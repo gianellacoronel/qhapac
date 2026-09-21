@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { BenefitQr } from "@/components/benefits/benefit-qr";
+import { TransactionLink } from "@/components/wallet/transaction-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { GeneratedBenefit } from "@/lib/benefits/types";
 import { formatBenefitDate } from "@/lib/benefits/utils";
+import { shortenHash } from "@/lib/stellar/explorer";
 
 type GeneratedBenefitViewProps = {
   benefit: GeneratedBenefit;
@@ -129,15 +131,34 @@ function RedeemedBenefitView({ benefit }: GeneratedBenefitViewProps) {
 
         <Separator />
 
-        <div className="space-y-2 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
-          <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-            Stellar proof
-          </p>
-          <p className="text-sm font-medium">Coming next</p>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            On-chain proof will be recorded when the redemption is finalized.
-          </p>
-        </div>
+        {benefit.transactionHash ? (
+          <div className="space-y-3 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
+            <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              On-chain proof
+            </p>
+            <div className="space-y-1">
+              <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                Transaction
+              </p>
+              <p className="font-mono text-sm font-semibold tracking-wide">
+                {shortenHash(benefit.transactionHash)}
+              </p>
+            </div>
+            <TransactionLink
+              hash={benefit.transactionHash}
+              label="View on Stellar Explorer"
+            />
+          </div>
+        ) : (
+          <div className="space-y-2 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
+            <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              On-chain proof
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Transaction details unavailable for this session.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

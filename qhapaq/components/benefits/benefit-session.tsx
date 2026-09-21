@@ -15,12 +15,30 @@ import {
   normalizeBenefitId,
 } from "@/lib/benefits/utils";
 
+export type RedeemBenefitOutcome =
+  | { ok: true; benefit: GeneratedBenefit }
+  | { ok: false; benefit: GeneratedBenefit; message: string };
+
 type BenefitSessionContextValue = {
   generatedBenefit: GeneratedBenefit | null;
   generateBenefit: (definitionId: string) => GeneratedBenefit | null;
   verifyBenefit: (benefitId: string) => GeneratedBenefit | null;
-  redeemBenefit: (benefitId: string) => GeneratedBenefit | null;
+  markVerified: (benefitId: string) => GeneratedBenefit | null;
+  redeemBenefit: (benefitId: string) => Promise<RedeemBenefitOutcome>;
   clearSession: () => void;
+};
+
+type RedeemApiSuccess = {
+  success: true;
+  benefitId: string;
+  transactionHash: string;
+  explorerUrl: string;
+};
+
+type RedeemApiFailure = {
+  success: false;
+  error?: string;
+  message?: string;
 };
 
 const BenefitSessionContext = createContext<BenefitSessionContextValue | null>(
@@ -54,7 +72,10 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
   const verifyBenefit = useCallback(
     (benefitId: string) => {
       if (!generatedBenefit) return null;
-      if (normalizeBenefitId(generatedBenefit.id) !== normalizeBenefitId(benefitId)) {
+      if (
+        normalizeBenefitId(generatedBenefit.id) !==
+        normalizeBenefitId(benefitId)
+      ) {
         return null;
       }
       return generatedBenefit;
@@ -62,22 +83,130 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
     [generatedBenefit]
   );
 
-  const redeemBenefit = useCallback(
-    (benefitId: string): GeneratedBenefit | null => {
-      const current = generatedBenefit;
-      if (!current) return null;
-      if (normalizeBenefitId(current.id) !== normalizeBenefitId(benefitId)) {
-        return null;
-      }
-      if (current.status === "redeemed") return current;
+  const markVerified = useCallback((benefitId: string) => {
+    let verified: GeneratedBenefit | null = null;
 
-      const redeemed: GeneratedBenefit = {
+    setGeneratedBenefit((current) => {
+      if (!current) return current;
+      if (normalizeBenefitId(current.id) !== normalizeBenefitId(benefitId)) {
+        return current;
+      }
+      if (current.status === "redeemed" || current.status === "redeeming") {
+        verified = current;
+        return current;
+      }
+
+      verified = {
         ...current,
-        status: "redeemed",
-        redeemedAt: new Date().toISOString(),
+        status: "verified",
+        redeemError: undefined,
       };
-      setGeneratedBenefit(redeemed);
-      return redeemed;
+      return verified;
+    });
+
+    return verified;
+  }, []);
+
+  const redeemBenefit = useCallback(
+    async (benefitId: string): Promise<RedeemBenefitOutcome> => {
+      const normalized = normalizeBenefitId(benefitId);
+      const current = generatedBenefit;
+
+      if (!current || normalizeBenefitId(current.id) !== normalized) {
+        const fallback: GeneratedBenefit = {
+          id: normalized || "UNKNOWN",
+          benefitDefinitionId: "",
+          projectId: "",
+          projectName: "",
+          benefitType: "",
+          validFor: "",
+          discount: 0,
+          status: "failed",
+          generatedAt: new Date().toISOString(),
+          redeemError: "This benefit could not be verified.",
+        };
+        return {
+          ok: false,
+          benefit: fallback,
+          message: "This benefit could not be verified.",
+        };
+      }
+
+      if (current.status === "redeemed") {
+        return {
+          ok: false,
+          benefit: current,
+          message: "This benefit has already been redeemed.",
+        };
+      }
+
+      if (current.status === "redeeming") {
+        return {
+          ok: false,
+          benefit: current,
+          message: "Redemption is already in progress.",
+        };
+      }
+
+      const redeeming: GeneratedBenefit = {
+        ...current,
+        status: "redeeming",
+        redeemError: undefined,
+      };
+      setGeneratedBenefit(redeeming);
+
+      try {
+        const response = await fetch("/api/benefits/redeem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ benefitId: current.id }),
+        });
+
+        const payload = (await response.json()) as
+          | RedeemApiSuccess
+          | RedeemApiFailure;
+
+        if (!response.ok || !payload.success) {
+          const failure = payload as RedeemApiFailure;
+          const message =
+            failure.message?.trim() ||
+            (failure.error === "already_redeemed"
+              ? "This benefit has already been redeemed."
+              : failure.error === "invalid_benefit"
+                ? "This benefit could not be verified."
+                : "We couldn't record the redemption on Stellar. Please try again.");
+
+          const failed: GeneratedBenefit = {
+            ...current,
+            status: "failed",
+            redeemError: message,
+          };
+          setGeneratedBenefit(failed);
+          return { ok: false, benefit: failed, message };
+        }
+
+        const success = payload as RedeemApiSuccess;
+        const redeemed: GeneratedBenefit = {
+          ...current,
+          status: "redeemed",
+          redeemedAt: new Date().toISOString(),
+          transactionHash: success.transactionHash,
+          explorerUrl: success.explorerUrl,
+          redeemError: undefined,
+        };
+        setGeneratedBenefit(redeemed);
+        return { ok: true, benefit: redeemed };
+      } catch {
+        const message =
+          "We couldn't record the redemption on Stellar. Please try again.";
+        const failed: GeneratedBenefit = {
+          ...current,
+          status: "failed",
+          redeemError: message,
+        };
+        setGeneratedBenefit(failed);
+        return { ok: false, benefit: failed, message };
+      }
     },
     [generatedBenefit]
   );
@@ -91,6 +220,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
       generatedBenefit,
       generateBenefit,
       verifyBenefit,
+      markVerified,
       redeemBenefit,
       clearSession,
     }),
@@ -98,6 +228,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
       generatedBenefit,
       generateBenefit,
       verifyBenefit,
+      markVerified,
       redeemBenefit,
       clearSession,
     ]

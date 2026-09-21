@@ -1,4 +1,5 @@
 const ID_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const BENEFIT_ID_PATTERN = /^QHP-[0-9A-Z]{6}$/;
 
 function randomSegment(length: number): string {
   let result = "";
@@ -16,6 +17,11 @@ export function createBenefitId(): string {
 
 export function normalizeBenefitId(value: string): string {
   return value.trim().toUpperCase();
+}
+
+/** True when the value matches the Qhapaq benefit ID format. */
+export function isValidBenefitId(value: string): boolean {
+  return BENEFIT_ID_PATTERN.test(normalizeBenefitId(value));
 }
 
 export function formatBenefitDate(iso: string): string {

@@ -116,7 +116,7 @@ export function BenefitsPage() {
 
           <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
             Generated benefits are unique digital credentials for this demo
-            session. On-chain redemption proof arrives in a later step.
+            session. Redeeming records a real Stellar Testnet proof.
           </p>
 
           <Link

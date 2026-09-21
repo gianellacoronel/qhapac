@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, CheckCircle2, CircleAlert } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  CircleAlert,
+  LoaderCircle,
+} from "lucide-react";
 import { useBenefitSession } from "@/components/benefits/benefit-session";
+import { TransactionLink } from "@/components/wallet/transaction-link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +30,7 @@ import {
   formatBenefitDate,
   normalizeBenefitId,
 } from "@/lib/benefits/utils";
+import { shortenHash } from "@/lib/stellar/explorer";
 
 type VerifyResult =
   | { kind: "idle" }
@@ -32,13 +39,15 @@ type VerifyResult =
 
 export function VerifyBenefitPage() {
   const searchParams = useSearchParams();
-  const { verifyBenefit, redeemBenefit, generatedBenefit } =
+  const { verifyBenefit, markVerified, redeemBenefit, generatedBenefit } =
     useBenefitSession();
 
   const initialId = searchParams.get("id") ?? "";
   const [benefitId, setBenefitId] = useState(initialId);
   const [result, setResult] = useState<VerifyResult>({ kind: "idle" });
   const [didAutoVerify, setDidAutoVerify] = useState(false);
+  const [redeemError, setRedeemError] = useState<string | null>(null);
+  const [isRedeeming, startRedeemTransition] = useTransition();
 
   useEffect(() => {
     if (initialId) {
@@ -51,10 +60,11 @@ export function VerifyBenefitPage() {
     const found = verifyBenefit(normalizeBenefitId(initialId));
     setDidAutoVerify(true);
     if (found) {
-      setBenefitId(found.id);
-      setResult({ kind: "valid", benefit: found });
+      const verified = markVerified(found.id) ?? found;
+      setBenefitId(verified.id);
+      setResult({ kind: "valid", benefit: verified });
     }
-  }, [didAutoVerify, initialId, verifyBenefit]);
+  }, [didAutoVerify, initialId, markVerified, verifyBenefit]);
 
   // Keep verified result in sync when the same benefit is redeemed.
   useEffect(() => {
@@ -78,6 +88,8 @@ export function VerifyBenefitPage() {
 
   function handleVerify() {
     const normalized = normalizeBenefitId(benefitId);
+    setRedeemError(null);
+
     if (!normalized) {
       setResult({
         kind: "invalid",
@@ -90,23 +102,32 @@ export function VerifyBenefitPage() {
     if (!found) {
       setResult({
         kind: "invalid",
-        message:
-          "No matching benefit in this session. Generate a benefit first, then verify its ID.",
+        message: "This benefit could not be verified.",
       });
       return;
     }
 
-    setBenefitId(found.id);
-    setResult({ kind: "valid", benefit: found });
+    const verified = markVerified(found.id) ?? found;
+    setBenefitId(verified.id);
+    setResult({ kind: "valid", benefit: verified });
   }
 
   function handleRedeem() {
     if (result.kind !== "valid") return;
-    const redeemed = redeemBenefit(result.benefit.id);
-    if (redeemed) {
-      setResult({ kind: "valid", benefit: redeemed });
-    }
+    setRedeemError(null);
+
+    startRedeemTransition(async () => {
+      const outcome = await redeemBenefit(result.benefit.id);
+      setResult({ kind: "valid", benefit: outcome.benefit });
+      if (!outcome.ok) {
+        setRedeemError(outcome.message);
+      }
+    });
   }
+
+  const showRedeemLoading =
+    isRedeeming ||
+    (result.kind === "valid" && result.benefit.status === "redeeming");
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 sm:px-8 sm:py-16">
@@ -159,7 +180,7 @@ export function VerifyBenefitPage() {
           <CardFooter>
             <Button
               className="w-full"
-              disabled={!canVerify}
+              disabled={!canVerify || showRedeemLoading}
               onClick={handleVerify}
             >
               Verify
@@ -178,6 +199,8 @@ export function VerifyBenefitPage() {
         {result.kind === "valid" ? (
           <ValidBenefitCard
             benefit={result.benefit}
+            isRedeeming={showRedeemLoading}
+            redeemError={redeemError ?? result.benefit.redeemError ?? null}
             onRedeem={handleRedeem}
           />
         ) : null}
@@ -188,11 +211,37 @@ export function VerifyBenefitPage() {
 
 type ValidBenefitCardProps = {
   benefit: GeneratedBenefit;
+  isRedeeming: boolean;
+  redeemError: string | null;
   onRedeem: () => void;
 };
 
-function ValidBenefitCard({ benefit, onRedeem }: ValidBenefitCardProps) {
+function ValidBenefitCard({
+  benefit,
+  isRedeeming,
+  redeemError,
+  onRedeem,
+}: ValidBenefitCardProps) {
   const isRedeemed = benefit.status === "redeemed";
+
+  if (isRedeeming) {
+    return (
+      <Card className="w-full max-w-md shadow-xs">
+        <CardHeader className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-primary">
+            <LoaderCircle className="size-4 animate-spin" aria-hidden />
+            Recording redemption...
+          </div>
+          <CardTitle className="font-heading text-xl">
+            Verifying on Stellar Testnet
+          </CardTitle>
+          <CardDescription>
+            Creating an on-chain proof for benefit {benefit.id}.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md shadow-xs">
@@ -208,12 +257,16 @@ function ValidBenefitCard({ benefit, onRedeem }: ValidBenefitCardProps) {
         </div>
         <div className="space-y-1">
           <CardTitle className="font-heading text-xl">
-            {benefit.projectName}
+            {isRedeemed ? `${benefit.discount}% OFF` : benefit.projectName}
           </CardTitle>
           <CardDescription className="text-base text-foreground">
-            {benefit.discount}% discount
+            {isRedeemed
+              ? benefit.projectName
+              : `${benefit.discount}% discount`}
           </CardDescription>
-          <p className="text-sm text-muted-foreground">{benefit.validFor}</p>
+          {!isRedeemed ? (
+            <p className="text-sm text-muted-foreground">{benefit.validFor}</p>
+          ) : null}
         </div>
       </CardHeader>
 
@@ -237,7 +290,15 @@ function ValidBenefitCard({ benefit, onRedeem }: ValidBenefitCardProps) {
           </div>
         </div>
 
-        {isRedeemed ? (
+        {redeemError ? (
+          <Alert variant="destructive">
+            <CircleAlert />
+            <AlertTitle>Redemption failed</AlertTitle>
+            <AlertDescription>{redeemError}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        {isRedeemed && benefit.transactionHash ? (
           <>
             <div className="space-y-1">
               <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
@@ -250,15 +311,22 @@ function ValidBenefitCard({ benefit, onRedeem }: ValidBenefitCardProps) {
               </p>
             </div>
             <Separator />
-            <div className="space-y-2 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
+            <div className="space-y-3 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
               <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-                Stellar proof
+                On-chain proof
               </p>
-              <p className="text-sm font-medium">Coming next</p>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                On-chain proof will be recorded when the redemption is
-                finalized.
-              </p>
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                  Transaction
+                </p>
+                <p className="font-mono text-sm font-semibold tracking-wide">
+                  {shortenHash(benefit.transactionHash)}
+                </p>
+              </div>
+              <TransactionLink
+                hash={benefit.transactionHash}
+                label="View on Stellar Explorer"
+              />
             </div>
           </>
         ) : null}
