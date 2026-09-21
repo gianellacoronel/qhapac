@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Sans_3, Raleway } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { BenefitSessionProvider } from "@/components/benefits/benefit-session";
 import { Navbar } from "@/components/layout/navbar";
+import { cn } from "@/lib/utils";
 
 const ralewayHeading = Raleway({
   subsets: ["latin"],
@@ -45,8 +46,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="flex min-h-full flex-col">
-        <Navbar />
-        {children}
+        <BenefitSessionProvider>
+          <Navbar />
+          {children}
+        </BenefitSessionProvider>
       </body>
     </html>
   );
