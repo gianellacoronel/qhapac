@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Gift, Sparkles } from "lucide-react";
+import { Gift } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,9 +33,8 @@ export function InvestmentCard({
   isTestnet,
 }: InvestmentCardProps) {
   const [open, setOpen] = useState(false);
-  const { formatted, balance, isLoading, error } = useQrpBalance(
-    isConnected && isTestnet ? address : null,
-  );
+  const { formatted, balance, hasTrustline, isLoading, error, refresh } =
+    useQrpBalance(isConnected && isTestnet ? address : null);
 
   return (
     <>
@@ -112,11 +111,13 @@ export function InvestmentCard({
         open={open}
         onOpenChange={setOpen}
         project={project}
-        balance={balance}
+        investorAddress={address}
         formattedBalance={formatted}
+        hasTrustline={hasTrustline}
         isConnected={isConnected}
         isTestnet={isTestnet}
         isLoadingBalance={isLoading}
+        onPurchaseSuccess={refresh}
       />
     </>
   );

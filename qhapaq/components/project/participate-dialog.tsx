@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,64 +19,123 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { requestQrpPurchase } from "@/lib/participation/purchase-client";
 import {
   estimateUsdValue,
   formatQrp,
   type ProjectData,
 } from "@/lib/project/data";
+import { shortenAddress } from "@/lib/stellar/wallet";
+import { shortenHash } from "@/lib/stellar/explorer";
 
 type ParticipateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project: ProjectData;
-  balance: string | null;
+  investorAddress: string | null;
   formattedBalance: string | null;
+  hasTrustline: boolean | null;
   isConnected: boolean;
   isTestnet: boolean;
   isLoadingBalance: boolean;
+  onPurchaseSuccess?: () => Promise<void> | void;
+};
+
+type PurchaseSuccessState = {
+  transactionHash: string;
+  explorerUrl: string;
+  amount: string;
 };
 
 export function ParticipateDialog({
   open,
   onOpenChange,
   project,
-  balance,
+  investorAddress,
   formattedBalance,
+  hasTrustline,
   isConnected,
   isTestnet,
   isLoadingBalance,
+  onPurchaseSuccess,
 }: ParticipateDialogProps) {
   const [amount, setAmount] = useState("");
-  const [confirmed, setConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<PurchaseSuccessState | null>(null);
 
   const numericAmount = Number(amount);
-  const balanceNumber = balance != null ? Number(balance) : null;
 
   const validationError = useMemo(() => {
     if (!amount.trim()) return null;
+    if (!/^(?:0|[1-9]\d*)(?:\.\d{1,7})?$/.test(amount.trim())) {
+      return "Enter a positive amount with at most 7 decimal places.";
+    }
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return "Enter a valid amount greater than zero.";
     }
-    if (balanceNumber != null && numericAmount > balanceNumber) {
-      return `Amount exceeds your available ${project.token} balance.`;
-    }
     return null;
-  }, [amount, balanceNumber, numericAmount, project.token]);
+  }, [amount, numericAmount]);
+
+  const missingTrustline =
+    isConnected && isTestnet && hasTrustline === false && !isLoadingBalance;
 
   const canConfirm =
     isConnected &&
     isTestnet &&
+    Boolean(investorAddress) &&
     !isLoadingBalance &&
+    !isSubmitting &&
+    !success &&
+    !missingTrustline &&
     !validationError &&
     Number.isFinite(numericAmount) &&
     numericAmount > 0;
 
+  function resetLocalState() {
+    setAmount("");
+    setError(null);
+    setSuccess(null);
+    setIsSubmitting(false);
+  }
+
   function handleOpenChange(next: boolean) {
     if (!next) {
-      setAmount("");
-      setConfirmed(false);
+      if (isSubmitting) return;
+      resetLocalState();
     }
     onOpenChange(next);
+  }
+
+  async function handleConfirm() {
+    if (!canConfirm || !investorAddress) return;
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const result = await requestQrpPurchase({
+        investorAddress,
+        amount: amount.trim(),
+      });
+
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
+
+      setSuccess({
+        transactionHash: result.transactionHash,
+        explorerUrl: result.explorerUrl,
+        amount: result.amount,
+      });
+
+      await onPurchaseSuccess?.();
+    } catch {
+      setError("We couldn't complete the QRP purchase. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -79,12 +143,12 @@ export function ParticipateDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl">
-            Participate in {project.name}
+            Acquire {project.token} for {project.name}
           </DialogTitle>
           <DialogDescription>
-            Choose how much {project.token} to allocate. This dialog is UI-only
-            for Day 2 — no tokens are moved until a later Freighter settlement
-            step.
+            Confirm to receive real {project.token} on Stellar Testnet from the
+            Qhapaq distributor. Freighter identifies your wallet; you do not
+            sign the transfer.
           </DialogDescription>
         </DialogHeader>
 
@@ -113,21 +177,44 @@ export function ParticipateDialog({
                 </span>
               </p>
             )}
+            {investorAddress && isConnected ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Investor: {shortenAddress(investorAddress)}
+              </p>
+            ) : null}
           </div>
 
+          {missingTrustline ? (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>QRP trustline required</AlertTitle>
+              <AlertDescription>
+                Your wallet does not trust QRP yet. Add a QRP trustline in
+                Freighter for the project issuer, then refresh your balance and
+                try again. Purchase will not be attempted without a trustline.
+              </AlertDescription>
+            </Alert>
+          ) : null}
+
           <div className="space-y-2">
-            <Label htmlFor="participate-amount">Amount ({project.token})</Label>
+            <Label htmlFor="participate-amount">
+              Amount to acquire ({project.token})
+            </Label>
             <Input
               id="participate-amount"
-              type="number"
+              type="text"
               inputMode="decimal"
-              min="0"
-              step="any"
-              placeholder="0"
+              placeholder="10"
               value={amount}
-              disabled={!isConnected || !isTestnet || confirmed}
+              disabled={
+                !isConnected ||
+                !isTestnet ||
+                Boolean(success) ||
+                isSubmitting ||
+                missingTrustline
+              }
               onChange={(event) => {
-                setConfirmed(false);
+                setError(null);
                 setAmount(event.target.value);
               }}
             />
@@ -150,13 +237,32 @@ export function ParticipateDialog({
             </p>
           </div>
 
-          {confirmed ? (
+          {error ? (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>Purchase failed</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : null}
+
+          {success ? (
             <Alert>
               <CheckCircle2 />
-              <AlertTitle>Selection saved in UI</AlertTitle>
-              <AlertDescription>
-                {formatQrp(numericAmount)} {project.token} selected for{" "}
-                {project.name}. No blockchain transaction was submitted.
+              <AlertTitle>QRP received on Testnet</AlertTitle>
+              <AlertDescription className="space-y-2">
+                <span className="block">
+                  {formatQrp(success.amount)} {project.token} sent to your
+                  wallet. Balance refreshed from Stellar after confirmation.
+                </span>
+                <a
+                  href={success.explorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
+                >
+                  View {shortenHash(success.transactionHash)} on Explorer
+                  <ExternalLink className="size-3.5" aria-hidden />
+                </a>
               </AlertDescription>
             </Alert>
           ) : null}
@@ -165,16 +271,23 @@ export function ParticipateDialog({
         <DialogFooter>
           <Button
             variant="outline"
+            disabled={isSubmitting}
             onClick={() => handleOpenChange(false)}
           >
-            Close
+            {success ? "Done" : "Close"}
           </Button>
-          <Button
-            disabled={!canConfirm || confirmed}
-            onClick={() => setConfirmed(true)}
-          >
-            Confirm
-          </Button>
+          {!success ? (
+            <Button disabled={!canConfirm} onClick={() => void handleConfirm()}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+                  Purchasing…
+                </>
+              ) : (
+                "Confirm purchase"
+              )}
+            </Button>
+          ) : null}
         </DialogFooter>
       </DialogContent>
     </Dialog>

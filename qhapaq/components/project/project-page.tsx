@@ -71,11 +71,13 @@ export function ProjectPage() {
         open={participateOpen}
         onOpenChange={setParticipateOpen}
         project={huaralResort}
-        balance={balanceState.balance}
+        investorAddress={wallet.address}
         formattedBalance={balanceState.formatted}
+        hasTrustline={balanceState.hasTrustline}
         isConnected={wallet.isConnected}
         isTestnet={wallet.isTestnet}
         isLoadingBalance={balanceState.isLoading}
+        onPurchaseSuccess={balanceState.refresh}
       />
     </div>
   );
