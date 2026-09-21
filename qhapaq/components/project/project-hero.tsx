@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import type { ProjectData } from "@/lib/project/data";
 
@@ -7,6 +8,8 @@ type ProjectHeroProps = {
 };
 
 export function ProjectHero({ project }: ProjectHeroProps) {
+  const t = useTranslations("project");
+
   return (
     <section className="relative overflow-hidden border-b border-border/60">
       <div
@@ -34,7 +37,7 @@ export function ProjectHero({ project }: ProjectHeroProps) {
           >
             {project.token}
           </Badge>
-          <Badge variant="outline">Stellar Testnet</Badge>
+          <Badge variant="outline">{t("stellarTestnet")}</Badge>
         </div>
 
         <div className="max-w-2xl space-y-5">

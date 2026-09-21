@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { getTransactionExplorerUrl } from "@/lib/stellar/explorer";
 
 type TransactionLinkProps = {
@@ -15,10 +16,12 @@ type TransactionLinkProps = {
  */
 export function TransactionLink({
   hash,
-  label = "View transaction on Stellar Explorer",
+  label,
   className,
 }: TransactionLinkProps) {
+  const t = useTranslations("transaction");
   const href = getTransactionExplorerUrl(hash);
+  const text = label ?? t("viewOnExplorer");
 
   return (
     <a
@@ -30,7 +33,7 @@ export function TransactionLink({
         "inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
       }
     >
-      {label}
+      {text}
       <ExternalLink className="size-3.5" aria-hidden />
     </a>
   );

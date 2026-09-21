@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, Loader2, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,43 +24,32 @@ type TestTransactionCardProps = {
   isTestnet: boolean;
 };
 
-function statusBadgeLabel(
-  status: ReturnType<typeof useTestTransaction>["status"]
-): string | null {
-  switch (status) {
-    case "signing":
-      return "Awaiting approval";
-    case "submitting":
-      return "Submitting";
-    case "success":
-      return "Confirmed";
-    case "error":
-      return "Failed";
-    default:
-      return null;
-  }
-}
-
 export function TestTransactionCard({
   address,
   isConnected,
   isTestnet,
 }: TestTransactionCardProps) {
+  const t = useTranslations("transaction");
   const { status, hash, error, isPending, run, reset } =
     useTestTransaction(isConnected && isTestnet ? address : null);
 
   const canRun = isConnected && isTestnet && !isPending;
-  const badgeLabel = statusBadgeLabel(status);
+
+  const badgeLabel =
+    status === "signing" ||
+    status === "submitting" ||
+    status === "success" ||
+    status === "error"
+      ? t(`status.${status}`)
+      : null;
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardDescription>Smoke test</CardDescription>
-            <CardTitle className="font-heading text-xl">
-              Stellar transaction
-            </CardTitle>
+            <CardDescription>{t("smokeTest")}</CardDescription>
+            <CardTitle className="font-heading text-xl">{t("title")}</CardTitle>
           </div>
           {badgeLabel ? (
             <Badge
@@ -79,21 +69,16 @@ export function TestTransactionCard({
 
       <CardContent className="gap-4">
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Sends {TEST_XLM_AMOUNT} XLM to your own account on Testnet. Uses
-          Freighter for signing — no private keys, no QRP movement.
+          {t("description", { amount: TEST_XLM_AMOUNT })}
         </p>
 
         {!isConnected ? (
-          <p className="text-sm text-muted-foreground">
-            Connect Freighter to run a test transaction.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("connectPrompt")}</p>
         ) : !isTestnet ? (
           <Alert variant="destructive">
             <AlertCircle />
-            <AlertTitle>Wrong network</AlertTitle>
-            <AlertDescription>
-              Switch Freighter to Stellar Testnet before sending.
-            </AlertDescription>
+            <AlertTitle>{t("wrongNetworkTitle")}</AlertTitle>
+            <AlertDescription>{t("wrongNetworkDescription")}</AlertDescription>
           </Alert>
         ) : null}
 
@@ -101,9 +86,7 @@ export function TestTransactionCard({
           <div className="flex flex-col gap-2">
             <Skeleton className="h-4 w-48" />
             <p className="text-sm text-muted-foreground">
-              {status === "signing"
-                ? "Waiting for wallet approval..."
-                : "Submitting transaction..."}
+              {status === "signing" ? t("waitingApproval") : t("submitting")}
             </p>
           </div>
         ) : null}
@@ -111,7 +94,7 @@ export function TestTransactionCard({
         {status === "success" && hash ? (
           <Alert>
             <CheckCircle2 />
-            <AlertTitle>Transaction confirmed</AlertTitle>
+            <AlertTitle>{t("confirmedTitle")}</AlertTitle>
             <AlertDescription>
               <span className="mt-1 block font-mono text-xs break-all">
                 {shortenHash(hash)}
@@ -120,7 +103,7 @@ export function TestTransactionCard({
                 {hash}
               </span>
               <span className="mt-3 block">
-                <TransactionLink hash={hash} />
+                <TransactionLink hash={hash} label={t("viewOnExplorer")} />
               </span>
             </AlertDescription>
           </Alert>
@@ -129,7 +112,7 @@ export function TestTransactionCard({
         {status === "error" && error ? (
           <Alert variant="destructive">
             <AlertCircle />
-            <AlertTitle>Transaction failed</AlertTitle>
+            <AlertTitle>{t("failedTitle")}</AlertTitle>
             <AlertDescription>
               <span className="block">{error}</span>
               <Button
@@ -138,7 +121,7 @@ export function TestTransactionCard({
                 className="mt-2"
                 onClick={reset}
               >
-                Dismiss
+                {t("dismiss")}
               </Button>
             </AlertDescription>
           </Alert>
@@ -156,10 +139,10 @@ export function TestTransactionCard({
             <Send data-icon="inline-start" />
           )}
           {status === "signing"
-            ? "Waiting for wallet approval..."
+            ? t("waitingApproval")
             : status === "submitting"
-              ? "Submitting transaction..."
-              : "Test Stellar Transaction"}
+              ? t("submitting")
+              : t("testButton")}
         </Button>
       </CardContent>
     </Card>

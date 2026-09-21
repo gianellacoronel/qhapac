@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,31 +27,36 @@ export function GenerateBenefitDialog({
   onConfirm,
   isGenerating = false,
 }: GenerateBenefitDialogProps) {
+  const t = useTranslations("benefits");
+
+  const validFor = t.has(`definitions.${benefit.id}.validFor`)
+    ? t(`definitions.${benefit.id}.validFor`)
+    : benefit.validFor;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl">
-            Your benefit
+            {t("generateDialogTitle")}
           </DialogTitle>
           <DialogDescription>
-            Generate a unique, verifiable digital benefit linked to your
-            participation.
+            {t("generateDialogDescription")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5 rounded-xl border border-border/80 bg-muted/40 p-5">
           <div className="space-y-1">
             <p className="font-heading text-3xl font-semibold tracking-tight">
-              {benefit.discount}% OFF
+              {t("percentOff", { discount: benefit.discount })}
             </p>
             <p className="text-base font-medium">{benefit.projectName}</p>
           </div>
           <div className="space-y-1 border-t border-border/70 pt-4">
             <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-              Valid for
+              {t("validForLabel")}
             </p>
-            <p className="text-sm font-medium">{benefit.validFor}</p>
+            <p className="text-sm font-medium">{validFor}</p>
           </div>
         </div>
 
@@ -60,7 +66,7 @@ export function GenerateBenefitDialog({
             disabled={isGenerating}
             onClick={onConfirm}
           >
-            Generate benefit
+            {t("generate")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -7,6 +7,7 @@ import {
   ExternalLink,
   Loader2,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { purchaseErrorKey } from "@/lib/i18n/errors";
 import { requestQrpPurchase } from "@/lib/participation/purchase-client";
 import {
   estimateUsdValue,
@@ -59,6 +61,8 @@ export function ParticipateDialog({
   isLoadingBalance,
   onPurchaseSuccess,
 }: ParticipateDialogProps) {
+  const t = useTranslations("purchase");
+  const locale = useLocale();
   const [amount, setAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,13 +73,13 @@ export function ParticipateDialog({
   const validationError = useMemo(() => {
     if (!amount.trim()) return null;
     if (!/^(?:0|[1-9]\d*)(?:\.\d{1,7})?$/.test(amount.trim())) {
-      return "Enter a positive amount with at most 7 decimal places.";
+      return t("validationDecimals");
     }
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      return "Enter a valid amount greater than zero.";
+      return t("validationPositive");
     }
     return null;
-  }, [amount, numericAmount]);
+  }, [amount, numericAmount, t]);
 
   const missingTrustline =
     isConnected && isTestnet && hasTrustline === false && !isLoadingBalance;
@@ -120,7 +124,7 @@ export function ParticipateDialog({
       });
 
       if (!result.success) {
-        setError(result.message);
+        setError(t(purchaseErrorKey(result.error)));
         return;
       }
 
@@ -132,7 +136,7 @@ export function ParticipateDialog({
 
       await onPurchaseSuccess?.();
     } catch {
-      setError("We couldn't complete the QRP purchase. Please try again.");
+      setError(t("genericError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,31 +147,29 @@ export function ParticipateDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl">
-            Acquire {project.token} for {project.name}
+            {t("title", { token: project.token, projectName: project.name })}
           </DialogTitle>
           <DialogDescription>
-            Confirm to receive real {project.token} on Stellar Testnet from the
-            Qhapaq distributor. Freighter identifies your wallet; you do not
-            sign the transfer.
+            {t("description", { token: project.token })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5">
           <div className="rounded-xl border border-border/80 bg-muted/40 px-4 py-3">
             <p className="text-xs tracking-wide text-muted-foreground uppercase">
-              Current {project.token} balance
+              {t("currentBalance", { token: project.token })}
             </p>
             {!isConnected ? (
               <p className="mt-1 text-lg font-medium text-muted-foreground">
-                Connect wallet
+                {t("connectWallet")}
               </p>
             ) : !isTestnet ? (
               <p className="mt-1 text-lg font-medium text-destructive">
-                Switch to Testnet
+                {t("switchToTestnet")}
               </p>
             ) : isLoadingBalance ? (
               <p className="mt-1 text-lg font-medium text-muted-foreground">
-                Loading…
+                {t("loading")}
               </p>
             ) : (
               <p className="mt-1 font-heading text-2xl font-semibold tracking-tight">
@@ -179,7 +181,7 @@ export function ParticipateDialog({
             )}
             {investorAddress && isConnected ? (
               <p className="mt-2 text-xs text-muted-foreground">
-                Investor: {shortenAddress(investorAddress)}
+                {t("investor", { address: shortenAddress(investorAddress) })}
               </p>
             ) : null}
           </div>
@@ -187,18 +189,14 @@ export function ParticipateDialog({
           {missingTrustline ? (
             <Alert variant="destructive">
               <AlertCircle />
-              <AlertTitle>QRP trustline required</AlertTitle>
-              <AlertDescription>
-                Your wallet does not trust QRP yet. Add a QRP trustline in
-                Freighter for the project issuer, then refresh your balance and
-                try again. Purchase will not be attempted without a trustline.
-              </AlertDescription>
+              <AlertTitle>{t("trustlineTitle")}</AlertTitle>
+              <AlertDescription>{t("trustlineDescription")}</AlertDescription>
             </Alert>
           ) : null}
 
           <div className="space-y-2">
             <Label htmlFor="participate-amount">
-              Amount to acquire ({project.token})
+              {t("amountLabel", { token: project.token })}
             </Label>
             <Input
               id="participate-amount"
@@ -225,22 +223,29 @@ export function ParticipateDialog({
 
           <div className="rounded-xl border border-border/80 px-4 py-3">
             <p className="text-xs tracking-wide text-muted-foreground uppercase">
-              Estimated participation value
+              {t("estimatedValue")}
             </p>
             <p className="mt-1 font-heading text-xl font-semibold tracking-tight">
               {amount.trim() && !validationError
-                ? estimateUsdValue(numericAmount, project.referenceValueUsd)
+                ? estimateUsdValue(
+                    numericAmount,
+                    project.referenceValueUsd,
+                    locale
+                  )
                 : "—"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Reference: 1 {project.token} = ${project.referenceValueUsd}
+              {t("reference", {
+                token: project.token,
+                value: project.referenceValueUsd,
+              })}
             </p>
           </div>
 
           {error ? (
             <Alert variant="destructive">
               <AlertCircle />
-              <AlertTitle>Purchase failed</AlertTitle>
+              <AlertTitle>{t("failedTitle")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
@@ -248,11 +253,13 @@ export function ParticipateDialog({
           {success ? (
             <Alert>
               <CheckCircle2 />
-              <AlertTitle>QRP received on Testnet</AlertTitle>
+              <AlertTitle>{t("successTitle")}</AlertTitle>
               <AlertDescription className="space-y-2">
                 <span className="block">
-                  {formatQrp(success.amount)} {project.token} sent to your
-                  wallet. Balance refreshed from Stellar after confirmation.
+                  {t("successDescription", {
+                    amount: formatQrp(success.amount, locale),
+                    token: project.token,
+                  })}
                 </span>
                 <a
                   href={success.explorerUrl}
@@ -260,7 +267,9 @@ export function ParticipateDialog({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
                 >
-                  View {shortenHash(success.transactionHash)} on Explorer
+                  {t("viewOnExplorer", {
+                    hash: shortenHash(success.transactionHash),
+                  })}
                   <ExternalLink className="size-3.5" aria-hidden />
                 </a>
               </AlertDescription>
@@ -274,17 +283,17 @@ export function ParticipateDialog({
             disabled={isSubmitting}
             onClick={() => handleOpenChange(false)}
           >
-            {success ? "Done" : "Close"}
+            {success ? t("done") : t("close")}
           </Button>
           {!success ? (
             <Button disabled={!canConfirm} onClick={() => void handleConfirm()}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
-                  Purchasing…
+                  {t("purchasing")}
                 </>
               ) : (
-                "Confirm purchase"
+                t("confirm")
               )}
             </Button>
           ) : null}

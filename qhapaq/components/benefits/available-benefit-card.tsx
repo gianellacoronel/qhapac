@@ -1,6 +1,7 @@
 "use client";
 
 import { Gift, Percent } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,12 +29,18 @@ export function AvailableBenefitCard({
   onGenerate,
   onViewGenerated,
 }: AvailableBenefitCardProps) {
+  const t = useTranslations("benefits");
+
   const statusLabel =
     status === "redeemed"
-      ? "Redeemed"
+      ? t("status.redeemed")
       : status === "generated"
-        ? "Generated"
-        : "Available";
+        ? t("status.generated")
+        : t("status.available");
+
+  const validFor = t.has(`definitions.${benefit.id}.validFor`)
+    ? t(`definitions.${benefit.id}.validFor`)
+    : benefit.validFor;
 
   return (
     <Card className="w-full max-w-md shadow-xs">
@@ -45,7 +52,7 @@ export function AvailableBenefitCard({
               {benefit.projectName}
             </CardDescription>
             <CardTitle className="font-heading text-3xl font-semibold tracking-tight">
-              {benefit.discount}% OFF
+              {t("percentOff", { discount: benefit.discount })}
             </CardTitle>
           </div>
           <Badge
@@ -64,24 +71,21 @@ export function AvailableBenefitCard({
       <CardContent className="gap-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Percent className="size-4 text-primary" aria-hidden />
-          {benefit.validFor}
+          {validFor}
         </div>
         <p className="text-sm text-muted-foreground">
-          Your participation:{" "}
-          <span className="font-medium text-foreground">
-            {participationLabel}
-          </span>
+          {t("yourParticipation", { label: participationLabel })}
         </p>
       </CardContent>
 
       <CardFooter>
         {status === "available" ? (
           <Button className="w-full" onClick={onGenerate}>
-            Generate benefit
+            {t("generate")}
           </Button>
         ) : (
           <Button className="w-full" variant="outline" onClick={onViewGenerated}>
-            View benefit
+            {t("viewBenefit")}
           </Button>
         )}
       </CardFooter>
@@ -92,9 +96,10 @@ export function AvailableBenefitCard({
 export function formatParticipationLabel(
   formatted: string | null,
   token: string,
-  isConnected: boolean
+  isConnected: boolean,
+  connectLabel: string
 ): string {
-  if (!isConnected) return `Connect wallet to see ${token}`;
+  if (!isConnected) return connectLabel;
   if (!formatted) return `0 ${token}`;
   return `${formatted} ${token}`;
 }

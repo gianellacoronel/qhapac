@@ -1,25 +1,27 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ConnectWallet } from "@/components/wallet/connect-wallet";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { useWallet } from "@/hooks/use-wallet";
 
-const navItems = [
-  { href: "/", label: "Project" },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "/benefits", label: "Benefits" },
-] as const;
-
 export function Navbar() {
+  const t = useTranslations("navbar");
   const pathname = usePathname();
   const wallet = useWallet();
   const [open, setOpen] = useState(false);
+
+  const navItems = [
+    { href: "/", label: t("home") },
+    { href: "/portfolio", label: t("portfolio") },
+    { href: "/benefits", label: t("benefits") },
+  ] as const;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
@@ -42,7 +44,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 md:flex" aria-label={t("mainNav")}>
           {navItems.map((item) => {
             const active =
               item.href === "/"
@@ -65,7 +67,10 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <Suspense fallback={null}>
+            <LanguageSwitcher />
+          </Suspense>
           <ConnectWallet wallet={wallet} variant="navbar" />
         </div>
 
@@ -73,7 +78,7 @@ export function Navbar() {
           variant="ghost"
           size="icon"
           className="md:hidden"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? t("closeMenu") : t("openMenu")}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
         >
@@ -83,7 +88,7 @@ export function Navbar() {
 
       {open ? (
         <div className="border-t border-border/70 bg-background px-6 py-4 md:hidden">
-          <nav className="flex flex-col gap-1" aria-label="Mobile">
+          <nav className="flex flex-col gap-1" aria-label={t("mobileNav")}>
             {navItems.map((item) => {
               const active =
                 item.href === "/"
@@ -106,7 +111,10 @@ export function Navbar() {
               );
             })}
           </nav>
-          <div className="mt-4 border-t border-border/70 pt-4">
+          <div className="mt-4 flex flex-col gap-4 border-t border-border/70 pt-4">
+            <Suspense fallback={null}>
+              <LanguageSwitcher />
+            </Suspense>
             <ConnectWallet wallet={wallet} variant="navbar" />
           </div>
         </div>

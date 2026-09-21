@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   AvailableBenefitCard,
   formatParticipationLabel,
@@ -11,6 +11,7 @@ import { GenerateBenefitDialog } from "@/components/benefits/generate-benefit-di
 import { GeneratedBenefitView } from "@/components/benefits/generated-benefit-view";
 import { useBenefitSession } from "@/components/benefits/benefit-session";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { useWallet } from "@/hooks/use-wallet";
 import { availableBenefits } from "@/lib/benefits/data";
@@ -18,6 +19,7 @@ import type { BenefitStatus } from "@/lib/benefits/types";
 import { huaralResort } from "@/lib/project/data";
 
 export function BenefitsPage() {
+  const t = useTranslations("benefits");
   const wallet = useWallet();
   const { generatedBenefit, generateBenefit } = useBenefitSession();
   const { formatted } = useQrpBalance(
@@ -42,7 +44,8 @@ export function BenefitsPage() {
   const participationLabel = formatParticipationLabel(
     formatted,
     huaralResort.token,
-    wallet.isConnected
+    wallet.isConnected,
+    t("connectToSee", { token: huaralResort.token })
   );
 
   function handleGenerateConfirm() {
@@ -63,13 +66,13 @@ export function BenefitsPage() {
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 sm:px-8 sm:py-16">
       <header className="max-w-2xl space-y-3">
         <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-          Benefits
+          {t("label")}
         </p>
         <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-          Your benefits
+          {t("title")}
         </h1>
         <p className="text-base leading-relaxed text-muted-foreground">
-          Benefits available through your Qhapaq participation.
+          {t("description")}
         </p>
       </header>
 
@@ -82,7 +85,7 @@ export function BenefitsPage() {
             onClick={() => setShowGenerated(false)}
           >
             <ArrowLeft data-icon="inline-start" />
-            Back to benefits
+            {t("backToBenefits")}
           </Button>
           <GeneratedBenefitView benefit={generatedBenefit} />
         </div>
@@ -115,15 +118,14 @@ export function BenefitsPage() {
           })}
 
           <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
-            Generated benefits are unique digital credentials for this demo
-            session. Redeeming records a real Stellar Testnet proof.
+            {t("disclaimer")}
           </p>
 
           <Link
             href="/benefits/verify"
             className="text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
-            Verify a benefit ID
+            {t("verifyLink")}
           </Link>
         </div>
       )}

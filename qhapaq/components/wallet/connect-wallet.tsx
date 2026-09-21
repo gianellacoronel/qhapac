@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Loader2, Unplug, Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ export function ConnectWallet({
   wallet: walletProp,
   variant = "default",
 }: ConnectWalletProps) {
+  const t = useTranslations("wallet");
   const internalWallet = useWallet();
   const wallet = walletProp ?? internalWallet;
   const isNavbar = variant === "navbar";
@@ -30,10 +32,18 @@ export function ConnectWallet({
     isFreighterAvailable,
     isLoading,
     error,
+    errorCode,
     connect,
     disconnect,
     clearError,
   } = wallet;
+
+  const displayError =
+    errorCode === "wrong_network"
+      ? t("wrongNetworkMessage", { network: stellarConfig.displayName })
+      : errorCode === "unexpected"
+        ? t("unexpectedError")
+        : error;
 
   if (isLoading && !isConnected) {
     return (
@@ -66,7 +76,7 @@ export function ConnectWallet({
           ) : (
             <Wallet data-icon="inline-start" />
           )}
-          Connect Wallet
+          {t("connect")}
         </Button>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
@@ -75,16 +85,16 @@ export function ConnectWallet({
             {shortenAddress(address!)}
           </Badge>
           <Badge variant={isTestnet ? "outline" : "destructive"}>
-            {isTestnet ? stellarConfig.displayName : "Wrong network"}
+            {isTestnet ? stellarConfig.displayName : t("wrongNetwork")}
           </Badge>
           <Button
             variant="ghost"
             size="sm"
             onClick={disconnect}
-            aria-label="Disconnect wallet"
+            aria-label={t("disconnectAria")}
           >
             <Unplug data-icon="inline-start" />
-            {isNavbar ? null : "Disconnect"}
+            {isNavbar ? null : t("disconnect")}
           </Button>
         </div>
       )}
@@ -92,30 +102,29 @@ export function ConnectWallet({
       {isFreighterAvailable === false ? (
         <Alert className={isNavbar ? "max-w-xs" : undefined}>
           <AlertCircle />
-          <AlertTitle>Freighter required</AlertTitle>
+          <AlertTitle>{t("freighterRequiredTitle")}</AlertTitle>
           <AlertDescription>
-            Install the Freighter browser extension and refresh this page to
-            connect your Stellar Testnet wallet.
+            {t("freighterRequiredDescription")}
           </AlertDescription>
         </Alert>
       ) : null}
 
-      {error ? (
+      {displayError ? (
         <Alert
           variant="destructive"
           className={isNavbar ? "max-w-xs" : undefined}
         >
           <AlertCircle />
-          <AlertTitle>Wallet error</AlertTitle>
+          <AlertTitle>{t("errorTitle")}</AlertTitle>
           <AlertDescription>
-            <span className="block">{error}</span>
+            <span className="block">{displayError}</span>
             <Button
               variant="ghost"
               size="xs"
               className="mt-2"
               onClick={clearError}
             >
-              Dismiss
+              {t("dismiss")}
             </Button>
           </AlertDescription>
         </Alert>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Gift } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ParticipateDialog } from "@/components/project/participate-dialog";
+import { Link } from "@/i18n/navigation";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { estimateUsdValue, type ProjectData } from "@/lib/project/data";
 
@@ -34,6 +35,8 @@ export function InvestmentCard({
   isTestnet,
   onPurchaseSuccess,
 }: InvestmentCardProps) {
+  const t = useTranslations("investment");
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const { formatted, balance, hasTrustline, isLoading, error, refresh } =
     useQrpBalance(isConnected && isTestnet ? address : null);
@@ -49,7 +52,7 @@ export function InvestmentCard({
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <CardDescription>Your participation</CardDescription>
+              <CardDescription>{t("yourParticipation")}</CardDescription>
               <CardTitle className="font-heading text-xl">
                 {project.name}
               </CardTitle>
@@ -62,14 +65,14 @@ export function InvestmentCard({
           <Separator />
 
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Balance</p>
+            <p className="text-sm text-muted-foreground">{t("balance")}</p>
             {!isConnected ? (
               <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground">
-                Connect wallet
+                {t("connectWallet")}
               </p>
             ) : !isTestnet ? (
               <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
-                Switch to Testnet
+                {t("switchToTestnet")}
               </p>
             ) : isLoading ? (
               <Skeleton className="h-9 w-32" />
@@ -87,14 +90,18 @@ export function InvestmentCard({
                 </p>
                 <p className="text-sm text-muted-foreground">
                   ≈{" "}
-                  {estimateUsdValue(balance ?? "0", project.referenceValueUsd)}
+                  {estimateUsdValue(
+                    balance ?? "0",
+                    project.referenceValueUsd,
+                    locale
+                  )}
                 </p>
               </>
             )}
           </div>
 
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Benefits</p>
+            <p className="text-sm text-muted-foreground">{t("benefits")}</p>
             <p className="flex items-center gap-2 font-medium">
               <Gift className="size-4 text-primary" aria-hidden />
               {project.mainBenefit}
@@ -105,11 +112,11 @@ export function InvestmentCard({
         <CardFooter className="flex flex-col gap-2 sm:flex-row">
           <Link href="/benefits" className="w-full sm:w-auto">
             <Button variant="outline" className="w-full">
-              View benefits
+              {t("viewBenefits")}
             </Button>
           </Link>
           <Button className="w-full sm:w-auto" onClick={() => setOpen(true)}>
-            Participate
+            {t("participate")}
           </Button>
         </CardFooter>
       </Card>

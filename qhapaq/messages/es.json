@@ -1,0 +1,232 @@
+{
+  "metadata": {
+    "title": "Qhapaq",
+    "description": "Qhapaq — participación verificable en proyectos del mundo real en Stellar Testnet."
+  },
+  "navbar": {
+    "home": "Proyecto",
+    "portfolio": "Portafolio",
+    "benefits": "Beneficios",
+    "mainNav": "Principal",
+    "mobileNav": "Móvil",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "language": "Idioma"
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN",
+    "switchTo": "Cambiar a {locale}"
+  },
+  "project": {
+    "stellarTestnet": "Stellar Testnet",
+    "overviewLabel": "Información del proyecto",
+    "overviewTitle": "Diseñado para participación verificable",
+    "location": "Ubicación",
+    "token": "Token",
+    "referenceValue": "Valor de referencia",
+    "referenceValueFormula": "1 {token} = ${value}",
+    "benefitsPreviewLabel": "Vista previa de beneficios",
+    "benefitsPreviewTitle": "Lo que desbloquea tu participación",
+    "participate": "Participar",
+    "shortDescription": "Un proyecto hotelero costero que invita a la participación comunitaria verificable mediante QRP en Stellar Testnet.",
+    "overview": {
+      "p1": "Huaral Resort ofrece un retiro pacífico al norte de Lima: piscinas, gastronomía y espacios de bienestar pensados para estadías prolongadas y fines de semana.",
+      "p2": "Qhapaq permite participar con QRP, un activo clásico de Stellar Testnet que representa participación en este prototipo de hackathon — no son acciones ni valores negociables.",
+      "p3": "Poseer QRP desbloquea un 20% de descuento en servicios del resort, dando a la participación un beneficio tangible y claro."
+    },
+    "mainBenefit": "20% de descuento en servicios del resort",
+    "benefits": {
+      "discount": {
+        "title": "Descuento en servicios del resort",
+        "description": "Los participantes reciben 20% de descuento en alojamiento, gastronomía y spa al visitar Huaral Resort.",
+        "highlight": "20%"
+      },
+      "priority": {
+        "title": "Ventana de reserva prioritaria",
+        "description": "Acceso anticipado a paquetes de temporada y reservas de fines de semana pico antes del lanzamiento general.",
+        "highlight": "Acceso anticipado"
+      },
+      "updates": {
+        "title": "Actualizaciones del proyecto",
+        "description": "Notas transparentes sobre financiamiento, hitos de construcción y mejoras en la experiencia del huésped.",
+        "highlight": "Vinculado on-chain"
+      }
+    },
+    "disclaimer": "QRP en Stellar Testnet es un prototipo de hackathon para participación verificable. No es un valor, cuota societaria ni producto de inversión."
+  },
+  "funding": {
+    "label": "Progreso de financiamiento",
+    "loading": "Cargando el progreso de financiamiento desde Stellar Testnet…",
+    "errorTitle": "No se pudo cargar el progreso de financiamiento",
+    "errorDescription": "Stellar Testnet no está disponible temporalmente. Los totales de financiamiento no se muestran hasta que la red responda.",
+    "completion": "Avance del financiamiento",
+    "footnote": "Totales en vivo desde Stellar Testnet para {projectName}: suma de QRP enviado desde el distributor a los inversores. El saldo {token} de tu wallet también se lee en vivo desde Testnet."
+  },
+  "investment": {
+    "yourParticipation": "Tu participación",
+    "balance": "Saldo",
+    "connectWallet": "Conectar wallet",
+    "switchToTestnet": "Cambiar a Testnet",
+    "benefits": "Beneficios",
+    "viewBenefits": "Ver beneficios",
+    "participate": "Participar"
+  },
+  "purchase": {
+    "title": "Adquirir {token} para {projectName}",
+    "description": "Confirma para recibir {token} real en Stellar Testnet desde el distributor de Qhapaq. Freighter identifica tu wallet; no firmas la transferencia.",
+    "currentBalance": "Saldo actual de {token}",
+    "connectWallet": "Conectar wallet",
+    "switchToTestnet": "Cambiar a Testnet",
+    "loading": "Cargando…",
+    "investor": "Inversor: {address}",
+    "trustlineTitle": "Se requiere trustline de QRP",
+    "trustlineDescription": "Tu wallet aún no confía en QRP. Agrega una trustline de QRP en Freighter para el issuer del proyecto, actualiza tu saldo e inténtalo de nuevo. No se intentará la compra sin trustline.",
+    "amountLabel": "Cantidad a adquirir ({token})",
+    "estimatedValue": "Valor estimado de participación",
+    "reference": "Referencia: 1 {token} = ${value}",
+    "failedTitle": "Compra fallida",
+    "successTitle": "QRP recibido en Testnet",
+    "successDescription": "{amount} {token} enviado a tu wallet. Saldo actualizado desde Stellar tras la confirmación.",
+    "viewOnExplorer": "Ver {hash} en Explorer",
+    "done": "Listo",
+    "close": "Cerrar",
+    "confirm": "Confirmar compra",
+    "purchasing": "Comprando…",
+    "validationDecimals": "Ingresa una cantidad positiva con como máximo 7 decimales.",
+    "validationPositive": "Ingresa una cantidad válida mayor que cero.",
+    "genericError": "No pudimos completar la compra de QRP. Inténtalo de nuevo.",
+    "errors": {
+      "invalid_address": "Se requiere una dirección Stellar de inversor válida.",
+      "invalid_amount": "Ingresa una cantidad de QRP válida mayor que cero.",
+      "no_trustline": "Tu wallet aún no tiene trustline de QRP. Agrega QRP en Freighter (confía en el issuer) antes de comprar e inténtalo de nuevo.",
+      "insufficient_distributor": "El distributor no tiene suficiente QRP para completar esta compra.",
+      "account_not_found": "No se encontró la cuenta del inversor en Stellar Testnet.",
+      "config": "La compra de QRP no está configurada en el servidor. Configura las variables de entorno del distributor y reinicia.",
+      "submit_failed": "No pudimos completar la compra de QRP en Stellar. Inténtalo de nuevo.",
+      "unknown": "No pudimos completar la compra de QRP. Inténtalo de nuevo."
+    }
+  },
+  "portfolio": {
+    "label": "Portafolio",
+    "title": "Tu participación en Qhapaq",
+    "description": "Saldo {token} en vivo desde Stellar Testnet para {projectName}. Valor de referencia: 1 {token} = ${value}."
+  },
+  "participation": {
+    "yourParticipation": "Tu participación",
+    "connectWallet": "Conectar wallet",
+    "switchToTestnet": "Cambiar a Testnet",
+    "noTrustline": "Aún no se encontró trustline de QRP en esta cuenta.",
+    "benefits": "Beneficios",
+    "balanceErrorTitle": "No se pudo cargar el saldo de QRP",
+    "retry": "Reintentar",
+    "viewBenefits": "Ver beneficios",
+    "participate": "Participar",
+    "refresh": "Actualizar"
+  },
+  "benefits": {
+    "label": "Beneficios",
+    "title": "Tus beneficios",
+    "description": "Beneficios disponibles mediante tu participación en Qhapaq.",
+    "backToBenefits": "Volver a beneficios",
+    "disclaimer": "Los beneficios generados son credenciales digitales únicas para esta sesión de demo. Al redimir se registra una prueba real en Stellar Testnet.",
+    "verifyLink": "Verificar un Benefit ID",
+    "definitions": {
+      "huaral-resort-20-off": {
+        "title": "20% OFF",
+        "description": "Descuento en servicios del resort disponible mediante participación en Qhapaq.",
+        "validFor": "Servicios del resort"
+      }
+    },
+    "status": {
+      "available": "Disponible",
+      "generated": "Generado",
+      "redeemed": "Redimido",
+      "valid": "Válido"
+    },
+    "percentOff": "{discount}% OFF",
+    "yourParticipation": "Tu participación: {label}",
+    "connectToSee": "Conecta la wallet para ver {token}",
+    "generate": "Generar beneficio",
+    "viewBenefit": "Ver beneficio",
+    "generateDialogTitle": "Tu beneficio",
+    "generateDialogDescription": "Genera un beneficio digital único y verificable vinculado a tu participación.",
+    "validForLabel": "Válido para",
+    "generatedTitle": "Beneficio generado",
+    "benefitId": "Benefit ID",
+    "validForOneRedemption": "Válido para una redención",
+    "verifyBenefit": "Verificar beneficio",
+    "redeemedTitle": "Beneficio redimido",
+    "statusLabel": "Estado",
+    "redeemedOn": "Redimido el",
+    "onChainProof": "Prueba on-chain",
+    "transaction": "Transaction",
+    "viewOnExplorer": "Ver en Stellar Explorer",
+    "txUnavailable": "Detalles de la transaction no disponibles para esta sesión.",
+    "errors": {
+      "not_found": "Este beneficio no pudo verificarse.",
+      "already_redeemed": "Este beneficio ya fue redimido.",
+      "in_progress": "La redención ya está en curso.",
+      "not_configured": "La redención no está configurada en el servidor. Configura QHAPAQ_REDEMPTION_SECRET_KEY y reinicia.",
+      "submit_failed": "No pudimos registrar la redención en Stellar. Inténtalo de nuevo."
+    }
+  },
+  "verify": {
+    "backToBenefits": "Volver a beneficios",
+    "title": "Verificar beneficio",
+    "description": "Ingresa el Benefit ID para confirmar que es válido en esta sesión.",
+    "enterIdTitle": "Ingresa el Benefit ID",
+    "exampleFormat": "Formato de ejemplo: QHP-8F42A1",
+    "benefitIdLabel": "Benefit ID",
+    "verify": "Verificar",
+    "unableTitle": "No se pudo verificar",
+    "enterId": "Ingresa un Benefit ID para verificar.",
+    "notFound": "Este beneficio no pudo verificarse.",
+    "recording": "Registrando redención...",
+    "verifyingOnChain": "Verificando en Stellar Testnet",
+    "creatingProof": "Creando una prueba on-chain para el beneficio {id}.",
+    "validBenefit": "Beneficio válido",
+    "redeemedBenefit": "Beneficio redimido",
+    "discountLabel": "{discount}% de descuento",
+    "statusLabel": "Estado",
+    "redeemedOn": "Redimido el",
+    "onChainProof": "Prueba on-chain",
+    "transaction": "Transaction",
+    "viewOnExplorer": "Ver en Stellar Explorer",
+    "redeem": "Redimir beneficio",
+    "redemptionFailed": "Redención fallida"
+  },
+  "wallet": {
+    "connect": "Conectar wallet",
+    "disconnect": "Desconectar",
+    "disconnectAria": "Desconectar wallet",
+    "wrongNetwork": "Red incorrecta",
+    "freighterRequiredTitle": "Se requiere Freighter",
+    "freighterRequiredDescription": "Instala la extensión Freighter del navegador y recarga esta página para conectar tu wallet de Stellar Testnet.",
+    "errorTitle": "Error de wallet",
+    "dismiss": "Cerrar",
+    "wrongNetworkMessage": "Red incorrecta. Cambia Freighter a {network}.",
+    "unexpectedError": "Error inesperado de wallet."
+  },
+  "transaction": {
+    "smokeTest": "Prueba rápida",
+    "title": "Transaction de Stellar",
+    "description": "Envía {amount} XLM a tu propia cuenta en Testnet. Usa Freighter para firmar — sin claves privadas ni movimiento de QRP.",
+    "connectPrompt": "Conecta Freighter para ejecutar una transaction de prueba.",
+    "wrongNetworkTitle": "Red incorrecta",
+    "wrongNetworkDescription": "Cambia Freighter a Stellar Testnet antes de enviar.",
+    "waitingApproval": "Esperando aprobación de la wallet...",
+    "submitting": "Enviando transaction...",
+    "confirmedTitle": "Transaction confirmada",
+    "failedTitle": "Transaction fallida",
+    "dismiss": "Cerrar",
+    "testButton": "Probar transaction de Stellar",
+    "viewOnExplorer": "Ver transaction en Stellar Explorer",
+    "status": {
+      "signing": "Esperando aprobación",
+      "submitting": "Enviando",
+      "success": "Confirmada",
+      "error": "Fallida"
+    }
+  }
+}

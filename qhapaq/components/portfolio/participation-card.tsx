@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { AlertCircle, Gift, RefreshCw, Sparkles } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/navigation";
+import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { estimateUsdValue, huaralResort } from "@/lib/project/data";
 
@@ -33,6 +35,9 @@ export function ParticipationCard({
   projectName = huaralResort.name,
   onParticipate,
 }: ParticipationCardProps) {
+  const t = useTranslations("participation");
+  const locale = useLocale();
+  const project = useLocalizedProject();
   const { formatted, balance, hasTrustline, isLoading, error, refresh } =
     useQrpBalance(isConnected && isTestnet ? address : null);
 
@@ -41,7 +46,7 @@ export function ParticipationCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardDescription>Your participation</CardDescription>
+            <CardDescription>{t("yourParticipation")}</CardDescription>
             <CardTitle className="font-heading text-xl">
               {projectName}
             </CardTitle>
@@ -56,11 +61,11 @@ export function ParticipationCard({
         <div className="space-y-1">
           {!isConnected ? (
             <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground">
-              Connect wallet
+              {t("connectWallet")}
             </p>
           ) : !isTestnet ? (
             <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
-              Switch to Testnet
+              {t("switchToTestnet")}
             </p>
           ) : isLoading ? (
             <Skeleton className="h-9 w-32" />
@@ -81,6 +86,7 @@ export function ParticipationCard({
                 {estimateUsdValue(
                   balance ?? "0",
                   huaralResort.referenceValueUsd,
+                  locale
                 )}
               </p>
             </>
@@ -90,24 +96,22 @@ export function ParticipationCard({
           hasTrustline === false &&
           !isLoading &&
           !error ? (
-            <p className="text-xs text-muted-foreground">
-              No QRP trustline found on this account yet.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("noTrustline")}</p>
           ) : null}
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Benefits</p>
+          <p className="text-sm text-muted-foreground">{t("benefits")}</p>
           <p className="flex items-center gap-2 font-medium">
             <Gift className="size-4 text-primary" aria-hidden />
-            {huaralResort.mainBenefit}
+            {project.mainBenefit}
           </p>
         </div>
 
         {error ? (
           <Alert variant="destructive">
             <AlertCircle />
-            <AlertTitle>Could not load QRP balance</AlertTitle>
+            <AlertTitle>{t("balanceErrorTitle")}</AlertTitle>
             <AlertDescription>
               <span className="block">{error}</span>
               <Button
@@ -119,7 +123,7 @@ export function ParticipationCard({
                 }}
               >
                 <RefreshCw data-icon="inline-start" />
-                Retry
+                {t("retry")}
               </Button>
             </AlertDescription>
           </Alert>
@@ -129,18 +133,18 @@ export function ParticipationCard({
       <CardFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Link href="/benefits" className="w-full sm:w-auto">
           <Button variant="outline" className="w-full">
-            View benefits
+            {t("viewBenefits")}
           </Button>
         </Link>
         {onParticipate ? (
           <Button className="w-full sm:w-auto" onClick={onParticipate}>
-            Participate
+            {t("participate")}
           </Button>
         ) : (
           <Link href="/" className="w-full sm:w-auto">
             <Button className="w-full">
               <Sparkles data-icon="inline-start" />
-              Participate
+              {t("participate")}
             </Button>
           </Link>
         )}
@@ -155,7 +159,7 @@ export function ParticipationCard({
             }}
           >
             <RefreshCw data-icon="inline-start" />
-            Refresh
+            {t("refresh")}
           </Button>
         ) : null}
       </CardFooter>

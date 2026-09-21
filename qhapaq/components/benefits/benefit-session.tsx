@@ -17,7 +17,7 @@ import {
 
 export type RedeemBenefitOutcome =
   | { ok: true; benefit: GeneratedBenefit }
-  | { ok: false; benefit: GeneratedBenefit; message: string };
+  | { ok: false; benefit: GeneratedBenefit; errorCode: string; message: string };
 
 type BenefitSessionContextValue = {
   generatedBenefit: GeneratedBenefit | null;
@@ -123,11 +123,12 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
           discount: 0,
           status: "failed",
           generatedAt: new Date().toISOString(),
-          redeemError: "This benefit could not be verified.",
+          redeemError: "not_found",
         };
         return {
           ok: false,
           benefit: fallback,
+          errorCode: "not_found",
           message: "This benefit could not be verified.",
         };
       }
@@ -136,6 +137,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
         return {
           ok: false,
           benefit: current,
+          errorCode: "already_redeemed",
           message: "This benefit has already been redeemed.",
         };
       }
@@ -144,6 +146,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
         return {
           ok: false,
           benefit: current,
+          errorCode: "in_progress",
           message: "Redemption is already in progress.",
         };
       }
@@ -168,21 +171,29 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
 
         if (!response.ok || !payload.success) {
           const failure = payload as RedeemApiFailure;
+          const errorCode =
+            failure.error === "already_redeemed"
+              ? "already_redeemed"
+              : failure.error === "invalid_benefit"
+                ? "not_found"
+                : failure.error === "not_configured"
+                  ? "not_configured"
+                  : "submit_failed";
           const message =
             failure.message?.trim() ||
-            (failure.error === "already_redeemed"
+            (errorCode === "already_redeemed"
               ? "This benefit has already been redeemed."
-              : failure.error === "invalid_benefit"
+              : errorCode === "not_found"
                 ? "This benefit could not be verified."
                 : "We couldn't record the redemption on Stellar. Please try again.");
 
           const failed: GeneratedBenefit = {
             ...current,
             status: "failed",
-            redeemError: message,
+            redeemError: errorCode,
           };
           setGeneratedBenefit(failed);
-          return { ok: false, benefit: failed, message };
+          return { ok: false, benefit: failed, errorCode, message };
         }
 
         const success = payload as RedeemApiSuccess;
@@ -197,15 +208,16 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
         setGeneratedBenefit(redeemed);
         return { ok: true, benefit: redeemed };
       } catch {
+        const errorCode = "submit_failed";
         const message =
           "We couldn't record the redemption on Stellar. Please try again.";
         const failed: GeneratedBenefit = {
           ...current,
           status: "failed",
-          redeemError: message,
+          redeemError: errorCode,
         };
         setGeneratedBenefit(failed);
-        return { ok: false, benefit: failed, message };
+        return { ok: false, benefit: failed, errorCode, message };
       }
     },
     [generatedBenefit]

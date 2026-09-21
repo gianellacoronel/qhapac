@@ -24,10 +24,10 @@ export function isValidBenefitId(value: string): boolean {
   return BENEFIT_ID_PATTERN.test(normalizeBenefitId(value));
 }
 
-export function formatBenefitDate(iso: string): string {
+export function formatBenefitDate(iso: string, locale = "es-PE"): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",

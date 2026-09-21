@@ -13,6 +13,8 @@ import {
   type ConnectedWallet,
 } from "@/lib/stellar/wallet";
 
+export type WalletErrorCode = "wrong_network" | "unexpected" | "raw" | null;
+
 export type WalletState = {
   address: string | null;
   network: string | null;
@@ -22,6 +24,7 @@ export type WalletState = {
   isFreighterAvailable: boolean | null;
   isLoading: boolean;
   error: string | null;
+  errorCode: WalletErrorCode;
   connect: () => Promise<void>;
   disconnect: () => void;
   clearError: () => void;
@@ -45,6 +48,15 @@ export function useWallet(): WalletState {
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<WalletErrorCode>(null);
+
+  const setWalletError = useCallback(
+    (code: WalletErrorCode, message: string | null) => {
+      setErrorCode(code);
+      setError(message);
+    },
+    []
+  );
 
   const applyWallet = useCallback((wallet: ConnectedWallet | null) => {
     if (!wallet) {
@@ -78,7 +90,8 @@ export function useWallet(): WalletState {
         if (cancelled) return;
 
         if (restored && !restored.isTestnet) {
-          setError(
+          setWalletError(
+            "wrong_network",
             `Wrong network. Switch Freighter to ${stellarConfig.displayName}.`
           );
           applyWallet(restored);
@@ -88,7 +101,7 @@ export function useWallet(): WalletState {
         applyWallet(restored);
       } catch (err) {
         if (!cancelled) {
-          setError(toErrorMessage(err));
+          setWalletError("raw", toErrorMessage(err));
         }
       } finally {
         if (!cancelled) {
@@ -102,7 +115,7 @@ export function useWallet(): WalletState {
     return () => {
       cancelled = true;
     };
-  }, [applyWallet]);
+  }, [applyWallet, setWalletError]);
 
   useEffect(() => {
     if (!address) {
@@ -123,46 +136,47 @@ export function useWallet(): WalletState {
         change.network &&
         !isExpectedFreighterNetwork(change.network)
       ) {
-        setError(
+        setWalletError(
+          "wrong_network",
           `Wrong network. Switch Freighter to ${stellarConfig.displayName}.`
         );
       } else if (
         change.network &&
         isExpectedFreighterNetwork(change.network)
       ) {
-        setError(null);
+        setWalletError(null, null);
       }
     });
 
     return () => {
       watcher.stop();
     };
-  }, [address]);
+  }, [address, setWalletError]);
 
   const connect = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
+    setWalletError(null, null);
 
     try {
       const wallet = await connectFreighter();
       applyWallet(wallet);
       setIsFreighterAvailable(true);
     } catch (err) {
-      setError(toErrorMessage(err));
+      setWalletError("raw", toErrorMessage(err));
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [applyWallet]);
+  }, [applyWallet, setWalletError]);
 
   const disconnect = useCallback(() => {
     applyWallet(null);
-    setError(null);
-  }, [applyWallet]);
+    setWalletError(null, null);
+  }, [applyWallet, setWalletError]);
 
   const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+    setWalletError(null, null);
+  }, [setWalletError]);
 
   const isConnected = Boolean(address);
   const isTestnet = network
@@ -178,6 +192,7 @@ export function useWallet(): WalletState {
     isFreighterAvailable,
     isLoading,
     error,
+    errorCode,
     connect,
     disconnect,
     clearError,

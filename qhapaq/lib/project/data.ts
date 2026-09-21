@@ -21,6 +21,10 @@ export type ProjectData = {
   disclaimer: string;
 };
 
+/**
+ * Structural project data. User-facing copy is localized via messages/*.json
+ * under the `project` namespace; English strings here remain as fallbacks.
+ */
 export const huaralResort: ProjectData = {
   id: "huaral-resort",
   name: "Huaral Resort",
@@ -71,21 +75,35 @@ export function getFundingPercent(raised: number, goal: number): number {
   return Math.min(100, Math.max(0, Math.round((raised / goal) * 100)));
 }
 
-export function formatQrp(amount: number | string): string {
+/** Maps app locale codes to BCP 47 tags used by Intl formatters. */
+export function toIntlLocale(locale?: string): string {
+  if (locale === "es") return "es-PE";
+  if (locale === "en") return "en-US";
+  return locale || "es-PE";
+}
+
+export function formatQrp(amount: number | string, locale?: string): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
   if (!Number.isFinite(value)) return "0";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(toIntlLocale(locale), {
     maximumFractionDigits: 7,
   }).format(value);
 }
 
 export function estimateUsdValue(
   qrpAmount: number | string,
-  referenceValueUsd = huaralResort.referenceValueUsd
+  referenceValueUsd = huaralResort.referenceValueUsd,
+  locale?: string
 ): string {
   const value = typeof qrpAmount === "string" ? Number(qrpAmount) : qrpAmount;
-  if (!Number.isFinite(value)) return "$0";
-  return new Intl.NumberFormat("en-US", {
+  if (!Number.isFinite(value)) {
+    return new Intl.NumberFormat(toIntlLocale(locale), {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(0);
+  }
+  return new Intl.NumberFormat(toIntlLocale(locale), {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
