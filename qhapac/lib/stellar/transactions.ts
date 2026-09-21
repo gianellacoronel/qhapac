@@ -10,17 +10,27 @@ import {
 import { getQrpAsset } from "./assets";
 import { getHorizonServer, stellarConfig } from "./config";
 
+/** Tiny native XLM amount for the harmless Testnet smoke-test payment. */
+export const TEST_XLM_AMOUNT = "0.0001";
+
 export type SubmitResult = {
   hash: string;
   ledger: number;
 };
 
+export type TransactionPhase = "building" | "signing" | "submitting";
+
 export type BuildPaymentParams = {
   sourceAddress: string;
   destinationAddress: string;
   amount: string;
+  /** Defaults to classic QRP for invest flows. Pass Asset.native() for XLM. */
   asset?: Asset;
   memo?: string;
+};
+
+export type SendPaymentParams = BuildPaymentParams & {
+  onPhaseChange?: (phase: TransactionPhase) => void;
 };
 
 function freighterErrorMessage(
@@ -28,6 +38,13 @@ function freighterErrorMessage(
   fallback: string
 ): string {
   return error?.message?.trim() || fallback;
+}
+
+function toErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+  return fallback;
 }
 
 /** Build an unsigned classic payment transaction as base64 XDR. */
@@ -128,12 +145,48 @@ export async function submitSignedTransaction(
 
 /**
  * Build → sign with Freighter → submit.
- * Intended for a future Invest flow; does not run on wallet connect.
+ * Never handles private keys. Does not run unless explicitly invoked.
  */
 export async function sendClassicPayment(
-  params: BuildPaymentParams
+  params: SendPaymentParams
 ): Promise<SubmitResult> {
-  const unsignedXdr = await buildPaymentTransaction(params);
-  const signedXdr = await signWithFreighter(unsignedXdr, params.sourceAddress);
-  return submitSignedTransaction(signedXdr);
+  const { onPhaseChange, ...payment } = params;
+
+  try {
+    onPhaseChange?.("building");
+    const unsignedXdr = await buildPaymentTransaction(payment);
+
+    onPhaseChange?.("signing");
+    const signedXdr = await signWithFreighter(
+      unsignedXdr,
+      payment.sourceAddress
+    );
+
+    onPhaseChange?.("submitting");
+    return await submitSignedTransaction(signedXdr);
+  } catch (error: unknown) {
+    throw new Error(
+      toErrorMessage(error, "Transaction failed. Please try again.")
+    );
+  }
+}
+
+/**
+ * Harmless Stellar Testnet smoke test: tiny native XLM self-payment.
+ * Does not touch QRP. Requires an explicit user action to start.
+ */
+export async function sendTestXlmPayment(
+  sourceAddress: string,
+  options?: {
+    onPhaseChange?: (phase: TransactionPhase) => void;
+  }
+): Promise<SubmitResult> {
+  return sendClassicPayment({
+    sourceAddress,
+    destinationAddress: sourceAddress,
+    amount: TEST_XLM_AMOUNT,
+    asset: Asset.native(),
+    memo: "Qhapaq test",
+    onPhaseChange: options?.onPhaseChange,
+  });
 }

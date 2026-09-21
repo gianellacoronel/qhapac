@@ -13,9 +13,17 @@ export {
   shortenAddress,
 } from "./wallet";
 export {
+  TEST_XLM_AMOUNT,
   buildPaymentTransaction,
   signWithFreighter,
   submitSignedTransaction,
   sendClassicPayment,
+  sendTestXlmPayment,
 } from "./transactions";
-export { getTransactionExplorerUrl } from "./explorer";
+export type {
+  BuildPaymentParams,
+  SendPaymentParams,
+  SubmitResult,
+  TransactionPhase,
+} from "./transactions";
+export { getTransactionExplorerUrl, shortenHash } from "./explorer";

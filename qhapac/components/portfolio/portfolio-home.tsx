@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectWallet } from "@/components/wallet/connect-wallet";
+import { TestTransactionCard } from "@/components/wallet/test-transaction-card";
 import { ParticipationCard } from "@/components/portfolio/participation-card";
 import { useWallet } from "@/hooks/use-wallet";
 
@@ -22,11 +23,18 @@ export function PortfolioHome() {
         <ConnectWallet wallet={wallet} />
       </header>
 
-      <ParticipationCard
-        address={wallet.address}
-        isConnected={wallet.isConnected}
-        isTestnet={wallet.isTestnet}
-      />
+      <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-start">
+        <ParticipationCard
+          address={wallet.address}
+          isConnected={wallet.isConnected}
+          isTestnet={wallet.isTestnet}
+        />
+        <TestTransactionCard
+          address={wallet.address}
+          isConnected={wallet.isConnected}
+          isTestnet={wallet.isTestnet}
+        />
+      </div>
     </div>
   );
 }
