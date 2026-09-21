@@ -6,6 +6,8 @@ export {
   fetchQrpBalance,
   formatAssetBalance,
 } from "./assets";
+export { getFundingProgress } from "./funding-progress";
+export type { FundingProgress } from "./funding-progress";
 export {
   detectFreighter,
   connectFreighter,

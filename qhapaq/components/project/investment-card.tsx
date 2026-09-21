@@ -24,6 +24,7 @@ type InvestmentCardProps = {
   address: string | null;
   isConnected: boolean;
   isTestnet: boolean;
+  onPurchaseSuccess?: () => Promise<void> | void;
 };
 
 export function InvestmentCard({
@@ -31,10 +32,16 @@ export function InvestmentCard({
   address,
   isConnected,
   isTestnet,
+  onPurchaseSuccess,
 }: InvestmentCardProps) {
   const [open, setOpen] = useState(false);
   const { formatted, balance, hasTrustline, isLoading, error, refresh } =
     useQrpBalance(isConnected && isTestnet ? address : null);
+
+  async function handlePurchaseSuccess() {
+    await refresh();
+    await onPurchaseSuccess?.();
+  }
 
   return (
     <>
@@ -117,7 +124,7 @@ export function InvestmentCard({
         isConnected={isConnected}
         isTestnet={isTestnet}
         isLoadingBalance={isLoading}
-        onPurchaseSuccess={refresh}
+        onPurchaseSuccess={handlePurchaseSuccess}
       />
     </>
   );

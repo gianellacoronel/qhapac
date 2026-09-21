@@ -29,7 +29,7 @@ export const huaralResort: ProjectData = {
   token: "QRP",
   referenceValueUsd: 100,
   fundingTarget: 1000,
-  fundingCurrent: 720,
+  fundingCurrent: 0,
   shortDescription:
     "A coastal hospitality project inviting verifiable community participation through QRP on Stellar Testnet.",
   overview: [
@@ -65,12 +65,10 @@ export const huaralResort: ProjectData = {
     "QRP on Stellar Testnet is a hackathon prototype for verifiable participation. It is not a security, equity share, or investment product.",
 };
 
-export function getFundingPercent(project: ProjectData): number {
-  if (project.fundingTarget <= 0) return 0;
-  return Math.min(
-    100,
-    Math.round((project.fundingCurrent / project.fundingTarget) * 100)
-  );
+export function getFundingPercent(raised: number, goal: number): number {
+  if (goal <= 0) return 0;
+  if (!Number.isFinite(raised) || raised <= 0) return 0;
+  return Math.min(100, Math.max(0, Math.round((raised / goal) * 100)));
 }
 
 export function formatQrp(amount: number | string): string {

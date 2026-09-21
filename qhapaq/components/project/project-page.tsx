@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BenefitCard } from "@/components/benefits/benefit-card";
 import { FundingProgress } from "@/components/project/funding-progress";
 import { InvestmentCard } from "@/components/project/investment-card";
@@ -8,19 +8,24 @@ import { ParticipateDialog } from "@/components/project/participate-dialog";
 import { ProjectHero } from "@/components/project/project-hero";
 import { ProjectOverview } from "@/components/project/project-overview";
 import { Button } from "@/components/ui/button";
+import { useFundingProgress } from "@/hooks/use-funding-progress";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { useWallet } from "@/hooks/use-wallet";
 import { huaralResort } from "@/lib/project/data";
-import { Sparkles } from "lucide-react";
 
 export function ProjectPage() {
   const wallet = useWallet();
   const [participateOpen, setParticipateOpen] = useState(false);
+  const funding = useFundingProgress();
   const balanceState = useQrpBalance(
     wallet.isConnected && wallet.isTestnet ? wallet.address : null,
   );
 
   const previewBenefits = huaralResort.benefits.slice(0, 2);
+
+  const handlePurchaseSuccess = useCallback(async () => {
+    await Promise.all([balanceState.refresh(), funding.refresh()]);
+  }, [balanceState.refresh, funding.refresh]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -28,7 +33,7 @@ export function ProjectPage() {
 
       <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14 lg:py-20">
         <div className="flex flex-col gap-12">
-          <FundingProgress project={huaralResort} />
+          <FundingProgress project={huaralResort} funding={funding} />
           <ProjectOverview project={huaralResort} />
 
           <section className="space-y-6">
@@ -63,6 +68,7 @@ export function ProjectPage() {
             address={wallet.address}
             isConnected={wallet.isConnected}
             isTestnet={wallet.isTestnet}
+            onPurchaseSuccess={funding.refresh}
           />
         </aside>
       </div>
@@ -77,7 +83,7 @@ export function ProjectPage() {
         isConnected={wallet.isConnected}
         isTestnet={wallet.isTestnet}
         isLoadingBalance={balanceState.isLoading}
-        onPurchaseSuccess={balanceState.refresh}
+        onPurchaseSuccess={handlePurchaseSuccess}
       />
     </div>
   );
