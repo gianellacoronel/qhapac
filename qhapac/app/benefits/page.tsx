@@ -1,10 +1,10 @@
-import { ProjectPage } from "@/components/project/project-page";
+import { BenefitsPage } from "@/components/benefits/benefits-page";
 
-export default function Home() {
+export default function BenefitsRoute() {
   return (
     <div className="flex flex-1 flex-col bg-background">
       <main className="flex flex-1 flex-col">
-        <ProjectPage />
+        <BenefitsPage />
       </main>
     </div>
   );

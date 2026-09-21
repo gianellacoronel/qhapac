@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertCircle, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { AlertCircle, Gift, RefreshCw, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,86 +9,99 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
-import { stellarConfig } from "@/lib/stellar/config";
+import { estimateUsdValue, huaralResort } from "@/lib/project/data";
 
 type ParticipationCardProps = {
   address: string | null;
   isConnected: boolean;
   isTestnet: boolean;
   projectName?: string;
-  assetLabel?: string;
+  onParticipate?: () => void;
 };
 
 export function ParticipationCard({
   address,
   isConnected,
   isTestnet,
-  projectName = "Huaral Resort",
-  assetLabel = "Qhapaq",
+  projectName = huaralResort.name,
+  onParticipate,
 }: ParticipationCardProps) {
-  const { formatted, hasTrustline, isLoading, error, refresh, balance } =
+  const { formatted, balance, hasTrustline, isLoading, error, refresh } =
     useQrpBalance(isConnected && isTestnet ? address : null);
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md shadow-xs">
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <CardDescription>{assetLabel}</CardDescription>
-            <CardTitle className="font-heading text-xl">{projectName}</CardTitle>
+            <CardDescription>Your participation</CardDescription>
+            <CardTitle className="font-heading text-xl">
+              {projectName}
+            </CardTitle>
           </div>
-          <Badge variant="outline">{stellarConfig.displayName}</Badge>
+          <Badge variant="outline">{huaralResort.token}</Badge>
         </div>
       </CardHeader>
 
-      <CardContent className="gap-4">
+      <CardContent className="gap-5">
         <Separator />
 
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-muted-foreground">Your participation</p>
+        <div className="space-y-1">
           {!isConnected ? (
-            <p className="text-2xl font-medium tracking-tight text-muted-foreground">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground">
               Connect wallet
             </p>
           ) : !isTestnet ? (
-            <p className="text-2xl font-medium tracking-tight text-destructive">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
               Switch to Testnet
             </p>
           ) : isLoading ? (
-            <Skeleton className="h-8 w-28" />
+            <Skeleton className="h-9 w-32" />
           ) : error ? (
-            <p className="text-2xl font-medium tracking-tight text-destructive">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
               —
             </p>
           ) : (
-            <p className="text-2xl font-medium tracking-tight">
-              {formatted ?? "0"}{" "}
-              <span className="text-base font-normal text-muted-foreground">
-                QRP
-              </span>
-            </p>
+            <>
+              <p className="font-heading text-3xl font-semibold tracking-tight">
+                {formatted ?? "0"}{" "}
+                <span className="text-lg font-normal text-muted-foreground">
+                  {huaralResort.token}
+                </span>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                ≈{" "}
+                {estimateUsdValue(
+                  balance ?? "0",
+                  huaralResort.referenceValueUsd,
+                )}
+              </p>
+            </>
           )}
-          {isConnected && isTestnet && hasTrustline === false && !isLoading && !error ? (
+          {isConnected &&
+          isTestnet &&
+          hasTrustline === false &&
+          !isLoading &&
+          !error ? (
             <p className="text-xs text-muted-foreground">
               No QRP trustline found on this account yet.
             </p>
           ) : null}
-          {isConnected && isTestnet && balance != null && !isLoading && !error ? (
-            <p className="text-xs text-muted-foreground">
-              Live balance from Stellar Horizon
-            </p>
-          ) : null}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-muted-foreground">Network</p>
-          <p className="font-medium">{stellarConfig.displayName}</p>
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">Benefits</p>
+          <p className="flex items-center gap-2 font-medium">
+            <Gift className="size-4 text-primary" aria-hidden />
+            {huaralResort.mainBenefit}
+          </p>
         </div>
 
         {error ? (
@@ -110,22 +124,41 @@ export function ParticipationCard({
             </AlertDescription>
           </Alert>
         ) : null}
+      </CardContent>
 
+      <CardFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <Link href="/benefits" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full">
+            View benefits
+          </Button>
+        </Link>
+        {onParticipate ? (
+          <Button className="w-full sm:w-auto" onClick={onParticipate}>
+            Participate
+          </Button>
+        ) : (
+          <Link href="/" className="w-full sm:w-auto">
+            <Button className="w-full">
+              <Sparkles data-icon="inline-start" />
+              Participate
+            </Button>
+          </Link>
+        )}
         {isConnected && isTestnet && !error ? (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="self-start"
+            className="w-full sm:ml-auto sm:w-auto"
             disabled={isLoading}
             onClick={() => {
               void refresh();
             }}
           >
             <RefreshCw data-icon="inline-start" />
-            Refresh balance
+            Refresh
           </Button>
         ) : null}
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

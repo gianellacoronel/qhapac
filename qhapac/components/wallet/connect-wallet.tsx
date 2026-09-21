@@ -11,11 +11,17 @@ import { shortenAddress } from "@/lib/stellar/wallet";
 
 type ConnectWalletProps = {
   wallet?: ReturnType<typeof useWallet>;
+  /** Compact control for the top navigation bar. */
+  variant?: "default" | "navbar";
 };
 
-export function ConnectWallet({ wallet: walletProp }: ConnectWalletProps) {
+export function ConnectWallet({
+  wallet: walletProp,
+  variant = "default",
+}: ConnectWalletProps) {
   const internalWallet = useWallet();
   const wallet = walletProp ?? internalWallet;
+  const isNavbar = variant === "navbar";
 
   const {
     address,
@@ -32,13 +38,19 @@ export function ConnectWallet({ wallet: walletProp }: ConnectWalletProps) {
   if (isLoading && !isConnected) {
     return (
       <div className="flex items-center gap-2">
-        <Skeleton className="h-9 w-36" />
+        <Skeleton className={isNavbar ? "h-8 w-28" : "h-9 w-36"} />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-start gap-3">
+    <div
+      className={
+        isNavbar
+          ? "flex flex-col items-end gap-2"
+          : "flex flex-col items-start gap-3"
+      }
+    >
       {!isConnected ? (
         <Button
           onClick={() => {
@@ -47,7 +59,7 @@ export function ConnectWallet({ wallet: walletProp }: ConnectWalletProps) {
             });
           }}
           disabled={isLoading || isFreighterAvailable === false}
-          size="lg"
+          size={isNavbar ? "sm" : "lg"}
         >
           {isLoading ? (
             <Loader2 data-icon="inline-start" className="animate-spin" />
@@ -72,13 +84,13 @@ export function ConnectWallet({ wallet: walletProp }: ConnectWalletProps) {
             aria-label="Disconnect wallet"
           >
             <Unplug data-icon="inline-start" />
-            Disconnect
+            {isNavbar ? null : "Disconnect"}
           </Button>
         </div>
       )}
 
       {isFreighterAvailable === false ? (
-        <Alert>
+        <Alert className={isNavbar ? "max-w-xs" : undefined}>
           <AlertCircle />
           <AlertTitle>Freighter required</AlertTitle>
           <AlertDescription>
@@ -89,7 +101,10 @@ export function ConnectWallet({ wallet: walletProp }: ConnectWalletProps) {
       ) : null}
 
       {error ? (
-        <Alert variant="destructive">
+        <Alert
+          variant="destructive"
+          className={isNavbar ? "max-w-xs" : undefined}
+        >
           <AlertCircle />
           <AlertTitle>Wallet error</AlertTitle>
           <AlertDescription>

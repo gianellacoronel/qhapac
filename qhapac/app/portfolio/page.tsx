@@ -1,10 +1,10 @@
-import { ProjectPage } from "@/components/project/project-page";
+import { PortfolioHome } from "@/components/portfolio/portfolio-home";
 
-export default function Home() {
+export default function PortfolioRoute() {
   return (
     <div className="flex flex-1 flex-col bg-background">
       <main className="flex flex-1 flex-col">
-        <ProjectPage />
+        <PortfolioHome />
       </main>
     </div>
   );

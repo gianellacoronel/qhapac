@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Sans_3, Raleway } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Navbar } from "@/components/layout/navbar";
 
 const ralewayHeading = Raleway({
   subsets: ["latin"],
@@ -26,7 +27,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Qhapaq",
   description:
-    "Qhapaq — real-world asset participation on Stellar Testnet with Freighter.",
+    "Qhapaq — verifiable participation in real-world projects on Stellar Testnet.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -43,7 +44,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         ralewayHeading.variable
       )}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
