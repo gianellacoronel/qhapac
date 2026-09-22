@@ -10,30 +10,13 @@ type ProjectHeroProps = {
 };
 
 export function ProjectHero({ project, aside }: ProjectHeroProps) {
-  const t = useTranslations("project");
+  // const t = useTranslations("project");
 
   return (
     <section className="relative overflow-hidden border-b border-border/60">
-      <div
-        className="absolute inset-0 -z-10"
-        aria-hidden="true"
-        style={{
-          background:
-            "linear-gradient(165deg, oklch(0.94 0.03 276) 0%, oklch(0.98 0.01 95) 42%, oklch(0.96 0.04 92) 100%)",
-        }}
-      />
-      <div
-        className="absolute inset-y-0 right-0 -z-10 w-full max-w-xl opacity-40 md:opacity-55"
-        aria-hidden="true"
-        style={{
-          background:
-            "radial-gradient(ellipse at 70% 40%, oklch(0.852 0.199 91.936 / 0.35), transparent 60%), radial-gradient(ellipse at 90% 80%, oklch(0.511 0.262 276.966 / 0.18), transparent 55%)",
-        }}
-      />
-
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-16 sm:px-8 sm:py-20 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center lg:gap-12 lg:py-24">
         <div className="flex flex-col gap-8">
-          <div className="flex flex-wrap items-center gap-2">
+          {/*<div className="flex flex-wrap items-center gap-2">
             <Badge
               variant="secondary"
               className="bg-accent text-accent-foreground"
@@ -41,7 +24,7 @@ export function ProjectHero({ project, aside }: ProjectHeroProps) {
               {project.token}
             </Badge>
             <Badge variant="outline">{t("stellarTestnet")}</Badge>
-          </div>
+          </div>*/}
 
           <div className="max-w-2xl space-y-5">
             <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
@@ -59,7 +42,9 @@ export function ProjectHero({ project, aside }: ProjectHeroProps) {
           </div>
         </div>
 
-        {aside ? <div className="min-w-0 lg:justify-self-end">{aside}</div> : null}
+        {aside ? (
+          <div className="min-w-0 lg:justify-self-end">{aside}</div>
+        ) : null}
       </div>
     </section>
   );
