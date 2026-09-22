@@ -18,6 +18,10 @@
     "en": "EN",
     "switchTo": "Cambiar a {locale}"
   },
+  "theme": {
+    "switchToLight": "Cambiar a tema claro",
+    "switchToDark": "Cambiar a tema oscuro"
+  },
   "project": {
     "stellarTestnet": "Stellar Testnet",
     "overviewLabel": "Información del proyecto",

@@ -4,6 +4,8 @@ import { Geist, Geist_Mono, Source_Sans_3, Raleway } from "next/font/google";
 import { notFound } from "next/navigation";
 import { BenefitSessionProvider } from "@/components/benefits/benefit-session";
 import { Navbar } from "@/components/layout/navbar";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { ThemeProvider } from "@/components/theme-provider";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
@@ -63,6 +65,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
+      suppressHydrationWarning
       className={cn(
         "h-full",
         "antialiased",
@@ -74,12 +77,20 @@ export default async function LocaleLayout({
       )}
     >
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider messages={messages}>
-          <BenefitSessionProvider>
-            <Navbar />
-            {children}
-          </BenefitSessionProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider messages={messages}>
+            <BenefitSessionProvider>
+              <Navbar />
+              {children}
+              <ThemeToggle />
+            </BenefitSessionProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
