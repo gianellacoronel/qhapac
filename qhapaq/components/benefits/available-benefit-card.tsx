@@ -42,53 +42,64 @@ export function AvailableBenefitCard({
     ? t(`definitions.${benefit.id}.validFor`)
     : benefit.validFor;
 
+  const actionButton =
+    status === "available" ? (
+      <Button className="w-full sm:w-auto" onClick={onGenerate}>
+        {t("generate")}
+      </Button>
+    ) : (
+      <Button
+        className="w-full sm:w-auto"
+        variant="outline"
+        onClick={onViewGenerated}
+      >
+        {t("viewBenefit")}
+      </Button>
+    );
+
   return (
-    <Card className="w-full max-w-md shadow-xs">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1">
-            <CardDescription className="flex items-center gap-1.5">
-              <Gift className="size-3.5 text-primary" aria-hidden />
-              {benefit.projectName}
-            </CardDescription>
-            <CardTitle className="font-heading text-3xl font-semibold tracking-tight">
-              {t("percentOff", { discount: benefit.discount })}
-            </CardTitle>
-          </div>
-          <Badge
-            variant={status === "available" ? "secondary" : "outline"}
-            className={
-              status === "available"
-                ? "bg-accent text-accent-foreground"
-                : undefined
-            }
-          >
-            {statusLabel}
-          </Badge>
-        </div>
-      </CardHeader>
+    <Card className="w-full gap-0 py-0 shadow-xs">
+      <div className="flex flex-col lg:flex-row lg:items-stretch">
+        <div className="flex min-w-0 flex-1 flex-col gap-(--card-spacing) py-(--card-spacing)">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <CardDescription className="flex items-center gap-1.5">
+                  <Gift className="size-3.5 text-primary" aria-hidden />
+                  {benefit.projectName}
+                </CardDescription>
+                <CardTitle className="font-heading text-3xl font-semibold tracking-tight">
+                  {t("percentOff", { discount: benefit.discount })}
+                </CardTitle>
+              </div>
+              <Badge
+                variant={status === "available" ? "secondary" : "outline"}
+                className={
+                  status === "available"
+                    ? "bg-accent text-accent-foreground"
+                    : undefined
+                }
+              >
+                {statusLabel}
+              </Badge>
+            </div>
+          </CardHeader>
 
-      <CardContent className="gap-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Percent className="size-4 text-primary" aria-hidden />
-          {validFor}
+          <CardContent className="gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Percent className="size-4 text-primary" aria-hidden />
+              {validFor}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t("yourParticipation", { label: participationLabel })}
+            </p>
+          </CardContent>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {t("yourParticipation", { label: participationLabel })}
-        </p>
-      </CardContent>
 
-      <CardFooter>
-        {status === "available" ? (
-          <Button className="w-full" onClick={onGenerate}>
-            {t("generate")}
-          </Button>
-        ) : (
-          <Button className="w-full" variant="outline" onClick={onViewGenerated}>
-            {t("viewBenefit")}
-          </Button>
-        )}
-      </CardFooter>
+        <CardFooter className="border-t border-border/60 py-(--card-spacing) lg:w-56 lg:shrink-0 lg:flex-col lg:items-stretch lg:justify-center lg:border-t-0 lg:border-l lg:border-border/60">
+          {actionButton}
+        </CardFooter>
+      </div>
     </Card>
   );
 }

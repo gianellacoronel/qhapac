@@ -117,16 +117,17 @@ export function BenefitsPage() {
             );
           })}
 
-          <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
-            {t("disclaimer")}
-          </p>
-
-          <Link
-            href="/benefits/verify"
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            {t("verifyLink")}
-          </Link>
+          <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+            <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
+              {t("disclaimer")}
+            </p>
+            <Link
+              href="/benefits/verify"
+              className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {t("verifyLink")}
+            </Link>
+          </div>
         </div>
       )}
 

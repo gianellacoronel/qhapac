@@ -32,13 +32,23 @@ export function ProjectPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <ProjectHero project={project} />
+      <ProjectHero
+        project={project}
+        aside={
+          <InvestmentCard
+            project={project}
+            address={wallet.address}
+            isConnected={wallet.isConnected}
+            isTestnet={wallet.isTestnet}
+            onPurchaseSuccess={funding.refresh}
+          />
+        }
+      />
 
-      <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14 lg:py-20">
-        <div className="flex flex-col gap-12">
-          <FundingProgress project={project} funding={funding} />
-          <ProjectOverview project={project} />
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
+        <FundingProgress project={project} funding={funding} />
 
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-14">
           <section className="space-y-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="space-y-2">
@@ -57,23 +67,15 @@ export function ProjectPage() {
               </Button>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               {previewBenefits.map((benefit) => (
                 <BenefitCard key={benefit.id} benefit={benefit} />
               ))}
             </div>
           </section>
-        </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <InvestmentCard
-            project={project}
-            address={wallet.address}
-            isConnected={wallet.isConnected}
-            isTestnet={wallet.isTestnet}
-            onPurchaseSuccess={funding.refresh}
-          />
-        </aside>
+          <ProjectOverview project={project} />
+        </div>
       </div>
 
       <ParticipateDialog

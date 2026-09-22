@@ -42,7 +42,7 @@ export function ParticipationCard({
     useQrpBalance(isConnected && isTestnet ? address : null);
 
   return (
-    <Card className="w-full max-w-md shadow-xs">
+    <Card className="w-full shadow-xs">
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div>

@@ -23,14 +23,14 @@ export function ProjectOverview({ project }: ProjectOverviewProps) {
         {project.overview.map((paragraph) => (
           <p
             key={paragraph}
-            className="max-w-2xl text-base leading-relaxed text-muted-foreground"
+            className="text-base leading-relaxed text-muted-foreground"
           >
             {paragraph}
           </p>
         ))}
       </div>
 
-      <dl className="grid gap-4 border-t border-border/70 pt-6 sm:grid-cols-3">
+      <dl className="grid gap-4 border-t border-border/70 pt-6 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
         <div className="space-y-1">
           <dt className="text-xs tracking-wide text-muted-foreground uppercase">
             {t("location")}
@@ -58,7 +58,7 @@ export function ProjectOverview({ project }: ProjectOverviewProps) {
         </div>
       </dl>
 
-      <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">
+      <p className="text-xs leading-relaxed text-muted-foreground">
         {project.disclaimer}
       </p>
     </section>

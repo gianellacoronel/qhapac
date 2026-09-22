@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useBenefitSession } from "@/components/benefits/benefit-session";
+import { BenefitQr } from "@/components/benefits/benefit-qr";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
 import type { GeneratedBenefit } from "@/lib/benefits/types";
 import {
@@ -159,8 +159,8 @@ export function VerifyBenefitPage() {
         </p>
       </header>
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <Card className="w-full max-w-md shadow-xs">
+      <div className="grid gap-6 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <Card className="w-full shadow-xs">
           <CardHeader>
             <CardTitle className="font-heading text-lg">
               {t("enterIdTitle")}
@@ -198,22 +198,24 @@ export function VerifyBenefitPage() {
           </CardFooter>
         </Card>
 
-        {result.kind === "invalid" ? (
-          <Alert variant="destructive" className="max-w-md">
-            <CircleAlert />
-            <AlertTitle>{t("unableTitle")}</AlertTitle>
-            <AlertDescription>{result.message}</AlertDescription>
-          </Alert>
-        ) : null}
+        <div className="min-w-0 space-y-6">
+          {result.kind === "invalid" ? (
+            <Alert variant="destructive">
+              <CircleAlert />
+              <AlertTitle>{t("unableTitle")}</AlertTitle>
+              <AlertDescription>{result.message}</AlertDescription>
+            </Alert>
+          ) : null}
 
-        {result.kind === "valid" ? (
-          <ValidBenefitCard
-            benefit={result.benefit}
-            isRedeeming={showRedeemLoading}
-            redeemError={displayRedeemError}
-            onRedeem={handleRedeem}
-          />
-        ) : null}
+          {result.kind === "valid" ? (
+            <ValidBenefitCard
+              benefit={result.benefit}
+              isRedeeming={showRedeemLoading}
+              redeemError={displayRedeemError}
+              onRedeem={handleRedeem}
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );
@@ -245,7 +247,7 @@ function ValidBenefitCard({
 
   if (isRedeeming) {
     return (
-      <Card className="w-full max-w-md shadow-xs">
+      <Card className="w-full shadow-xs">
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-primary">
             <LoaderCircle className="size-4 animate-spin" aria-hidden />
@@ -263,107 +265,122 @@ function ValidBenefitCard({
   }
 
   return (
-    <Card className="w-full max-w-md shadow-xs">
-      <CardHeader className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm font-medium text-primary">
-            <CheckCircle2 className="size-4" aria-hidden />
-            {isRedeemed ? t("redeemedBenefit") : t("validBenefit")}
-          </div>
-          <Badge variant={isRedeemed ? "outline" : "secondary"}>
-            {isRedeemed
-              ? tBenefits("status.redeemed")
-              : tBenefits("status.valid")}
-          </Badge>
-        </div>
-        <div className="space-y-1">
-          <CardTitle className="font-heading text-xl">
-            {isRedeemed
-              ? tBenefits("percentOff", { discount: benefit.discount })
-              : benefit.projectName}
-          </CardTitle>
-          <CardDescription className="text-base text-foreground">
-            {isRedeemed
-              ? benefit.projectName
-              : t("discountLabel", { discount: benefit.discount })}
-          </CardDescription>
-          {!isRedeemed ? (
-            <p className="text-sm text-muted-foreground">{validFor}</p>
-          ) : null}
-        </div>
-      </CardHeader>
-
-      <CardContent className="gap-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1">
-            <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-              {t("benefitIdLabel")}
-            </p>
-            <p className="font-mono text-sm font-semibold tracking-wide">
-              {benefit.id}
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-              {t("statusLabel")}
-            </p>
-            <p className="text-sm font-medium">
-              {isRedeemed
-                ? tBenefits("status.redeemed")
-                : tBenefits("status.valid")}
-            </p>
-          </div>
-        </div>
-
-        {redeemError ? (
-          <Alert variant="destructive">
-            <CircleAlert />
-            <AlertTitle>{t("redemptionFailed")}</AlertTitle>
-            <AlertDescription>{redeemError}</AlertDescription>
-          </Alert>
-        ) : null}
-
-        {isRedeemed && benefit.transactionHash ? (
-          <>
-            <div className="space-y-1">
-              <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-                {t("redeemedOn")}
-              </p>
-              <p className="text-sm font-medium">
-                {benefit.redeemedAt
-                  ? formatBenefitDate(benefit.redeemedAt, toIntlLocale(locale))
-                  : "—"}
-              </p>
+    <Card className="w-full gap-0 py-0 shadow-xs">
+      <div className="flex flex-col lg:flex-row lg:items-stretch">
+        <div className="flex min-w-0 flex-1 flex-col gap-(--card-spacing) py-(--card-spacing)">
+          <CardHeader className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                <CheckCircle2 className="size-4" aria-hidden />
+                {isRedeemed ? t("redeemedBenefit") : t("validBenefit")}
+              </div>
+              <Badge variant={isRedeemed ? "outline" : "secondary"}>
+                {isRedeemed
+                  ? tBenefits("status.redeemed")
+                  : tBenefits("status.valid")}
+              </Badge>
             </div>
-            <Separator />
-            <div className="space-y-3 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
-              <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-                {t("onChainProof")}
-              </p>
+            <div className="space-y-1">
+              <CardTitle className="font-heading text-xl">
+                {isRedeemed
+                  ? tBenefits("percentOff", { discount: benefit.discount })
+                  : benefit.projectName}
+              </CardTitle>
+              <CardDescription className="text-base text-foreground">
+                {isRedeemed
+                  ? benefit.projectName
+                  : t("discountLabel", { discount: benefit.discount })}
+              </CardDescription>
+              {!isRedeemed ? (
+                <p className="text-sm text-muted-foreground">{validFor}</p>
+              ) : null}
+            </div>
+          </CardHeader>
+
+          <CardContent className="gap-5">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
-                  {t("transaction")}
+                  {t("benefitIdLabel")}
                 </p>
                 <p className="font-mono text-sm font-semibold tracking-wide">
-                  {shortenHash(benefit.transactionHash)}
+                  {benefit.id}
                 </p>
               </div>
-              <TransactionLink
-                hash={benefit.transactionHash}
-                label={t("viewOnExplorer")}
-              />
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                  {t("statusLabel")}
+                </p>
+                <p className="text-sm font-medium">
+                  {isRedeemed
+                    ? tBenefits("status.redeemed")
+                    : tBenefits("status.valid")}
+                </p>
+              </div>
             </div>
-          </>
-        ) : null}
-      </CardContent>
 
-      {!isRedeemed ? (
-        <CardFooter>
-          <Button className="w-full" onClick={onRedeem}>
-            {t("redeem")}
-          </Button>
-        </CardFooter>
-      ) : null}
+            {redeemError ? (
+              <Alert variant="destructive">
+                <CircleAlert />
+                <AlertTitle>{t("redemptionFailed")}</AlertTitle>
+                <AlertDescription>{redeemError}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            {isRedeemed && benefit.transactionHash ? (
+              <>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                    {t("redeemedOn")}
+                  </p>
+                  <p className="text-sm font-medium">
+                    {benefit.redeemedAt
+                      ? formatBenefitDate(
+                          benefit.redeemedAt,
+                          toIntlLocale(locale)
+                        )
+                      : "—"}
+                  </p>
+                </div>
+                <div className="space-y-3 rounded-xl border border-dashed border-border/80 bg-muted/30 p-4">
+                  <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                    {t("onChainProof")}
+                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                      {t("transaction")}
+                    </p>
+                    <p className="font-mono text-sm font-semibold tracking-wide">
+                      {shortenHash(benefit.transactionHash)}
+                    </p>
+                  </div>
+                  <TransactionLink
+                    hash={benefit.transactionHash}
+                    label={t("viewOnExplorer")}
+                  />
+                </div>
+              </>
+            ) : null}
+          </CardContent>
+
+          {!isRedeemed ? (
+            <CardFooter className="mt-auto hidden lg:flex">
+              <Button onClick={onRedeem}>{t("redeem")}</Button>
+            </CardFooter>
+          ) : null}
+        </div>
+
+        {!isRedeemed ? (
+          <div className="flex flex-col items-center justify-center gap-4 border-t border-border/60 px-(--card-spacing) py-(--card-spacing) lg:w-64 lg:shrink-0 lg:border-t-0 lg:border-l lg:border-border/60">
+            <BenefitQr benefitId={benefit.id} />
+            <CardFooter className="w-full p-0 lg:hidden">
+              <Button className="w-full" onClick={onRedeem}>
+                {t("redeem")}
+              </Button>
+            </CardFooter>
+          </div>
+        ) : null}
+      </div>
     </Card>
   );
 }

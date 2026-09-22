@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
@@ -5,9 +6,10 @@ import type { ProjectData } from "@/lib/project/data";
 
 type ProjectHeroProps = {
   project: ProjectData;
+  aside?: ReactNode;
 };
 
-export function ProjectHero({ project }: ProjectHeroProps) {
+export function ProjectHero({ project, aside }: ProjectHeroProps) {
   const t = useTranslations("project");
 
   return (
@@ -29,31 +31,35 @@ export function ProjectHero({ project }: ProjectHeroProps) {
         }}
       />
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-16 sm:px-8 sm:py-20 lg:py-24">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge
-            variant="secondary"
-            className="bg-accent text-accent-foreground"
-          >
-            {project.token}
-          </Badge>
-          <Badge variant="outline">{t("stellarTestnet")}</Badge>
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-16 sm:px-8 sm:py-20 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center lg:gap-12 lg:py-24">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="bg-accent text-accent-foreground"
+            >
+              {project.token}
+            </Badge>
+            <Badge variant="outline">{t("stellarTestnet")}</Badge>
+          </div>
+
+          <div className="max-w-2xl space-y-5">
+            <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              {project.name}
+            </h1>
+            <p className="flex items-center gap-2 text-sm text-muted-foreground sm:text-base">
+              <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
+              <span>
+                {project.location}, {project.region}
+              </span>
+            </p>
+            <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {project.shortDescription}
+            </p>
+          </div>
         </div>
 
-        <div className="max-w-2xl space-y-5">
-          <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            {project.name}
-          </h1>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground sm:text-base">
-            <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
-            <span>
-              {project.location}, {project.region}
-            </span>
-          </p>
-          <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {project.shortDescription}
-          </p>
-        </div>
+        {aside ? <div className="min-w-0 lg:justify-self-end">{aside}</div> : null}
       </div>
     </section>
   );
