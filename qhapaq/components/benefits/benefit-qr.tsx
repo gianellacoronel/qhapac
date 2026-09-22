@@ -15,7 +15,7 @@ export function BenefitQr({ benefitId, size = 180 }: BenefitQrProps) {
         value={buildQrPayload(benefitId)}
         size={size}
         bgColor="#FFFFFF"
-        fgColor="#2A2240"
+        fgColor="#1A1A1A"
         level="M"
         aria-label={`QR code for benefit ${benefitId}`}
       />
