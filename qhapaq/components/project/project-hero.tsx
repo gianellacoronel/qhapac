@@ -12,11 +12,11 @@ type ProjectHeroProps = {
 export function ProjectHero({ project, lead, aside }: ProjectHeroProps) {
   return (
     <section className="relative border-b border-border/60">
-      <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 sm:px-8 sm:py-16 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,20rem)] lg:items-start lg:gap-14 lg:py-20">
-        <div className="flex min-w-0 flex-col gap-8">
-          {lead}
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-14 sm:gap-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
+        {lead}
 
-          <div className="space-y-2 border-t border-border/60 pt-6">
+        <div className="grid gap-8 border-t border-border/60 pt-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,26rem)] lg:items-end lg:gap-12 lg:pt-10">
+          <div className="min-w-0 space-y-2">
             <h1 className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
               {project.name}
             </h1>
@@ -30,13 +30,9 @@ export function ProjectHero({ project, lead, aside }: ProjectHeroProps) {
               {project.shortDescription}
             </p>
           </div>
-        </div>
 
-        {aside ? (
-          <aside className="min-w-0 lg:sticky lg:top-24 lg:justify-self-end">
-            {aside}
-          </aside>
-        ) : null}
+          {aside ? <aside className="min-w-0">{aside}</aside> : null}
+        </div>
       </div>
     </section>
   );

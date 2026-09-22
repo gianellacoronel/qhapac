@@ -37,28 +37,28 @@ export function InvestmentCard({
 
   return (
     <>
-      <div className="flex w-full flex-col gap-6 border-t border-border/70 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
-        <div className="space-y-1">
+      <div className="flex w-full flex-col gap-5 border-t border-border/70 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+        <div className="space-y-1.5">
           <p className="text-sm text-muted-foreground">{t("yourParticipation")}</p>
           {!isConnected ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground sm:text-4xl">
               {t("connectWallet")}
             </p>
           ) : !isTestnet ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive sm:text-4xl">
               {t("switchToTestnet")}
             </p>
           ) : isLoading ? (
-            <Skeleton className="h-9 w-28" />
+            <Skeleton className="h-10 w-32" />
           ) : error ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
+            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive sm:text-4xl">
               —
             </p>
           ) : (
             <>
-              <p className="font-heading text-3xl font-semibold tracking-tight tabular-nums">
+              <p className="font-heading text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
                 {formatted ?? "0"}{" "}
-                <span className="text-base font-normal text-muted-foreground">
+                <span className="text-base font-normal text-muted-foreground sm:text-lg">
                   {project.token}
                 </span>
               </p>
@@ -79,11 +79,11 @@ export function InvestmentCard({
         </p>
 
         <div className="flex flex-col gap-2">
-          <Button className="w-full" onClick={() => setOpen(true)}>
+          <Button className="w-full" size="lg" onClick={() => setOpen(true)}>
             {t("participate")}
           </Button>
           <Link href="/benefits" className="w-full">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" size="lg" className="w-full">
               {t("viewBenefits")}
             </Button>
           </Link>
