@@ -13,9 +13,17 @@ import { useFundingProgress } from "@/hooks/use-funding-progress";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Link } from "@/i18n/navigation";
+import { requestMilestoneApproval } from "@/lib/milestones/approve-client";
 import { formatQrp } from "@/lib/project/data";
 import { stellarConfig } from "@/lib/stellar/config";
 import { shortenAddress } from "@/lib/stellar/wallet";
+
+export type ApprovalUiPhase =
+  | "idle"
+  | "approving"
+  | "confirming"
+  | "success"
+  | "error";
 
 export function AdminDashboard() {
   const t = useTranslations("admin");
@@ -30,12 +38,14 @@ export function AdminDashboard() {
     approvedCount,
     pendingCount,
     totalCount,
-    approveMilestone,
+    recordApprovedMilestone,
   } = useMilestones();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [approvalPhase, setApprovalPhase] = useState<ApprovalUiPhase>("idle");
+  const [approvalError, setApprovalError] = useState<string | null>(null);
 
   const selectedMilestone = useMemo(
     () => milestones.find((m) => m.id === selectedId) ?? null,
@@ -45,16 +55,55 @@ export function AdminDashboard() {
   const handleViewDetails = useCallback((id: string) => {
     setSelectedId(id);
     setDetailOpen(true);
+    setApprovalPhase("idle");
+    setApprovalError(null);
   }, []);
 
   const handleApprove = useCallback(
-    (id: string) => {
+    async (id: string) => {
       if (!address || !isAdmin) return;
+      if (approvingId) return;
+
       setApprovingId(id);
-      approveMilestone(id, address);
+      setApprovalError(null);
+      setApprovalPhase("approving");
+
+      // Brief UI beat before network round-trip / Horizon confirm.
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      setApprovalPhase("confirming");
+
+      const result = await requestMilestoneApproval(id);
+
+      if (!result.ok) {
+        setApprovalPhase("error");
+        setApprovalError(
+          result.error === "already_approved"
+            ? tMilestones("alreadyApprovedError")
+            : result.error === "config"
+              ? tMilestones("configError")
+              : result.error === "network"
+                ? tMilestones("networkError")
+                : tMilestones("approvalFailed")
+        );
+        setApprovingId(null);
+        return;
+      }
+
+      recordApprovedMilestone(id, {
+        approvedBy: result.approvedBy,
+        approvedAt: result.approvedAt,
+        transactionHash: result.transactionHash,
+      });
+      setApprovalPhase("success");
       setApprovingId(null);
     },
-    [address, isAdmin, approveMilestone]
+    [
+      address,
+      isAdmin,
+      approvingId,
+      recordApprovedMilestone,
+      tMilestones,
+    ]
   );
 
   if (isLoading) {
@@ -204,7 +253,7 @@ export function AdminDashboard() {
             {tMilestones("title")}
           </h2>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            {tMilestones("localApprovalNote")}
+            {tMilestones("onChainApprovalNote")}
           </p>
         </div>
 
@@ -220,7 +269,11 @@ export function AdminDashboard() {
         open={detailOpen && Boolean(selectedMilestone)}
         onOpenChange={(open) => {
           setDetailOpen(open);
-          if (!open) setSelectedId(null);
+          if (!open) {
+            setSelectedId(null);
+            setApprovalPhase("idle");
+            setApprovalError(null);
+          }
         }}
         canApprove
         onApprove={handleApprove}
@@ -228,6 +281,12 @@ export function AdminDashboard() {
           selectedMilestone
             ? approvingId === selectedMilestone.id
             : false
+        }
+        approvalPhase={
+          selectedId === selectedMilestone?.id ? approvalPhase : "idle"
+        }
+        approvalError={
+          selectedId === selectedMilestone?.id ? approvalError : null
         }
       />
     </div>

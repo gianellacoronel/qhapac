@@ -11,18 +11,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { TransactionLink } from "@/components/wallet/transaction-link";
 import { toIntlLocale } from "@/lib/project/data";
+import { shortenHash } from "@/lib/stellar/explorer";
 import { shortenAddress } from "@/lib/stellar/wallet";
 import type { Milestone } from "@/lib/milestones/types";
 import { cn } from "@/lib/utils";
+
+export type MilestoneApprovalPhase =
+  | "idle"
+  | "approving"
+  | "confirming"
+  | "success"
+  | "error";
 
 type MilestoneDetailDialogProps = {
   milestone: Milestone | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   canApprove?: boolean;
-  onApprove?: (id: string) => void;
+  onApprove?: (id: string) => void | Promise<void>;
   isApproving?: boolean;
+  approvalPhase?: MilestoneApprovalPhase;
+  approvalError?: string | null;
 };
 
 function formatDate(iso: string, locale: string): string {
@@ -55,6 +66,8 @@ export function MilestoneDetailDialog({
   canApprove = false,
   onApprove,
   isApproving = false,
+  approvalPhase = "idle",
+  approvalError = null,
 }: MilestoneDetailDialogProps) {
   const t = useTranslations("milestones");
   const locale = useLocale();
@@ -89,10 +102,19 @@ export function MilestoneDetailDialog({
         });
 
   const handleConfirmApprove = () => {
-    if (!onApprove || !canApprove || approved) return;
-    onApprove(milestone.id);
+    if (!onApprove || !canApprove || approved || isApproving) return;
+    void onApprove(milestone.id);
     setConfirming(false);
   };
+
+  const approveButtonLabel =
+    approvalPhase === "approving"
+      ? t("approving")
+      : approvalPhase === "confirming"
+        ? t("confirmingOnStellar")
+        : approvalPhase === "success" || approved
+          ? t("approved")
+          : t("approve");
 
   return (
     <>
@@ -151,17 +173,37 @@ export function MilestoneDetailDialog({
                 </div>
               ) : null}
 
-              {milestone.transactionHash ? (
-                <div className="space-y-0.5 sm:col-span-2">
+              {approved ? (
+                <div className="space-y-2 sm:col-span-2">
                   <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-                    {t("transactionHash")}
+                    {t("blockchainProof")}
                   </dt>
-                  <dd className="break-all font-mono text-xs">
-                    {milestone.transactionHash}
-                  </dd>
+                  {milestone.transactionHash ? (
+                    <dd className="space-y-2">
+                      <p className="break-all font-mono text-xs">
+                        {t("transactionLabel", {
+                          hash: shortenHash(milestone.transactionHash),
+                        })}
+                      </p>
+                      <TransactionLink
+                        hash={milestone.transactionHash}
+                        label={t("viewOnExplorer")}
+                      />
+                    </dd>
+                  ) : (
+                    <dd className="text-sm text-muted-foreground">
+                      {t("noBlockchainProof")}
+                    </dd>
+                  )}
                 </div>
               ) : null}
             </dl>
+
+            {approvalError ? (
+              <p className="text-sm text-destructive" role="alert">
+                {approvalError}
+              </p>
+            ) : null}
 
             {milestone.evidence?.mock ? (
               <div className="space-y-2 border-t border-border/70 pt-4">
@@ -179,6 +221,7 @@ export function MilestoneDetailDialog({
                     type="button"
                     size="sm"
                     variant="outline"
+                    disabled={isApproving}
                     onClick={() => setEvidenceOpen(true)}
                   >
                     {t("viewEvidence")}
@@ -189,7 +232,13 @@ export function MilestoneDetailDialog({
           </div>
 
           <DialogFooter>
-            {confirming ? (
+            {isApproving ? (
+              <div className="flex w-full flex-col gap-2 sm:items-end">
+                <Button type="button" disabled>
+                  {approveButtonLabel}
+                </Button>
+              </div>
+            ) : confirming ? (
               <div className="flex w-full flex-col gap-3 sm:items-end">
                 <p className="text-sm text-muted-foreground sm:text-right">
                   {t("confirmApprovalDescription", { title })}
@@ -198,16 +247,11 @@ export function MilestoneDetailDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={isApproving}
                     onClick={() => setConfirming(false)}
                   >
                     {t("cancel")}
                   </Button>
-                  <Button
-                    type="button"
-                    disabled={isApproving}
-                    onClick={handleConfirmApprove}
-                  >
+                  <Button type="button" onClick={handleConfirmApprove}>
                     {t("confirmApproval")}
                   </Button>
                 </div>

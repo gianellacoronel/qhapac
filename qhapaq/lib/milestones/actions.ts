@@ -1,18 +1,24 @@
 import type { Milestone } from "./types";
 
+export type MilestoneApprovalProof = {
+  approvedBy: string;
+  approvedAt: string;
+  transactionHash: string;
+};
+
 /**
- * Local/prototype approval. Later this can be replaced by a Stellar
- * transaction flow that also sets `transactionHash`.
+ * Apply a confirmed on-chain approval to local milestone state.
+ * Only call after a successful Stellar Testnet transaction.
  */
-export function approveMilestone(
+export function applyMilestoneApproval(
   milestones: Milestone[],
   id: string,
-  approvedBy: string
+  proof: MilestoneApprovalProof
 ): { milestones: Milestone[]; didApprove: boolean } {
   let didApprove = false;
 
   const next = milestones.map((milestone) => {
-    if (milestone.id !== id || milestone.status === "approved") {
+    if (milestone.id !== id) {
       return milestone;
     }
 
@@ -20,9 +26,9 @@ export function approveMilestone(
     return {
       ...milestone,
       status: "approved" as const,
-      approvedAt: new Date().toISOString(),
-      approvedBy,
-      // Intentionally omit transactionHash until a real Stellar tx exists.
+      approvedAt: proof.approvedAt,
+      approvedBy: proof.approvedBy,
+      transactionHash: proof.transactionHash,
     };
   });
 

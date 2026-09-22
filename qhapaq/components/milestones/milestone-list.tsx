@@ -3,6 +3,7 @@
 import { Check, Circle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { TransactionLink } from "@/components/wallet/transaction-link";
 import { toIntlLocale } from "@/lib/project/data";
 import { shortenAddress } from "@/lib/stellar/wallet";
 import type { Milestone } from "@/lib/milestones/types";
@@ -97,6 +98,26 @@ export function MilestoneList({
                 </p>
               ) : null}
 
+              {approved && compact ? (
+                <div className="space-y-1.5 text-sm text-muted-foreground">
+                  <p className="text-xs font-medium tracking-wide text-primary uppercase">
+                    {t("approved")}
+                  </p>
+                  {milestone.approvedAt ? (
+                    <p>{formatApprovedAt(milestone.approvedAt, locale)}</p>
+                  ) : null}
+                  <p>{approvedByText}</p>
+                  {milestone.transactionHash ? (
+                    <TransactionLink
+                      hash={milestone.transactionHash}
+                      label={t("viewBlockchainProof")}
+                    />
+                  ) : (
+                    <p className="text-xs">{t("noBlockchainProof")}</p>
+                  )}
+                </div>
+              ) : null}
+
               {approved && !compact ? (
                 <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm text-muted-foreground">
                   <p>{approvedByText}</p>
@@ -106,6 +127,12 @@ export function MilestoneList({
                         date: formatApprovedAt(milestone.approvedAt, locale),
                       })}
                     </p>
+                  ) : null}
+                  {milestone.transactionHash ? (
+                    <TransactionLink
+                      hash={milestone.transactionHash}
+                      label={t("viewBlockchainProof")}
+                    />
                   ) : null}
                 </div>
               ) : null}
