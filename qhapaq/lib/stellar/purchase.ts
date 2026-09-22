@@ -103,7 +103,7 @@ function loadDistributorKeypair(): Keypair {
 }
 
 /**
- * Stellar classic amounts: positive decimal string, up to 7 fraction digits.
+ * QRP purchase amounts: positive integers greater than zero.
  * Returns a normalized string suitable for Operation.payment.
  */
 export function parseQrpPurchaseAmount(raw: unknown): string {
@@ -124,38 +124,22 @@ export function parseQrpPurchaseAmount(raw: unknown): string {
     );
   }
 
-  if (!/^(?:0|[1-9]\d*)(?:\.\d{1,7})?$/.test(asString)) {
+  if (!/^[1-9]\d*$/.test(asString)) {
     throw new PurchaseValidationError(
       "INVALID_AMOUNT",
-      "Amount must be a positive number with at most 7 decimal places."
+      "Amount must be a positive integer greater than zero."
     );
   }
 
   const value = Number(asString);
-  if (!Number.isFinite(value) || value <= 0) {
+  if (!Number.isSafeInteger(value) || value <= 0) {
     throw new PurchaseValidationError(
       "INVALID_AMOUNT",
       "Enter a valid QRP amount greater than zero."
     );
   }
 
-  // Strip trailing zeros while keeping a valid Stellar amount string.
-  if (!asString.includes(".")) {
-    return asString;
-  }
-
-  const normalized = asString
-    .replace(/(\.\d*?[1-9])0+$/, "$1")
-    .replace(/\.0+$/, "");
-
-  if (!normalized || Number(normalized) <= 0) {
-    throw new PurchaseValidationError(
-      "INVALID_AMOUNT",
-      "Enter a valid QRP amount greater than zero."
-    );
-  }
-
-  return normalized;
+  return asString;
 }
 
 export function parseInvestorAddress(raw: unknown): string {

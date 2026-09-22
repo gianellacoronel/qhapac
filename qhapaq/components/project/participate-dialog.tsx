@@ -72,8 +72,8 @@ export function ParticipateDialog({
 
   const validationError = useMemo(() => {
     if (!amount.trim()) return null;
-    if (!/^(?:0|[1-9]\d*)(?:\.\d{1,7})?$/.test(amount.trim())) {
-      return t("validationDecimals");
+    if (!/^[1-9]\d*$/.test(amount.trim())) {
+      return t("validationInteger");
     }
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return t("validationPositive");
@@ -201,7 +201,8 @@ export function ParticipateDialog({
             <Input
               id="participate-amount"
               type="text"
-              inputMode="decimal"
+              inputMode="numeric"
+              pattern="[1-9][0-9]*"
               placeholder="10"
               value={amount}
               disabled={
@@ -213,7 +214,10 @@ export function ParticipateDialog({
               }
               onChange={(event) => {
                 setError(null);
-                setAmount(event.target.value);
+                const next = event.target.value;
+                if (next === "" || /^\d+$/.test(next)) {
+                  setAmount(next);
+                }
               }}
             />
             {validationError ? (
