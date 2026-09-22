@@ -1,12 +1,27 @@
 "use client";
 
-import { AlertCircle, Loader2, Unplug, Wallet } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronDown,
+  Loader2,
+  LogOut,
+  Unplug,
+  User,
+  Wallet,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWallet } from "@/hooks/use-wallet";
+import { useRouter } from "@/i18n/navigation";
 import { stellarConfig } from "@/lib/stellar/config";
 import { shortenAddress } from "@/lib/stellar/wallet";
 
@@ -21,6 +36,8 @@ export function ConnectWallet({
   variant = "default",
 }: ConnectWalletProps) {
   const t = useTranslations("wallet");
+  const tProfile = useTranslations("profile");
+  const router = useRouter();
   const internalWallet = useWallet();
   const wallet = walletProp ?? internalWallet;
   const isNavbar = variant === "navbar";
@@ -78,6 +95,43 @@ export function ConnectWallet({
           )}
           {t("connect")}
         </Button>
+      ) : isNavbar ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-mono"
+                aria-label={tProfile("accountMenuAria", {
+                  address: shortenAddress(address!),
+                })}
+              />
+            }
+          >
+            {shortenAddress(address!)}
+            <ChevronDown data-icon="inline-end" className="opacity-70" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-44">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                router.push("/profile");
+              }}
+            >
+              <User />
+              {tProfile("viewProfile")}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={disconnect}
+            >
+              <LogOut />
+              {t("disconnect")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="secondary" className="font-mono text-xs">
@@ -94,7 +148,7 @@ export function ConnectWallet({
             aria-label={t("disconnectAria")}
           >
             <Unplug data-icon="inline-start" />
-            {isNavbar ? null : t("disconnect")}
+            {t("disconnect")}
           </Button>
         </div>
       )}

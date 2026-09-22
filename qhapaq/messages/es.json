@@ -237,6 +237,22 @@
     "wrongNetworkMessage": "Red incorrecta. Cambia Freighter a {network}.",
     "unexpectedError": "Error inesperado de wallet."
   },
+  "profile": {
+    "title": "Perfil",
+    "description": "Información básica de la wallet conectada en Stellar Testnet.",
+    "viewProfile": "Ver perfil",
+    "connectedWallet": "Wallet conectada",
+    "address": "Dirección",
+    "shortAddress": "Dirección abreviada",
+    "network": "Red",
+    "qrpBalance": "Balance QRP",
+    "xlmBalance": "Balance XLM",
+    "connectionStatus": "Estado de conexión",
+    "statusConnected": "Conectada",
+    "statusDisconnected": "Desconectada",
+    "connectPrompt": "Conecta tu wallet para ver tu perfil.",
+    "accountMenuAria": "Menú de cuenta {address}"
+  },
   "transaction": {
     "smokeTest": "Prueba rápida",
     "title": "Transaction de Stellar",
