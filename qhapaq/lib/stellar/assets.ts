@@ -19,6 +19,16 @@ export type QrpBalanceResult = {
   assetId: string;
 };
 
+export type NativeBalanceResult = {
+  balance: string;
+  formatted: string;
+};
+
+export type AccountBalancesResult = {
+  qrp: QrpBalanceResult;
+  xlm: NativeBalanceResult;
+};
+
 /**
  * Horizon returns classic balances as decimal strings (already scaled).
  * Normalize for display without inventing values.
@@ -40,54 +50,81 @@ export function formatAssetBalance(
   }).format(value);
 }
 
+function toHorizonError(error: unknown, fallback: string): Error {
+  const status = (error as { response?: { status?: number } })?.response
+    ?.status;
+
+  if (status === 404) {
+    return new Error(
+      "This Stellar account was not found on Testnet. Fund it with Friendbot first."
+    );
+  }
+
+  return new Error(error instanceof Error ? error.message : fallback);
+}
+
 /**
- * Fetch the real QRP classic-asset balance for an account from Horizon Testnet.
+ * Single Horizon account load for QRP + native XLM balances.
  */
-export async function fetchQrpBalance(
+export async function fetchAccountBalances(
   publicKey: string
-): Promise<QrpBalanceResult> {
+): Promise<AccountBalancesResult> {
   const issuer = requireQrpIssuer();
   const assetId = getQrpAssetId();
   const horizon = getHorizonServer();
 
   try {
     const account = await horizon.loadAccount(publicKey);
-    const match = account.balances.find(
+
+    const qrpMatch = account.balances.find(
       (balance) =>
         "asset_code" in balance &&
         balance.asset_code === QRP_ASSET_CODE &&
         balance.asset_issuer === issuer
     );
 
-    if (!match || !("balance" in match)) {
-      return {
-        balance: "0",
-        formatted: formatAssetBalance("0"),
-        hasTrustline: false,
-        assetId,
-      };
-    }
+    const qrp: QrpBalanceResult =
+      qrpMatch && "balance" in qrpMatch
+        ? {
+            balance: qrpMatch.balance,
+            formatted: formatAssetBalance(qrpMatch.balance),
+            hasTrustline: true,
+            assetId,
+          }
+        : {
+            balance: "0",
+            formatted: formatAssetBalance("0"),
+            hasTrustline: false,
+            assetId,
+          };
+
+    const nativeMatch = account.balances.find(
+      (balance) => balance.asset_type === "native"
+    );
+    const xlmBalance =
+      nativeMatch && "balance" in nativeMatch ? nativeMatch.balance : "0";
 
     return {
-      balance: match.balance,
-      formatted: formatAssetBalance(match.balance),
-      hasTrustline: true,
-      assetId,
+      qrp,
+      xlm: {
+        balance: xlmBalance,
+        formatted: formatAssetBalance(xlmBalance),
+      },
     };
   } catch (error: unknown) {
-    const status = (error as { response?: { status?: number } })?.response
-      ?.status;
-
-    if (status === 404) {
-      throw new Error(
-        "This Stellar account was not found on Testnet. Fund it with Friendbot first."
-      );
-    }
-
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to load QRP balance from Stellar Testnet."
+    throw toHorizonError(
+      error,
+      "Failed to load account balances from Stellar Testnet."
     );
   }
+}
+
+/**
+ * Fetch the real QRP classic-asset balance for an account from Horizon Testnet.
+ */
+export async function fetchQrpBalance(
+  publicKey: string
+): Promise<QrpBalanceResult> {
+  const { qrp } = await fetchAccountBalances(publicKey);
+  return qrp;
 }

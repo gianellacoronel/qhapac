@@ -3,8 +3,14 @@ export {
   QRP_ASSET_CODE,
   getQrpAsset,
   getQrpAssetId,
+  fetchAccountBalances,
   fetchQrpBalance,
   formatAssetBalance,
+} from "./assets";
+export type {
+  AccountBalancesResult,
+  NativeBalanceResult,
+  QrpBalanceResult,
 } from "./assets";
 export { getFundingProgress } from "./funding-progress";
 export type { FundingProgress } from "./funding-progress";
