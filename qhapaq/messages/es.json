@@ -7,6 +7,7 @@
     "home": "Proyecto",
     "portfolio": "Portafolio",
     "benefits": "Beneficios",
+    "admin": "Admin",
     "mainNav": "Principal",
     "mobileNav": "Móvil",
     "openMenu": "Abrir menú",
@@ -231,6 +232,88 @@
       "submitting": "Enviando",
       "success": "Confirmada",
       "error": "Fallida"
+    }
+  },
+  "admin": {
+    "label": "Admin",
+    "title": "Admin",
+    "description": "Gestiona los hitos del proyecto y revisa el progreso del prototipo del proyecto activo.",
+    "subtitle": "Administración del proyecto",
+    "currentProject": "Proyecto actual",
+    "projectSummary": "Resumen del proyecto",
+    "fundingLabel": "Progreso de financiamiento",
+    "networkLabel": "Red",
+    "benefitsLabel": "Beneficios",
+    "milestonesSummary": "{approved} / {total} aprobados",
+    "adminWallet": "Wallet admin: {address}",
+    "loading": "Verificando acceso de admin…",
+    "accessDeniedTitle": "Acceso denegado",
+    "unauthorizedTitle": "No autorizado",
+    "unauthorizedDescription": "Solo la Admin Wallet puede acceder a la administración del proyecto.",
+    "connectAdminWallet": "Conecta la Admin Wallet con Freighter para acceder a esta área.",
+    "backHome": "Volver al proyecto"
+  },
+  "milestones": {
+    "label": "Hitos del proyecto",
+    "title": "Hitos del proyecto",
+    "summaryLabel": "Hitos",
+    "summaryTitle": "Hitos",
+    "projectProgressLabel": "Progreso del proyecto",
+    "projectProgressTitle": "Progreso del proyecto",
+    "approvedCount": "{approved} / {total} aprobados",
+    "pending": "Pendiente",
+    "approved": "Aprobado",
+    "approve": "Aprobar hito",
+    "viewDetails": "Ver detalle",
+    "detailsTitle": "Detalle del hito",
+    "detailsDescription": "Revisa la información del hito antes de aprobar.",
+    "expectedDate": "Fecha esperada",
+    "approvedByLabel": "Aprobado por",
+    "approvedAtLabel": "Fecha de aprobación",
+    "approvedByAdminWallet": "Aprobado por Admin Wallet",
+    "approvedByAddress": "Aprobado por {address}",
+    "approvedAt": "{date}",
+    "evidence": "Evidencia",
+    "viewEvidence": "Ver evidencia",
+    "evidencePrototypeNote": "Evidencia mock del prototipo para esta demo — no es un documento verificable on-chain.",
+    "transactionHash": "Hash de transacción",
+    "confirmApproval": "Confirmar aprobación",
+    "confirmApprovalDescription": "¿Aprobar “{title}”? Solo actualiza el estado local del prototipo — no se envía ninguna transacción en Stellar.",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "prototypeNote": "Hitos de prototipo para demostrar el flujo admin y participante. No son datos reales del proyecto.",
+    "localApprovalNote": "Las aprobaciones son locales a esta sesión del prototipo. La confirmación on-chain en Stellar llegará después.",
+    "items": {
+      "land-acquisition": {
+        "title": "Adquisición del terreno",
+        "description": "Asegurar el terreno costero para el desarrollo de Huaral Resort.",
+        "evidenceTitle": "Resumen de adquisición del terreno",
+        "evidenceDescription": "Nota mock del prototipo que confirma la diligencia del terreno costero."
+      },
+      "construction-start": {
+        "title": "Inicio de construcción",
+        "description": "Comenzar la preparación del sitio y las obras principales.",
+        "evidenceTitle": "Checklist de inicio de obra",
+        "evidenceDescription": "Nota mock del prototipo para la movilización y preparación del sitio."
+      },
+      "construction-25": {
+        "title": "25% de construcción",
+        "description": "Alcanzar un cuarto del progreso de construcción planificado.",
+        "evidenceTitle": "Informe de avance de construcción",
+        "evidenceDescription": "Informe mock del prototipo para el hito del 25% de construcción."
+      },
+      "construction-50": {
+        "title": "50% de construcción",
+        "description": "Alcanzar la mitad del progreso de construcción planificado.",
+        "evidenceTitle": "Informe de mitad de obra",
+        "evidenceDescription": "Informe mock del prototipo para el hito del 50% de construcción."
+      },
+      "project-complete": {
+        "title": "Proyecto terminado",
+        "description": "Finalizar la construcción y abrir las operaciones de Huaral Resort.",
+        "evidenceTitle": "Nota de apertura",
+        "evidenceDescription": "Nota mock del prototipo para la finalización y readiness operacional."
+      }
     }
   }
 }

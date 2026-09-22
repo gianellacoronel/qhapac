@@ -7,6 +7,7 @@
     "home": "Project",
     "portfolio": "Portfolio",
     "benefits": "Benefits",
+    "admin": "Admin",
     "mainNav": "Main",
     "mobileNav": "Mobile",
     "openMenu": "Open menu",
@@ -231,6 +232,88 @@
       "submitting": "Submitting",
       "success": "Confirmed",
       "error": "Failed"
+    }
+  },
+  "admin": {
+    "label": "Admin",
+    "title": "Admin",
+    "description": "Manage project milestones and review prototype progress for the active project.",
+    "subtitle": "Project Administration",
+    "currentProject": "Current project",
+    "projectSummary": "Project summary",
+    "fundingLabel": "Funding Progress",
+    "networkLabel": "Network",
+    "benefitsLabel": "Benefits",
+    "milestonesSummary": "{approved} / {total} Approved",
+    "adminWallet": "Admin wallet: {address}",
+    "loading": "Checking admin access…",
+    "accessDeniedTitle": "Access denied",
+    "unauthorizedTitle": "Unauthorized",
+    "unauthorizedDescription": "Only the Admin Wallet can access project administration.",
+    "connectAdminWallet": "Connect the Admin Wallet with Freighter to access this area.",
+    "backHome": "Back to project"
+  },
+  "milestones": {
+    "label": "Project Milestones",
+    "title": "Project Milestones",
+    "summaryLabel": "Milestones",
+    "summaryTitle": "Milestones",
+    "projectProgressLabel": "Project Progress",
+    "projectProgressTitle": "Project Progress",
+    "approvedCount": "{approved} / {total} approved",
+    "pending": "Pending",
+    "approved": "Approved",
+    "approve": "Approve milestone",
+    "viewDetails": "View details",
+    "detailsTitle": "Milestone details",
+    "detailsDescription": "Review milestone information before approving.",
+    "expectedDate": "Expected date",
+    "approvedByLabel": "Approved by",
+    "approvedAtLabel": "Approved at",
+    "approvedByAdminWallet": "Approved by Admin Wallet",
+    "approvedByAddress": "Approved by {address}",
+    "approvedAt": "{date}",
+    "evidence": "Evidence",
+    "viewEvidence": "View evidence",
+    "evidencePrototypeNote": "Prototype mock evidence for this demo — not a verified on-chain document.",
+    "transactionHash": "Transaction hash",
+    "confirmApproval": "Confirm approval",
+    "confirmApprovalDescription": "Approve “{title}”? This updates local prototype state only — no Stellar transaction is sent.",
+    "cancel": "Cancel",
+    "close": "Close",
+    "prototypeNote": "Prototype milestones for demonstrating the admin and participant flow. Not live project data.",
+    "localApprovalNote": "Approvals are local to this prototype session. On-chain Stellar confirmation will come later.",
+    "items": {
+      "land-acquisition": {
+        "title": "Land acquisition",
+        "description": "Secure the coastal plot for Huaral Resort development.",
+        "evidenceTitle": "Land acquisition summary",
+        "evidenceDescription": "Mock prototype note confirming plot diligence for the coastal site."
+      },
+      "construction-start": {
+        "title": "Construction start",
+        "description": "Begin site preparation and primary construction works.",
+        "evidenceTitle": "Site kickoff checklist",
+        "evidenceDescription": "Mock prototype note for mobilization and site preparation start."
+      },
+      "construction-25": {
+        "title": "25% construction",
+        "description": "Reach one quarter of planned construction progress.",
+        "evidenceTitle": "Construction progress report",
+        "evidenceDescription": "Mock prototype progress report for the 25% construction checkpoint."
+      },
+      "construction-50": {
+        "title": "50% construction",
+        "description": "Reach halfway through planned construction progress.",
+        "evidenceTitle": "Midpoint construction report",
+        "evidenceDescription": "Mock prototype progress report for the 50% construction checkpoint."
+      },
+      "project-complete": {
+        "title": "Project complete",
+        "description": "Finish construction and open Huaral Resort operations.",
+        "evidenceTitle": "Opening readiness note",
+        "evidenceDescription": "Mock prototype note for completion and operational readiness."
+      }
     }
   }
 }

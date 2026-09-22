@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,19 +9,32 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { useWallet } from "@/hooks/use-wallet";
+import { useUserRole } from "@/hooks/use-user-role";
+
+type NavItem = {
+  href: "/" | "/portfolio" | "/benefits" | "/admin";
+  label: string;
+};
 
 export function Navbar() {
   const t = useTranslations("navbar");
   const pathname = usePathname();
-  const wallet = useWallet();
+  const { isAdmin, wallet } = useUserRole();
   const [open, setOpen] = useState(false);
 
-  const navItems = [
-    { href: "/", label: t("home") },
-    { href: "/portfolio", label: t("portfolio") },
-    { href: "/benefits", label: t("benefits") },
-  ] as const;
+  const navItems = useMemo(() => {
+    const items: NavItem[] = [
+      { href: "/", label: t("home") },
+      { href: "/portfolio", label: t("portfolio") },
+      { href: "/benefits", label: t("benefits") },
+    ];
+
+    if (isAdmin) {
+      items.push({ href: "/admin", label: t("admin") });
+    }
+
+    return items;
+  }, [isAdmin, t]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">

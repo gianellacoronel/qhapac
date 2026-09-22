@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { BenefitCard } from "@/components/benefits/benefit-card";
+import { ProjectMilestonesProgress } from "@/components/milestones/project-milestones-progress";
 import { FundingProgress } from "@/components/project/funding-progress";
 import { InvestmentCard } from "@/components/project/investment-card";
 import { ParticipateDialog } from "@/components/project/participate-dialog";
@@ -47,6 +48,8 @@ export function ProjectPage() {
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
         <FundingProgress project={project} funding={funding} />
+
+        <ProjectMilestonesProgress />
 
         <div className="grid gap-12 lg:items-start lg:gap-14">
           <section className="space-y-6">

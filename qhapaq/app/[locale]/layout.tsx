@@ -15,6 +15,7 @@ import { notFound } from "next/navigation";
 import { BenefitSessionProvider } from "@/components/benefits/benefit-session";
 import { Navbar } from "@/components/layout/navbar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { MilestonesProvider } from "@/components/milestones/milestones-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -101,9 +102,11 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider messages={messages}>
             <BenefitSessionProvider>
-              <Navbar />
-              {children}
-              <ThemeToggle />
+              <MilestonesProvider>
+                <Navbar />
+                {children}
+                <ThemeToggle />
+              </MilestonesProvider>
             </BenefitSessionProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
