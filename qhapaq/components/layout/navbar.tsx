@@ -44,20 +44,23 @@ export function Navbar() {
           className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
           onClick={() => setOpen(false)}
         >
-          <Image
+          {/*<Image
             src="/qhapaq-mark.svg"
             alt=""
             width={32}
             height={32}
             className="size-8"
             priority
-          />
+          />*/}
           <span className="font-heading text-lg font-semibold tracking-tight text-foreground">
             Qhapaq
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label={t("mainNav")}>
+        <nav
+          className="hidden items-center gap-1 md:flex"
+          aria-label={t("mainNav")}
+        >
           {navItems.map((item) => {
             const active =
               item.href === "/"
@@ -71,7 +74,7 @@ export function Navbar() {
                   "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
                     ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {item.label}
@@ -116,7 +119,7 @@ export function Navbar() {
                     "rounded-md px-3 py-2.5 text-sm font-medium",
                     active
                       ? "bg-secondary text-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   {item.label}
