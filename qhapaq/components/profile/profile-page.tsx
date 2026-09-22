@@ -1,17 +1,33 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { AlertCircle, Check, Copy, Loader2, Wallet } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  ChevronDown,
+  Copy,
+  Loader2,
+  Wallet,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useBenefitSession } from "@/components/benefits/benefit-session";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TransactionLink } from "@/components/wallet/transaction-link";
 import { useAccountBalances } from "@/hooks/use-account-balances";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useWallet } from "@/hooks/use-wallet";
 import { Link } from "@/i18n/navigation";
-import { estimateUsdValue, huaralResort } from "@/lib/project/data";
+import { availableBenefits } from "@/lib/benefits/data";
+import { formatBenefitDate } from "@/lib/benefits/utils";
+import {
+  estimateUsdValue,
+  huaralResort,
+  toIntlLocale,
+} from "@/lib/project/data";
 import { stellarConfig } from "@/lib/stellar/config";
+import { shortenAddress } from "@/lib/stellar/wallet";
 import { cn } from "@/lib/utils";
 
 function SectionLabel({ children }: { children: ReactNode }) {
@@ -25,11 +41,36 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-function MetaRow({ label, children }: { label: string; children: ReactNode }) {
+function HighlightStat({
+  value,
+  label,
+  emphasize = false,
+  loading = false,
+}: {
+  value: ReactNode;
+  label: string;
+  emphasize?: boolean;
+  loading?: boolean;
+}) {
   return (
-    <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-4 gap-y-1 text-sm sm:grid-cols-[8.5rem_minmax(0,1fr)]">
-      <p className="text-muted-foreground">{label}</p>
-      <div className="min-w-0 text-foreground">{children}</div>
+    <div className="min-w-0 space-y-2">
+      <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        {label}
+      </p>
+      {loading ? (
+        <Skeleton className="h-10 w-28" />
+      ) : (
+        <p
+          className={cn(
+            "font-heading font-semibold tracking-tight",
+            emphasize
+              ? "text-3xl text-primary tabular-nums sm:text-4xl sm:tracking-tighter"
+              : "text-2xl text-foreground sm:text-3xl",
+          )}
+        >
+          {value}
+        </p>
+      )}
     </div>
   );
 }
@@ -38,9 +79,11 @@ export function ProfilePage() {
   const t = useTranslations("profile");
   const tWallet = useTranslations("wallet");
   const tParticipation = useTranslations("participation");
+  const tBenefits = useTranslations("benefits");
   const locale = useLocale();
   const project = useLocalizedProject();
   const wallet = useWallet();
+  const { generatedBenefit } = useBenefitSession();
   const {
     address,
     isConnected,
@@ -55,6 +98,12 @@ export function ProfilePage() {
   );
 
   const [copied, setCopied] = useState(false);
+  const primaryBenefit = availableBenefits[0];
+  const qrpIssuer = process.env.NEXT_PUBLIC_QRP_ISSUER?.trim() || null;
+  const qrpAmount = Number(balances.qrpBalance ?? "0");
+  const hasQrp = Number.isFinite(qrpAmount) && qrpAmount > 0;
+  const balancesReady =
+    isConnected && isTestnet && !balances.isLoading && !balances.error;
 
   useEffect(() => {
     if (!copied) return;
@@ -76,79 +125,118 @@ export function ProfilePage() {
     ? stellarConfig.displayName
     : tWallet("wrongNetwork");
 
-  const connectionStatus = !isConnected
-    ? t("statusDisconnected")
-    : isTestnet
-      ? t("statusConnected")
-      : tWallet("wrongNetwork");
-
   let participationStatus = t("participationUnavailable");
+  let participationBody = t("participationIntroUnavailable");
   if (isConnected && isTestnet) {
     if (balances.isLoading) {
       participationStatus = "…";
+      participationBody = "…";
     } else if (balances.error) {
       participationStatus = t("participationUnavailable");
+      participationBody = t("participationIntroUnavailable");
     } else if (balances.hasTrustline === false) {
-      participationStatus = tParticipation("noTrustline");
-    } else if (Number(balances.qrpBalance ?? "0") > 0) {
+      participationStatus = t("participationNeedsSetup");
+      participationBody = t("participationIntroNoTrustline", {
+        project: project.name,
+      });
+    } else if (hasQrp) {
       participationStatus = t("participationActive");
+      participationBody = t("participationIntroActive", {
+        project: project.name,
+      });
     } else {
       participationStatus = t("participationReady");
+      participationBody = t("participationIntroReady", {
+        project: project.name,
+      });
     }
   }
 
+  const redeemedProof =
+    generatedBenefit?.status === "redeemed" && generatedBenefit.transactionHash
+      ? generatedBenefit
+      : null;
+
+  const activeGenerated =
+    generatedBenefit &&
+    generatedBenefit.status !== "redeemed" &&
+    generatedBenefit.status !== "failed"
+      ? generatedBenefit
+      : null;
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
-      <header className="flex flex-col gap-6 border-b border-border pb-10 sm:flex-row sm:items-end sm:justify-between sm:gap-10 sm:pb-12">
-        <div className="max-w-xl space-y-4">
-          <SectionLabel>{t("sectionProfile")}</SectionLabel>
-          <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
-            {t.rich("heroTitle", {
-              mark: (chunks) => (
-                <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
-                  {chunks}
-                </span>
-              ),
-            })}
-          </h1>
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
-            {t("heroLead")}
-          </p>
-        </div>
-
-        {isConnected ? (
-          <div className="shrink-0 space-y-1 sm:text-right">
-            <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-              {t("network")}
-            </p>
-            <p
-              className={cn(
-                "text-sm font-medium",
-                isTestnet ? "text-foreground" : "text-destructive",
-              )}
-            >
-              {networkLabel}
+      <header className="pb-10 sm:pb-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end lg:gap-14">
+          <div className="max-w-xl space-y-4">
+            <SectionLabel>{t("sectionProfile")}</SectionLabel>
+            <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
+              {t.rich("heroTitle", {
+                mark: (chunks) => (
+                  <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+                    {chunks}
+                  </span>
+                ),
+              })}
+            </h1>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
+              {t("heroLead")}
             </p>
           </div>
-        ) : null}
+
+          {isLoading && !isConnected ? (
+            <div className="space-y-3 lg:justify-self-end lg:text-right">
+              <Skeleton className="h-3 w-20 lg:ml-auto" />
+              <Skeleton className="h-5 w-48 lg:ml-auto" />
+            </div>
+          ) : isConnected && address ? (
+            <div className="min-w-0 space-y-2 lg:justify-self-end lg:text-right">
+              <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                {t("yourWallet")}
+              </p>
+              <div className="flex items-start gap-2 lg:justify-end">
+                <p className="min-w-0 break-all font-mono text-[0.8125rem] leading-relaxed text-foreground">
+                  {address}
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    void handleCopyAddress();
+                  }}
+                  aria-label={
+                    copied ? t("copiedAddress") : t("copyAddressAria")
+                  }
+                >
+                  {copied ? <Check /> : <Copy />}
+                </Button>
+              </div>
+              {copied ? (
+                <p className="text-xs text-foreground" aria-live="polite">
+                  {t("copiedAddress")}
+                </p>
+              ) : null}
+              {!isTestnet ? (
+                <p className="text-sm font-medium text-destructive">
+                  {networkLabel}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </header>
 
       {isLoading && !isConnected ? (
-        <div className="mt-10 grid gap-10 lg:mt-14 lg:grid-cols-2 lg:gap-16">
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-16 w-full" />
-          </div>
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-12 w-48" />
-            <Skeleton className="h-8 w-32" />
-          </div>
+        <div className="mt-10 grid gap-10 lg:mt-14 lg:grid-cols-3 lg:gap-12">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
         </div>
       ) : !isConnected ? (
         <div className="mt-10 flex max-w-lg flex-col gap-5 lg:mt-14">
-          <SectionLabel>{t("sectionWallet")}</SectionLabel>
+          <SectionLabel>{t("yourWallet")}</SectionLabel>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {t("connectPrompt")}
           </p>
@@ -180,87 +268,25 @@ export function ProfilePage() {
         </div>
       ) : (
         <div className="mt-10 flex flex-col gap-14 lg:mt-14 lg:gap-16">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
-            <section aria-labelledby="profile-wallet-heading">
-              <SectionLabel>
-                <span id="profile-wallet-heading">{t("sectionWallet")}</span>
-              </SectionLabel>
+          {!isTestnet ? (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{tWallet("wrongNetwork")}</AlertTitle>
+              <AlertDescription>
+                {tWallet("wrongNetworkMessage", {
+                  network: stellarConfig.displayName,
+                })}
+              </AlertDescription>
+            </Alert>
+          ) : null}
 
-              <div className="space-y-6">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("connectedWallet")}
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-foreground">
-                    {connectionStatus}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("address")}
-                  </p>
-                  <div className="mt-2 flex items-start gap-2">
-                    <p className="min-w-0 flex-1 break-all font-mono text-[0.8125rem] leading-relaxed text-foreground">
-                      {address}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-xs"
-                      className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground"
-                      onClick={() => {
-                        void handleCopyAddress();
-                      }}
-                      aria-label={
-                        copied ? t("copiedAddress") : t("copyAddressAria")
-                      }
-                    >
-                      {copied ? <Check /> : <Copy />}
-                    </Button>
-                  </div>
-                  {copied ? (
-                    <p
-                      className="mt-1.5 text-xs text-foreground"
-                      aria-live="polite"
-                    >
-                      {t("copiedAddress")}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="border-t border-border pt-5">
-                  <p className="text-sm text-muted-foreground">
-                    {t("network")}
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-1 text-sm font-medium",
-                      isTestnet ? "text-foreground" : "text-destructive",
-                    )}
-                  >
-                    {networkLabel}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            <section aria-labelledby="profile-assets-heading">
-              <SectionLabel>
-                <span id="profile-assets-heading">{t("sectionAssets")}</span>
-              </SectionLabel>
-
-              {!isTestnet ? (
-                <p className="text-sm text-destructive">
-                  {tWallet("wrongNetwork")}
-                </p>
-              ) : balances.isLoading ? (
-                <div className="space-y-6">
-                  <Skeleton className="h-14 w-56" />
-                  <Skeleton className="h-8 w-36" />
-                </div>
-              ) : balances.error ? (
-                <div className="space-y-3">
+          {isTestnet ? (
+            <section
+              aria-label={t("highlightsAria")}
+              className="border-y border-border py-8 sm:py-10"
+            >
+              {balances.error ? (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-destructive">{balances.error}</p>
                   <Button
                     variant="ghost"
@@ -274,81 +300,255 @@ export function ProfilePage() {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-8">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {t("assetQrp")}
-                    </p>
-                    <p className="mt-1 font-heading text-4xl font-semibold tracking-tight tabular-nums text-primary sm:text-5xl sm:tracking-tighter">
-                      {balances.qrpFormatted ?? "0"}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {huaralResort.token}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-border pt-6">
-                    <p className="text-sm text-muted-foreground">
-                      {t("assetXlm")}
-                    </p>
-                    <p className="mt-1 font-heading text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-                      {balances.xlmFormatted ?? "0"}
-                      <span className="ml-2 text-sm font-normal text-muted-foreground">
-                        XLM
-                      </span>
-                    </p>
-                  </div>
+                <div className="grid gap-8 sm:grid-cols-3 sm:gap-10">
+                  <HighlightStat
+                    label={t("metricParticipation")}
+                    emphasize
+                    loading={balances.isLoading}
+                    value={
+                      <>
+                        {balances.qrpFormatted ?? "0"}
+                        <span className="ml-2 text-[0.45em] font-medium tracking-normal text-muted-foreground">
+                          {huaralResort.token}
+                        </span>
+                      </>
+                    }
+                  />
+                  <HighlightStat
+                    label={t("metricBenefit")}
+                    emphasize
+                    value={
+                      <>
+                        {primaryBenefit?.discount ?? 20}
+                        <span className="text-[0.55em]">%</span>
+                      </>
+                    }
+                  />
+                  <HighlightStat
+                    label={t("metricProject")}
+                    value={project.name}
+                  />
                 </div>
               )}
             </section>
-          </div>
+          ) : null}
 
-          <section
-            aria-labelledby="profile-participation-heading"
-            className="border-t border-border pt-12 lg:pt-14"
-          >
-            <div className="grid gap-10 lg:items-start lg:gap-16">
-              <div>
+          {isTestnet ? (
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
+              <section aria-labelledby="profile-participation-heading">
                 <SectionLabel>
                   <span id="profile-participation-heading">
                     {t("sectionParticipation")}
                   </span>
                 </SectionLabel>
 
-                <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                  {project.name}
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {project.location}, {project.region}
-                </p>
-
-                <div className="mt-8 space-y-4">
-                  <MetaRow label={t("holding")}>
-                    {balances.isLoading ? (
-                      <Skeleton className="h-5 w-28" />
-                    ) : balances.error ? (
-                      <span className="text-destructive">—</span>
-                    ) : (
-                      <span className="tabular-nums">
-                        {balances.qrpFormatted ?? "0"} {huaralResort.token}
-                        {isTestnet && !balances.error ? (
-                          <span className="mt-0.5 block text-muted-foreground">
-                            ≈{" "}
-                            {estimateUsdValue(
-                              balances.qrpBalance ?? "0",
-                              huaralResort.referenceValueUsd,
-                              locale,
-                            )}
-                          </span>
-                        ) : null}
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <p className="text-base leading-relaxed text-foreground sm:text-[1.0625rem]">
+                      {balances.isLoading ? (
+                        <Skeleton className="h-5 w-72" />
+                      ) : (
+                        participationBody
+                      )}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("status")}:{" "}
+                      <span className="text-foreground">
+                        {participationStatus}
                       </span>
-                    )}
-                  </MetaRow>
-                  <MetaRow label={t("status")}>{participationStatus}</MetaRow>
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    {t("tokenLabel", { token: huaralResort.token })}
+                  </p>
+
+                  {balancesReady && hasQrp ? (
+                    <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
+                      {t("referenceNote", {
+                        value: estimateUsdValue(
+                          balances.qrpBalance ?? "0",
+                          huaralResort.referenceValueUsd,
+                          locale,
+                        ),
+                      })}
+                    </p>
+                  ) : null}
+
+                  {!balances.isLoading &&
+                  !balances.error &&
+                  (balances.hasTrustline === false || !hasQrp) ? (
+                    <Link href="/" className="inline-flex w-fit">
+                      <Button variant="outline" size="sm">
+                        {t("participate")}
+                      </Button>
+                    </Link>
+                  ) : null}
                 </div>
-              </div>
+              </section>
+
+              <section aria-labelledby="profile-benefits-heading">
+                <SectionLabel>
+                  <span id="profile-benefits-heading">
+                    {t("sectionBenefits")}
+                  </span>
+                </SectionLabel>
+
+                <div className="space-y-5">
+                  <div>
+                    <p className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                      {t("benefitDiscount", {
+                        discount: primaryBenefit?.discount ?? 20,
+                      })}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {t("benefitAvailableFor")}
+                    </p>
+                  </div>
+
+                  {activeGenerated ? (
+                    <div className="space-y-3 border-t border-border pt-5">
+                      <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                        {t("benefitActive")}
+                      </p>
+                      <p className="font-mono text-sm text-foreground">
+                        {activeGenerated.id}
+                      </p>
+                      <Link href="/benefits" className="inline-flex w-fit">
+                        <Button variant="outline" size="sm">
+                          {t("viewBenefit")}
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : redeemedProof ? (
+                    <div className="space-y-3 border-t border-border pt-5">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {t("benefitUsedHint")}
+                      </p>
+                      <Link href="/benefits" className="inline-flex w-fit">
+                        <Button variant="outline" size="sm">
+                          {t("goToBenefits")}
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 border-t border-border pt-5">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {hasQrp
+                          ? t("howToGetBenefits")
+                          : t("howToGetBenefitsNoParticipation")}
+                      </p>
+                      <Link href="/benefits" className="inline-flex w-fit">
+                        <Button variant="outline" size="sm">
+                          {t("goToBenefits")}
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
-          </section>
+          ) : null}
+
+          {isTestnet ? (
+            <section
+              aria-labelledby="profile-activity-heading"
+              className="border-t border-border pt-12 lg:pt-14"
+            >
+              <SectionLabel>
+                <span id="profile-activity-heading">
+                  {t("sectionActivity")}
+                </span>
+              </SectionLabel>
+
+              {redeemedProof ? (
+                <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:gap-10">
+                  <div className="min-w-0 space-y-2">
+                    <p className="text-sm font-medium text-foreground">
+                      {t("activityBenefitUsed")}
+                    </p>
+                    <p className="font-heading text-2xl font-semibold tracking-tight text-foreground">
+                      {tBenefits("discountLabel", {
+                        discount: redeemedProof.discount,
+                      })}
+                    </p>
+                    {redeemedProof.redeemedAt ? (
+                      <p className="text-sm text-muted-foreground">
+                        {formatBenefitDate(
+                          redeemedProof.redeemedAt,
+                          toIntlLocale(locale),
+                        )}
+                      </p>
+                    ) : null}
+                  </div>
+                  <TransactionLink
+                    hash={redeemedProof.transactionHash!}
+                    label={t("activityViewProof")}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  />
+                </div>
+              ) : (
+                <div className="flex max-w-xl flex-col gap-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t("activityEmpty")}
+                  </p>
+                  <Link
+                    href="/benefits/verify"
+                    className="inline-flex w-fit items-center text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    {t("verifyInfo")}
+                  </Link>
+                </div>
+              )}
+            </section>
+          ) : null}
+
+          <details className="group border-t border-border pt-10 lg:pt-12">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+              <span className="text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                {t("sectionTechnical")}
+              </span>
+              <ChevronDown
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                aria-hidden
+              />
+            </summary>
+
+            <div className="mt-6 grid gap-5 text-sm sm:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-1">
+                <p className="text-muted-foreground">{t("network")}</p>
+                <p
+                  className={cn(
+                    "font-medium",
+                    isTestnet ? "text-foreground" : "text-destructive",
+                  )}
+                >
+                  {networkLabel}
+                </p>
+              </div>
+
+              {qrpIssuer ? (
+                <div className="space-y-1">
+                  <p className="text-muted-foreground">{t("qrpIssuer")}</p>
+                  <p className="font-mono text-[0.8125rem] text-foreground">
+                    {shortenAddress(qrpIssuer, 6)}
+                  </p>
+                </div>
+              ) : null}
+
+              {isTestnet && balancesReady ? (
+                <div className="space-y-1">
+                  <p className="text-muted-foreground">{t("assetXlm")}</p>
+                  <p className="tabular-nums text-foreground">
+                    {balances.xlmFormatted ?? "0"} XLM
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("xlmHint")}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </details>
         </div>
       )}
     </div>
