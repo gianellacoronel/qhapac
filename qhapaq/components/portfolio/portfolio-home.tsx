@@ -11,32 +11,27 @@ export function PortfolioHome() {
   const wallet = useWallet();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-8 sm:py-16">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:items-start lg:gap-x-12 lg:gap-y-10">
-        <header className="space-y-3">
-          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            {t("label")}
-          </p>
-          <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-            {t("title")}
-          </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            {t("description", {
-              token: huaralResort.token,
-              projectName: huaralResort.name,
-              value: huaralResort.referenceValueUsd,
-            })}
-          </p>
-        </header>
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-16 px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
+      <header className="max-w-xl space-y-2">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+          {t("title")}
+        </h1>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {t("description", {
+            token: huaralResort.token,
+            projectName: huaralResort.name,
+            value: huaralResort.referenceValueUsd,
+          })}
+        </p>
+      </header>
 
-        <div className="min-w-0 lg:row-span-2">
-          <ParticipationCard
-            address={wallet.address}
-            isConnected={wallet.isConnected}
-            isTestnet={wallet.isTestnet}
-          />
-        </div>
+      <ParticipationCard
+        address={wallet.address}
+        isConnected={wallet.isConnected}
+        isTestnet={wallet.isTestnet}
+      />
 
+      <div className="border-t border-border/70 pt-10 opacity-90">
         <TestTransactionCard
           address={wallet.address}
           isConnected={wallet.isConnected}

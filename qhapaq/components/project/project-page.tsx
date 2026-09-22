@@ -35,6 +35,7 @@ export function ProjectPage() {
     <div className="flex flex-1 flex-col">
       <ProjectHero
         project={project}
+        lead={<FundingProgress project={project} funding={funding} />}
         aside={
           <InvestmentCard
             project={project}
@@ -46,37 +47,32 @@ export function ProjectPage() {
         }
       />
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
-        <FundingProgress project={project} funding={funding} />
-
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-12 sm:px-8 sm:py-16 lg:gap-20 lg:py-20">
         <ProjectMilestonesProgress />
 
-        <div className="grid gap-12 lg:items-start lg:gap-14">
-          <section className="space-y-6">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-                  {t("benefitsPreviewLabel")}
-                </p>
-                <h2 className="font-heading text-2xl font-semibold tracking-tight">
-                  {t("benefitsPreviewTitle")}
-                </h2>
-              </div>
-              <Button
-                className="hidden sm:inline-flex"
-                onClick={() => setParticipateOpen(true)}
-              >
-                {t("participate")}
-              </Button>
-            </div>
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-14">
+          <div className="space-y-3 lg:sticky lg:top-24">
+            <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+              {t("benefitsPreviewTitle")}
+            </h2>
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+              {project.mainBenefit}
+            </p>
+            <Button
+              className="mt-2 hidden sm:inline-flex"
+              onClick={() => setParticipateOpen(true)}
+            >
+              {t("participate")}
+            </Button>
+          </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              {previewBenefits.map((benefit) => (
-                <BenefitCard key={benefit.id} benefit={benefit} />
-              ))}
-            </div>
-          </section>
-        </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            {previewBenefits.map((benefit) => (
+              <BenefitCard key={benefit.id} benefit={benefit} />
+            ))}
+          </div>
+        </section>
+
         <ProjectOverview project={project} />
       </div>
 

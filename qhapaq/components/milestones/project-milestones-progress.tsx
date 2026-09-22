@@ -9,24 +9,30 @@ export function ProjectMilestonesProgress() {
   const t = useTranslations("milestones");
   const { milestones, approvedCount, totalCount } = useMilestones();
 
+  const nextPending = milestones.find((m) => m.status === "pending");
+  const nextTitle = nextPending
+    ? t(`items.${nextPending.id}.title`)
+    : t("allApproved");
+
   return (
-    <section className="space-y-5">
-      <div className="space-y-2">
-        <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-          {t("projectProgressLabel")}
-        </p>
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight">
+    <section className="grid gap-10 border-t border-border/70 pt-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("projectProgressTitle")}
           </h2>
-          <p className="text-sm text-muted-foreground tabular-nums">
-            {t("approvedCount", {
-              approved: approvedCount,
-              total: totalCount,
-            })}
+          <p className="max-w-md font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+            {nextPending ? t("nextUp", { title: nextTitle }) : nextTitle}
           </p>
         </div>
-        <p className="max-w-2xl text-sm text-muted-foreground">
+        <p className="font-heading text-5xl font-semibold tracking-tight tabular-nums text-primary sm:text-6xl">
+          {approvedCount}
+          <span className="text-[0.5em] font-medium text-muted-foreground">
+            {" "}
+            / {totalCount}
+          </span>
+        </p>
+        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
           {t("prototypeNote")}
         </p>
       </div>

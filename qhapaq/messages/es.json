@@ -26,13 +26,13 @@
   "project": {
     "stellarTestnet": "Stellar Testnet",
     "overviewLabel": "Información del proyecto",
-    "overviewTitle": "Diseñado para participación verificable",
+    "overviewTitle": "Participación verificable en un resort costero",
     "location": "Ubicación",
     "token": "Token",
     "referenceValue": "Valor de referencia",
     "referenceValueFormula": "1 {token} = ${value}",
     "benefitsPreviewLabel": "Vista previa de beneficios",
-    "benefitsPreviewTitle": "Lo que desbloquea tu participación",
+    "benefitsPreviewTitle": "Tu participación desbloquea esto",
     "participate": "Participar",
     "shortDescription": "Un proyecto hotelero costero que invita a la participación comunitaria verificable mediante QRP en Stellar Testnet.",
     "overview": {
@@ -62,11 +62,13 @@
   },
   "funding": {
     "label": "Progreso de financiamiento",
+    "funded": "financiado",
+    "heroStatement": "{projectName} ya tiene este avance de financiamiento",
     "loading": "Cargando el progreso de financiamiento desde Stellar Testnet…",
     "errorTitle": "No se pudo cargar el progreso de financiamiento",
     "errorDescription": "Stellar Testnet no está disponible temporalmente. Los totales de financiamiento no se muestran hasta que la red responda.",
     "completion": "Avance del financiamiento",
-    "footnote": "Totales en vivo desde Stellar Testnet para {projectName}: suma de QRP enviado desde el distributor a los inversores. El saldo {token} de tu wallet también se lee en vivo desde Testnet."
+    "footnote": "Totales en vivo desde Stellar Testnet: QRP enviado del distributor a inversores. Tu saldo {token} también se lee en vivo."
   },
   "investment": {
     "yourParticipation": "Tu participación",
@@ -114,8 +116,8 @@
   },
   "portfolio": {
     "label": "Portafolio",
-    "title": "Tu participación en Qhapaq",
-    "description": "Saldo {token} en vivo desde Stellar Testnet para {projectName}. Valor de referencia: 1 {token} = ${value}."
+    "title": "Tu participación",
+    "description": "Saldo {token} en vivo desde Stellar Testnet para {projectName}. Referencia: 1 {token} = ${value}."
   },
   "participation": {
     "yourParticipation": "Tu participación",
@@ -132,7 +134,8 @@
   "benefits": {
     "label": "Beneficios",
     "title": "Tus beneficios",
-    "description": "Beneficios disponibles mediante tu participación en Qhapaq.",
+    "heroStatement": "Descuento en servicios del resort",
+    "description": "Genera tu credencial digital y úsala en Huaral Resort.",
     "backToBenefits": "Volver a beneficios",
     "disclaimer": "Los beneficios generados son credenciales digitales únicas para esta sesión de demo. Al redimir se registra una prueba real en Stellar Testnet.",
     "verifyLink": "Verificar un Benefit ID",
@@ -237,14 +240,18 @@
   "admin": {
     "label": "Admin",
     "title": "Admin",
-    "description": "Gestiona los hitos del proyecto y revisa el progreso del prototipo del proyecto activo.",
+    "description": "Aprueba hitos on-chain y revisa el avance del proyecto activo.",
     "subtitle": "Administración del proyecto",
     "currentProject": "Proyecto actual",
     "projectSummary": "Resumen del proyecto",
-    "fundingLabel": "Progreso de financiamiento",
+    "fundingLabel": "Financiamiento",
     "networkLabel": "Red",
     "benefitsLabel": "Beneficios",
     "milestonesSummary": "{approved} / {total} aprobados",
+    "pendingLabel": "{count, plural, one {hito pendiente} other {hitos pendientes}}",
+    "actionRequired": "Requiere acción",
+    "nextMilestonePrompt": "Revisa la evidencia y aprueba este hito en Stellar Testnet.",
+    "allCaughtUp": "Sin hitos pendientes",
     "adminWallet": "Wallet admin: {address}",
     "loading": "Verificando acceso de admin…",
     "accessDeniedTitle": "Acceso denegado",
@@ -259,7 +266,9 @@
     "summaryLabel": "Hitos",
     "summaryTitle": "Hitos",
     "projectProgressLabel": "Progreso del proyecto",
-    "projectProgressTitle": "Progreso del proyecto",
+    "projectProgressTitle": "Avance del proyecto",
+    "nextUp": "Siguiente: {title}",
+    "allApproved": "Todos los hitos están aprobados",
     "approvedCount": "{approved} / {total} aprobados",
     "pending": "Pendiente",
     "approved": "Aprobado",

@@ -5,13 +5,6 @@ import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { useTestTransaction } from "@/hooks/use-test-transaction";
@@ -44,13 +37,12 @@ export function TestTransactionCard({
       : null;
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <CardDescription>{t("smokeTest")}</CardDescription>
-            <CardTitle className="font-heading text-xl">{t("title")}</CardTitle>
-          </div>
+    <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-10">
+      <div className="min-w-0 space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="font-heading text-lg font-semibold tracking-tight">
+            {t("title")}
+          </h2>
           {badgeLabel ? (
             <Badge
               variant={
@@ -65,10 +57,7 @@ export function TestTransactionCard({
             </Badge>
           ) : null}
         </div>
-      </CardHeader>
-
-      <CardContent className="gap-4">
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
           {t("description", { amount: TEST_XLM_AMOUNT })}
         </p>
 
@@ -99,9 +88,6 @@ export function TestTransactionCard({
               <span className="mt-1 block font-mono text-xs break-all">
                 {shortenHash(hash)}
               </span>
-              <span className="mt-1 block font-mono text-[11px] break-all text-muted-foreground">
-                {hash}
-              </span>
               <span className="mt-3 block">
                 <TransactionLink hash={hash} label={t("viewOnExplorer")} />
               </span>
@@ -126,25 +112,27 @@ export function TestTransactionCard({
             </AlertDescription>
           </Alert>
         ) : null}
+      </div>
 
-        <Button
-          disabled={!canRun}
-          onClick={() => {
-            void run();
-          }}
-        >
-          {isPending ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
-          ) : (
-            <Send data-icon="inline-start" />
-          )}
-          {status === "signing"
-            ? t("waitingApproval")
-            : status === "submitting"
-              ? t("submitting")
-              : t("testButton")}
-        </Button>
-      </CardContent>
-    </Card>
+      <Button
+        variant="outline"
+        disabled={!canRun}
+        className="w-full sm:w-auto"
+        onClick={() => {
+          void run();
+        }}
+      >
+        {isPending ? (
+          <Loader2 data-icon="inline-start" className="animate-spin" />
+        ) : (
+          <Send data-icon="inline-start" />
+        )}
+        {status === "signing"
+          ? t("waitingApproval")
+          : status === "submitting"
+            ? t("submitting")
+            : t("testButton")}
+      </Button>
+    </div>
   );
 }

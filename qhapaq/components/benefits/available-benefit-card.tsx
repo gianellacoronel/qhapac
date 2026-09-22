@@ -1,17 +1,9 @@
 "use client";
 
-import { Gift, Percent } from "lucide-react";
+import { Gift } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { BenefitDefinition, BenefitStatus } from "@/lib/benefits/types";
 
 type AvailableBenefitCardProps = {
@@ -58,49 +50,32 @@ export function AvailableBenefitCard({
     );
 
   return (
-    <Card className="w-full gap-0 py-0 shadow-xs">
-      <div className="flex flex-col lg:flex-row lg:items-stretch">
-        <div className="flex min-w-0 flex-1 flex-col gap-(--card-spacing) py-(--card-spacing)">
-          <CardHeader>
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <CardDescription className="flex items-center gap-1.5">
-                  <Gift className="size-3.5 text-primary" aria-hidden />
-                  {benefit.projectName}
-                </CardDescription>
-                <CardTitle className="font-heading text-3xl font-semibold tracking-tight">
-                  {t("percentOff", { discount: benefit.discount })}
-                </CardTitle>
-              </div>
-              <Badge
-                variant={status === "available" ? "secondary" : "outline"}
-                className={
-                  status === "available"
-                    ? "bg-accent text-accent-foreground"
-                    : undefined
-                }
-              >
-                {statusLabel}
-              </Badge>
-            </div>
-          </CardHeader>
-
-          <CardContent className="gap-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Percent className="size-4 text-primary" aria-hidden />
-              {validFor}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {t("yourParticipation", { label: participationLabel })}
-            </p>
-          </CardContent>
+    <div className="grid gap-4 border-b border-border/70 py-6 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8">
+      <div className="min-w-0 space-y-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Gift className="size-3.5 text-primary" aria-hidden />
+            {benefit.projectName}
+          </p>
+          <Badge
+            variant={status === "available" ? "secondary" : "outline"}
+            className={
+              status === "available" ? "bg-primary/20 text-foreground" : undefined
+            }
+          >
+            {statusLabel}
+          </Badge>
         </div>
-
-        <CardFooter className="border-t border-border/60 py-(--card-spacing) lg:w-56 lg:shrink-0 lg:flex-col lg:items-stretch lg:justify-center lg:border-t-0 lg:border-l lg:border-border/60">
-          {actionButton}
-        </CardFooter>
+        <p className="font-heading text-2xl font-semibold tracking-tight">
+          {t("percentOff", { discount: benefit.discount })}
+        </p>
+        <p className="text-sm text-muted-foreground">{validFor}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("yourParticipation", { label: participationLabel })}
+        </p>
       </div>
-    </Card>
+      <div className="sm:justify-self-end">{actionButton}</div>
+    </div>
   );
 }
 

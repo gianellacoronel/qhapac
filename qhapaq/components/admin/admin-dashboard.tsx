@@ -52,6 +52,15 @@ export function AdminDashboard() {
     [milestones, selectedId]
   );
 
+  const nextPending = useMemo(
+    () => milestones.find((m) => m.status === "pending") ?? null,
+    [milestones]
+  );
+
+  const nextPendingTitle = nextPending
+    ? tMilestones(`items.${nextPending.id}.title`)
+    : null;
+
   const handleViewDetails = useCallback((id: string) => {
     setSelectedId(id);
     setDetailOpen(true);
@@ -116,12 +125,12 @@ export function AdminDashboard() {
 
   if (!isConnected || !isAdmin) {
     return (
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-12 sm:px-8">
-        <div className="space-y-2">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-12 sm:px-8 sm:py-16">
+        <div className="space-y-3">
+          <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
             {t("title")}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="max-w-lg text-base text-muted-foreground">
             {t("accessDeniedTitle")}
           </p>
         </div>
@@ -152,104 +161,95 @@ export function AdminDashboard() {
       : `${formatQrp(fundingRaised, locale)} / ${formatQrp(fundingGoal, locale)} ${project.token}`;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-6 py-10 sm:px-8 sm:py-12">
-      <header className="space-y-2 border-b border-border/70 pb-6">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-          {t("title")}
-        </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground">
-          {t("description")}
-        </p>
-        <div className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-sm text-muted-foreground">
-          <p>
-            <span className="text-foreground">{t("currentProject")}:</span>{" "}
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-14 px-6 py-10 sm:px-8 sm:py-16 lg:py-20">
+      <section className="grid gap-8 border-b border-border/70 pb-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] lg:items-end lg:gap-14">
+        <div className="min-w-0 space-y-4">
+          <p className="text-sm text-muted-foreground">
             {project.name}
+            {address
+              ? ` · ${t("adminWallet", { address: shortenAddress(address, 4) })}`
+              : null}
           </p>
-          {address ? (
-            <p>
-              {t("adminWallet", { address: shortenAddress(address, 4) })}
-            </p>
-          ) : null}
+          {nextPending && nextPendingTitle ? (
+            <>
+              <p className="text-sm font-medium text-primary">
+                {t("actionRequired")}
+              </p>
+              <h1 className="font-heading text-4xl font-semibold tracking-tight text-primary sm:text-5xl lg:text-6xl lg:leading-[1.05]">
+                {nextPendingTitle}
+              </h1>
+              <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
+                {t("nextMilestonePrompt")}
+              </p>
+              <Button
+                className="mt-2 w-full sm:w-auto"
+                onClick={() => handleViewDetails(nextPending.id)}
+              >
+                {tMilestones("viewDetails")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <h1 className="font-heading text-4xl font-semibold tracking-tight text-primary sm:text-5xl lg:text-6xl">
+                {t("allCaughtUp")}
+              </h1>
+              <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
+                {t("description")}
+              </p>
+            </>
+          )}
         </div>
-      </header>
 
-      <section className="space-y-4">
-        <div className="space-y-1">
-          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            {t("projectSummary")}
+        <div className="flex min-w-0 flex-col gap-2 lg:items-end lg:text-right">
+          <p className="font-heading text-5xl font-semibold tracking-tighter tabular-nums text-foreground sm:text-6xl">
+            {pendingCount}
           </p>
-          <h2 className="font-heading text-xl font-semibold tracking-tight">
-            {project.name}
-          </h2>
-        </div>
-
-        <dl className="grid gap-4 border-y border-border/70 py-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-0.5">
-            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-              {tProject("location")}
-            </dt>
-            <dd className="font-medium">{locationLabel}</dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-              {tProject("token")}
-            </dt>
-            <dd className="font-medium">{project.token}</dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-              {t("fundingLabel")}
-            </dt>
-            <dd className="font-medium tabular-nums">{fundingSummary}</dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-              {t("networkLabel")}
-            </dt>
-            <dd className="font-medium">{stellarConfig.displayName}</dd>
-          </div>
-        </dl>
-
-        <FundingProgress project={project} funding={funding} />
-      </section>
-
-      <section className="space-y-3">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-              {tMilestones("summaryLabel")}
-            </p>
-            <h2 className="font-heading text-xl font-semibold tracking-tight">
-              {tMilestones("summaryTitle")}
-            </h2>
-          </div>
-          <p className="font-heading text-lg font-semibold tabular-nums">
+          <p className="text-sm font-medium text-muted-foreground">
+            {t("pendingLabel", { count: pendingCount })}
+          </p>
+          <p className="text-sm tabular-nums text-muted-foreground">
             {t("milestonesSummary", {
               approved: approvedCount,
               total: totalCount,
             })}
           </p>
         </div>
-
-        <dl className="grid max-w-sm grid-cols-2 gap-4 text-sm">
-          <div className="space-y-0.5">
-            <dt className="text-muted-foreground">{tMilestones("approved")}</dt>
-            <dd className="font-heading text-xl font-semibold tabular-nums">
-              {approvedCount}
-            </dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-muted-foreground">{tMilestones("pending")}</dt>
-            <dd className="font-heading text-xl font-semibold tabular-nums">
-              {pendingCount}
-            </dd>
-          </div>
-        </dl>
       </section>
 
-      <section className="space-y-4">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-12">
+        <div className="space-y-4">
+          <h2 className="font-heading text-2xl font-semibold tracking-tight">
+            {project.name}
+          </h2>
+          <dl className="grid gap-4 text-sm sm:grid-cols-2">
+            <div className="space-y-0.5">
+              <dt className="text-muted-foreground">{tProject("location")}</dt>
+              <dd className="font-medium">{locationLabel}</dd>
+            </div>
+            <div className="space-y-0.5">
+              <dt className="text-muted-foreground">{tProject("token")}</dt>
+              <dd className="font-medium">{project.token}</dd>
+            </div>
+            <div className="space-y-0.5">
+              <dt className="text-muted-foreground">{t("fundingLabel")}</dt>
+              <dd className="font-medium tabular-nums">{fundingSummary}</dd>
+            </div>
+            <div className="space-y-0.5">
+              <dt className="text-muted-foreground">{t("networkLabel")}</dt>
+              <dd className="font-medium">{stellarConfig.displayName}</dd>
+            </div>
+          </dl>
+        </div>
+        <FundingProgress
+          project={project}
+          funding={funding}
+          variant="compact"
+        />
+      </section>
+
+      <section className="space-y-4 border-t border-border/70 pt-10">
         <div className="space-y-1">
-          <h2 className="font-heading text-xl font-semibold tracking-tight">
+          <h2 className="font-heading text-2xl font-semibold tracking-tight">
             {tMilestones("title")}
           </h2>
           <p className="max-w-2xl text-sm text-muted-foreground">

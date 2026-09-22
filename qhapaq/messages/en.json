@@ -26,13 +26,13 @@
   "project": {
     "stellarTestnet": "Stellar Testnet",
     "overviewLabel": "Project information",
-    "overviewTitle": "Built for verifiable participation",
+    "overviewTitle": "Verifiable participation in a coastal resort",
     "location": "Location",
     "token": "Token",
     "referenceValue": "Reference value",
     "referenceValueFormula": "1 {token} = ${value}",
     "benefitsPreviewLabel": "Benefits preview",
-    "benefitsPreviewTitle": "What participation unlocks",
+    "benefitsPreviewTitle": "Participation unlocks this",
     "participate": "Participate",
     "shortDescription": "A coastal hospitality project inviting verifiable community participation through QRP on Stellar Testnet.",
     "overview": {
@@ -62,11 +62,13 @@
   },
   "funding": {
     "label": "Funding progress",
+    "funded": "funded",
+    "heroStatement": "{projectName} has reached this funding mark",
     "loading": "Loading funding progress from Stellar Testnet…",
     "errorTitle": "Could not load funding progress",
     "errorDescription": "Stellar Testnet is temporarily unavailable. Funding totals are not shown until the network responds.",
     "completion": "Funding completion",
-    "footnote": "Live totals from Stellar Testnet for {projectName}: sum of QRP sent from the distributor to investors. Your wallet {token} balance is also read live from Testnet."
+    "footnote": "Live totals from Stellar Testnet: QRP sent from the distributor to investors. Your {token} balance is also read live."
   },
   "investment": {
     "yourParticipation": "Your participation",
@@ -114,8 +116,8 @@
   },
   "portfolio": {
     "label": "Portfolio",
-    "title": "Your Qhapaq participation",
-    "description": "Live {token} balance from Stellar Testnet for {projectName}. Reference value: 1 {token} = ${value}."
+    "title": "Your participation",
+    "description": "Live {token} balance from Stellar Testnet for {projectName}. Reference: 1 {token} = ${value}."
   },
   "participation": {
     "yourParticipation": "Your participation",
@@ -132,7 +134,8 @@
   "benefits": {
     "label": "Benefits",
     "title": "Your benefits",
-    "description": "Benefits available through your Qhapaq participation.",
+    "heroStatement": "Discount on resort services",
+    "description": "Generate your digital credential and use it at Huaral Resort.",
     "backToBenefits": "Back to benefits",
     "disclaimer": "Generated benefits are unique digital credentials for this demo session. Redeeming records a real Stellar Testnet proof.",
     "verifyLink": "Verify a benefit ID",
@@ -237,14 +240,18 @@
   "admin": {
     "label": "Admin",
     "title": "Admin",
-    "description": "Manage project milestones and review prototype progress for the active project.",
+    "description": "Approve milestones on-chain and review progress for the active project.",
     "subtitle": "Project Administration",
     "currentProject": "Current project",
     "projectSummary": "Project summary",
-    "fundingLabel": "Funding Progress",
+    "fundingLabel": "Funding",
     "networkLabel": "Network",
     "benefitsLabel": "Benefits",
-    "milestonesSummary": "{approved} / {total} Approved",
+    "milestonesSummary": "{approved} / {total} approved",
+    "pendingLabel": "{count, plural, one {pending milestone} other {pending milestones}}",
+    "actionRequired": "Action required",
+    "nextMilestonePrompt": "Review evidence and approve this milestone on Stellar Testnet.",
+    "allCaughtUp": "No pending milestones",
     "adminWallet": "Admin wallet: {address}",
     "loading": "Checking admin access…",
     "accessDeniedTitle": "Access denied",
@@ -259,7 +266,9 @@
     "summaryLabel": "Milestones",
     "summaryTitle": "Milestones",
     "projectProgressLabel": "Project Progress",
-    "projectProgressTitle": "Project Progress",
+    "projectProgressTitle": "Project progress",
+    "nextUp": "Next up: {title}",
+    "allApproved": "All milestones are approved",
     "approvedCount": "{approved} / {total} approved",
     "pending": "Pending",
     "approved": "Approved",

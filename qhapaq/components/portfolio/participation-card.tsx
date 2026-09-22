@@ -1,19 +1,9 @@
 "use client";
 
-import { AlertCircle, Gift, RefreshCw, Sparkles } from "lucide-react";
+import { AlertCircle, Gift, RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
@@ -42,127 +32,115 @@ export function ParticipationCard({
     useQrpBalance(isConnected && isTestnet ? address : null);
 
   return (
-    <Card className="w-full shadow-xs">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <CardDescription>{t("yourParticipation")}</CardDescription>
-            <CardTitle className="font-heading text-xl">
-              {projectName}
-            </CardTitle>
-          </div>
-          <Badge variant="outline">{huaralResort.token}</Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="gap-5">
-        <Separator />
-
-        <div className="space-y-1">
+    <div className="flex w-full flex-col gap-10">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end lg:gap-14">
+        <div className="min-w-0 space-y-3">
           {!isConnected ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground">
+            <p className="font-heading text-5xl font-semibold tracking-tight text-muted-foreground sm:text-6xl lg:text-7xl">
               {t("connectWallet")}
             </p>
           ) : !isTestnet ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
+            <p className="font-heading text-5xl font-semibold tracking-tight text-destructive sm:text-6xl">
               {t("switchToTestnet")}
             </p>
           ) : isLoading ? (
-            <Skeleton className="h-9 w-32" />
+            <Skeleton className="h-24 w-56 sm:h-28" />
           ) : error ? (
-            <p className="font-heading text-3xl font-semibold tracking-tight text-destructive">
+            <p className="font-heading text-7xl font-semibold tracking-tighter text-destructive tabular-nums sm:text-8xl">
               —
             </p>
           ) : (
-            <>
-              <p className="font-heading text-3xl font-semibold tracking-tight">
-                {formatted ?? "0"}{" "}
-                <span className="text-lg font-normal text-muted-foreground">
-                  {huaralResort.token}
-                </span>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ≈{" "}
-                {estimateUsdValue(
-                  balance ?? "0",
-                  huaralResort.referenceValueUsd,
-                  locale
-                )}
-              </p>
-            </>
+            <p className="font-heading text-7xl font-semibold tracking-tighter text-primary tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
+              {formatted ?? "0"}
+            </p>
           )}
+          <p className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+            {huaralResort.token}
+            <span className="ml-2 text-base font-normal text-muted-foreground">
+              · {projectName}
+            </span>
+          </p>
+          {isConnected && isTestnet && !isLoading && !error ? (
+            <p className="text-base text-muted-foreground">
+              ≈{" "}
+              {estimateUsdValue(
+                balance ?? "0",
+                huaralResort.referenceValueUsd,
+                locale
+              )}
+            </p>
+          ) : null}
           {isConnected &&
           isTestnet &&
           hasTrustline === false &&
           !isLoading &&
           !error ? (
-            <p className="text-xs text-muted-foreground">{t("noTrustline")}</p>
+            <p className="text-sm text-muted-foreground">{t("noTrustline")}</p>
           ) : null}
         </div>
 
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">{t("benefits")}</p>
-          <p className="flex items-center gap-2 font-medium">
-            <Gift className="size-4 text-primary" aria-hidden />
-            {project.mainBenefit}
-          </p>
-        </div>
+        <div className="flex min-w-0 flex-col gap-5 lg:items-end lg:text-right">
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">{t("benefits")}</p>
+            <p className="flex items-center gap-2 font-medium lg:justify-end">
+              <Gift className="size-4 shrink-0 text-primary" aria-hidden />
+              {project.mainBenefit}
+            </p>
+          </div>
 
-        {error ? (
-          <Alert variant="destructive">
-            <AlertCircle />
-            <AlertTitle>{t("balanceErrorTitle")}</AlertTitle>
-            <AlertDescription>
-              <span className="block">{error}</span>
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
+            <Link href="/benefits" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full">
+                {t("viewBenefits")}
+              </Button>
+            </Link>
+            {onParticipate ? (
+              <Button className="w-full sm:w-auto" onClick={onParticipate}>
+                {t("participate")}
+              </Button>
+            ) : (
+              <Link href="/" className="w-full sm:w-auto">
+                <Button className="w-full">{t("participate")}</Button>
+              </Link>
+            )}
+            {isConnected && isTestnet && !error ? (
               <Button
                 variant="ghost"
-                size="xs"
-                className="mt-2"
+                size="sm"
+                className="w-full sm:w-auto"
+                disabled={isLoading}
                 onClick={() => {
                   void refresh();
                 }}
               >
                 <RefreshCw data-icon="inline-start" />
-                {t("retry")}
+                {t("refresh")}
               </Button>
-            </AlertDescription>
-          </Alert>
-        ) : null}
-      </CardContent>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
-      <CardFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        <Link href="/benefits" className="w-full sm:w-auto">
-          <Button variant="outline" className="w-full">
-            {t("viewBenefits")}
-          </Button>
-        </Link>
-        {onParticipate ? (
-          <Button className="w-full sm:w-auto" onClick={onParticipate}>
-            {t("participate")}
-          </Button>
-        ) : (
-          <Link href="/" className="w-full sm:w-auto">
-            <Button className="w-full">
-              <Sparkles data-icon="inline-start" />
-              {t("participate")}
+      {error ? (
+        <Alert variant="destructive">
+          <AlertCircle />
+          <AlertTitle>{t("balanceErrorTitle")}</AlertTitle>
+          <AlertDescription>
+            <span className="block">{error}</span>
+            <Button
+              variant="ghost"
+              size="xs"
+              className="mt-2"
+              onClick={() => {
+                void refresh();
+              }}
+            >
+              <RefreshCw data-icon="inline-start" />
+              {t("retry")}
             </Button>
-          </Link>
-        )}
-        {isConnected && isTestnet && !error ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full sm:ml-auto sm:w-auto"
-            disabled={isLoading}
-            onClick={() => {
-              void refresh();
-            }}
-          >
-            <RefreshCw data-icon="inline-start" />
-            {t("refresh")}
-          </Button>
-        ) : null}
-      </CardFooter>
-    </Card>
+          </AlertDescription>
+        </Alert>
+      ) : null}
+    </div>
   );
 }
