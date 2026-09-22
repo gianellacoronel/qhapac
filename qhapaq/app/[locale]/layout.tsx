@@ -1,6 +1,16 @@
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
-import { Geist, Geist_Mono, Source_Sans_3, Raleway } from "next/font/google";
+import {
+  getMessages,
+  getTranslations,
+  setRequestLocale,
+} from "next-intl/server";
+import {
+  Geist,
+  Geist_Mono,
+  Source_Sans_3,
+  Raleway,
+  Arimo,
+} from "next/font/google";
 import { notFound } from "next/navigation";
 import { BenefitSessionProvider } from "@/components/benefits/benefit-session";
 import { Navbar } from "@/components/layout/navbar";
@@ -11,7 +21,7 @@ import { cn } from "@/lib/utils";
 
 const ralewayHeading = Raleway({
   subsets: ["latin"],
-  variable: "--font-heading",
+  variable: "--font-relaway",
 });
 
 const sourceSans3 = Source_Sans_3({
@@ -27,6 +37,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const arimo = Arimo({
+  subsets: ["latin"],
+  variable: "--font-heading",
 });
 
 type LocaleLayoutProps = {
@@ -73,7 +88,8 @@ export default async function LocaleLayout({
         geistMono.variable,
         "font-sans",
         sourceSans3.variable,
-        ralewayHeading.variable
+        ralewayHeading.variable,
+        arimo.variable,
       )}
     >
       <body className="flex min-h-full flex-col">
