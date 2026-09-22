@@ -3,7 +3,11 @@
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FundingProgressState } from "@/hooks/use-funding-progress";
 import { formatQrp, type ProjectData } from "@/lib/project/data";
@@ -49,8 +53,8 @@ export function FundingProgress({
           )}
           {!isLoading && !error ? (
             <p className="text-sm tabular-nums text-muted-foreground">
-              {formatQrp(raised ?? 0, locale)} / {formatQrp(displayGoal, locale)}{" "}
-              {project.token}
+              {formatQrp(raised ?? 0, locale)} /{" "}
+              {formatQrp(displayGoal, locale)} {project.token}
             </p>
           ) : null}
         </div>
@@ -117,12 +121,12 @@ export function FundingProgress({
                   / {formatQrp(displayGoal, locale)} {project.token}
                 </span>
               </p>
-              <p className="max-w-xs text-sm leading-relaxed text-muted-foreground lg:ml-auto">
+              {/*<p className="max-w-xs text-sm leading-relaxed text-muted-foreground lg:ml-auto">
                 {t("footnote", {
                   projectName: project.name,
                   token: project.token,
                 })}
-              </p>
+              </p>*/}
             </>
           )}
         </div>
