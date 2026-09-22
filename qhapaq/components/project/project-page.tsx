@@ -48,7 +48,7 @@ export function ProjectPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
         <FundingProgress project={project} funding={funding} />
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-14">
+        <div className="grid gap-12 lg:items-start lg:gap-14">
           <section className="space-y-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="space-y-2">
@@ -73,9 +73,8 @@ export function ProjectPage() {
               ))}
             </div>
           </section>
-
-          <ProjectOverview project={project} />
         </div>
+        <ProjectOverview project={project} />
       </div>
 
       <ParticipateDialog
