@@ -16,7 +16,10 @@ export {
 } from "./wallet";
 export {
   TEST_XLM_AMOUNT,
+  TrustlineError,
   buildPaymentTransaction,
+  buildQrpChangeTrustTransaction,
+  createQrpTrustline,
   signWithFreighter,
   submitSignedTransaction,
   sendClassicPayment,
@@ -24,8 +27,12 @@ export {
 } from "./transactions";
 export type {
   BuildPaymentParams,
+  CreateQrpTrustlineParams,
+  CreateQrpTrustlineResult,
   SendPaymentParams,
   SubmitResult,
   TransactionPhase,
+  TrustlineErrorCode,
+  TrustlinePhase,
 } from "./transactions";
 export { getTransactionExplorerUrl, shortenHash } from "./explorer";

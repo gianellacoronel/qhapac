@@ -80,7 +80,9 @@ export function InvestmentCard({
 
         <div className="flex flex-col gap-2">
           <Button className="w-full" size="lg" onClick={() => setOpen(true)}>
-            {t("participate")}
+            {isConnected && isTestnet && hasTrustline === false
+              ? t("addQrp")
+              : t("participate")}
           </Button>
           <Link href="/benefits" className="w-full">
             <Button variant="outline" size="lg" className="w-full">
@@ -101,6 +103,7 @@ export function InvestmentCard({
         isTestnet={isTestnet}
         isLoadingBalance={isLoading}
         onPurchaseSuccess={handlePurchaseSuccess}
+        onTrustlineSuccess={refresh}
       />
     </>
   );

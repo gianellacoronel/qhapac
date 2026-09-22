@@ -7,8 +7,9 @@ import {
   TransactionBuilder,
   type Transaction,
 } from "stellar-sdk";
-import { getQrpAsset } from "./assets";
+import { fetchQrpBalance, getQrpAsset } from "./assets";
 import { getHorizonServer, stellarConfig } from "./config";
+import { getTransactionExplorerUrl } from "./explorer";
 
 /** Tiny native XLM amount for the harmless Testnet smoke-test payment. */
 export const TEST_XLM_AMOUNT = "0.0001";
@@ -19,6 +20,29 @@ export type SubmitResult = {
 };
 
 export type TransactionPhase = "building" | "signing" | "submitting";
+
+export type TrustlinePhase =
+  | "building"
+  | "signing"
+  | "submitting"
+  | "confirming";
+
+export type TrustlineErrorCode =
+  | "CANCELLED"
+  | "INSUFFICIENT_XLM"
+  | "NOT_CONFIRMED"
+  | "SUBMIT"
+  | "UNEXPECTED";
+
+export class TrustlineError extends Error {
+  readonly code: TrustlineErrorCode;
+
+  constructor(code: TrustlineErrorCode, message: string) {
+    super(message);
+    this.name = "TrustlineError";
+    this.code = code;
+  }
+}
 
 export type BuildPaymentParams = {
   sourceAddress: string;
@@ -33,6 +57,18 @@ export type SendPaymentParams = BuildPaymentParams & {
   onPhaseChange?: (phase: TransactionPhase) => void;
 };
 
+export type CreateQrpTrustlineParams = {
+  sourceAddress: string;
+  onPhaseChange?: (phase: TrustlinePhase) => void;
+};
+
+export type CreateQrpTrustlineResult = {
+  hash: string | null;
+  ledger: number | null;
+  explorerUrl: string | null;
+  alreadyExisted: boolean;
+};
+
 function freighterErrorMessage(
   error: { message?: string } | undefined,
   fallback: string
@@ -45,6 +81,89 @@ function toErrorMessage(error: unknown, fallback: string): string {
     return error.message;
   }
   return fallback;
+}
+
+function getHorizonResultCodes(error: unknown): {
+  transaction?: string;
+  operations?: string[];
+} | null {
+  const horizonError = error as {
+    response?: {
+      data?: {
+        extras?: {
+          result_codes?: {
+            transaction?: string;
+            operations?: string[];
+          };
+        };
+      };
+    };
+    message?: string;
+  };
+
+  const codes = horizonError.response?.data?.extras?.result_codes;
+  if (codes) return codes;
+
+  const message = toErrorMessage(error, "");
+  if (!message.includes("Transaction rejected")) return null;
+
+  const opsMatch = message.match(/: ([a-z0-9_, ]+)\)\.?$/i);
+  const txMatch = message.match(/Transaction rejected \(([^:)]+)/i);
+
+  return {
+    transaction: txMatch?.[1]?.trim(),
+    operations: opsMatch?.[1]
+      ?.split(",")
+      .map((op) => op.trim())
+      .filter(Boolean),
+  };
+}
+
+function isInsufficientXlmError(error: unknown): boolean {
+  const codes = getHorizonResultCodes(error);
+  const ops = codes?.operations?.join(" ") ?? "";
+  const tx = codes?.transaction ?? "";
+  const message = toErrorMessage(error, "").toLowerCase();
+
+  return (
+    ops.includes("op_low_reserve") ||
+    ops.includes("op_underfunded") ||
+    tx === "insufficient_balance" ||
+    message.includes("op_low_reserve") ||
+    message.includes("op_underfunded") ||
+    message.includes("low reserve")
+  );
+}
+
+function isFreighterCancellation(error: unknown): boolean {
+  const message = toErrorMessage(error, "").toLowerCase();
+  return (
+    message.includes("reject") ||
+    message.includes("denied") ||
+    message.includes("declin") ||
+    message.includes("cancel") ||
+    message.includes("user refused")
+  );
+}
+
+async function waitForQrpTrustline(
+  publicKey: string,
+  options?: { attempts?: number; delayMs?: number }
+): Promise<boolean> {
+  const attempts = options?.attempts ?? 6;
+  const delayMs = options?.delayMs ?? 800;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const balance = await fetchQrpBalance(publicKey);
+    if (balance.hasTrustline) {
+      return true;
+    }
+    if (attempt < attempts - 1) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return false;
 }
 
 /** Build an unsigned classic payment transaction as base64 XDR. */
@@ -189,4 +308,121 @@ export async function sendTestXlmPayment(
     memo: "Qhapaq test",
     onPhaseChange: options?.onPhaseChange,
   });
+}
+
+/** Build an unsigned changeTrust(QRP) transaction as base64 XDR. */
+export async function buildQrpChangeTrustTransaction(
+  sourceAddress: string
+): Promise<string> {
+  const horizon = getHorizonServer();
+  const account = await horizon.loadAccount(sourceAddress);
+
+  return new TransactionBuilder(account, {
+    fee: BASE_FEE,
+    networkPassphrase: stellarConfig.networkPassphrase,
+  })
+    .addOperation(
+      Operation.changeTrust({
+        asset: getQrpAsset(),
+      })
+    )
+    .addMemo(Memo.text("Qhapaq QRP"))
+    .setTimeout(180)
+    .build()
+    .toXDR();
+}
+
+/**
+ * Build → sign with Freighter → submit changeTrust(QRP), then verify on Horizon.
+ * Never handles private keys. Does not run unless explicitly invoked by the user.
+ */
+export async function createQrpTrustline(
+  params: CreateQrpTrustlineParams
+): Promise<CreateQrpTrustlineResult> {
+  const { sourceAddress, onPhaseChange } = params;
+
+  try {
+    const existing = await fetchQrpBalance(sourceAddress);
+    if (existing.hasTrustline) {
+      return {
+        hash: null,
+        ledger: null,
+        explorerUrl: null,
+        alreadyExisted: true,
+      };
+    }
+
+    onPhaseChange?.("building");
+    const unsignedXdr = await buildQrpChangeTrustTransaction(sourceAddress);
+
+    onPhaseChange?.("signing");
+    let signedXdr: string;
+    try {
+      signedXdr = await signWithFreighter(unsignedXdr, sourceAddress);
+    } catch (error: unknown) {
+      if (isFreighterCancellation(error)) {
+        throw new TrustlineError(
+          "CANCELLED",
+          "Freighter signing was cancelled."
+        );
+      }
+      throw error;
+    }
+
+    onPhaseChange?.("submitting");
+    let submitted: SubmitResult;
+    try {
+      submitted = await submitSignedTransaction(signedXdr);
+    } catch (error: unknown) {
+      if (isInsufficientXlmError(error)) {
+        throw new TrustlineError(
+          "INSUFFICIENT_XLM",
+          "Not enough XLM to cover Stellar reserves for adding QRP."
+        );
+      }
+      throw new TrustlineError(
+        "SUBMIT",
+        toErrorMessage(error, "Failed to submit trustline transaction.")
+      );
+    }
+
+    onPhaseChange?.("confirming");
+    const confirmed = await waitForQrpTrustline(sourceAddress);
+    if (!confirmed) {
+      throw new TrustlineError(
+        "NOT_CONFIRMED",
+        "Trustline was submitted but QRP is not visible on Stellar yet."
+      );
+    }
+
+    return {
+      hash: submitted.hash,
+      ledger: submitted.ledger,
+      explorerUrl: getTransactionExplorerUrl(submitted.hash),
+      alreadyExisted: false,
+    };
+  } catch (error: unknown) {
+    if (error instanceof TrustlineError) {
+      throw error;
+    }
+
+    if (isFreighterCancellation(error)) {
+      throw new TrustlineError(
+        "CANCELLED",
+        "Freighter signing was cancelled."
+      );
+    }
+
+    if (isInsufficientXlmError(error)) {
+      throw new TrustlineError(
+        "INSUFFICIENT_XLM",
+        "Not enough XLM to cover Stellar reserves for adding QRP."
+      );
+    }
+
+    throw new TrustlineError(
+      "UNEXPECTED",
+      toErrorMessage(error, "Could not add QRP to your wallet.")
+    );
+  }
 }

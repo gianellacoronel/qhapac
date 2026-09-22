@@ -29,6 +29,24 @@ export function purchaseErrorKey(errorCode: string | undefined): string {
 }
 
 /**
+ * Maps trustline helper error codes to translation keys under purchase.errors.*
+ */
+export function trustlineErrorKey(errorCode: string | undefined): string {
+  switch (errorCode) {
+    case "CANCELLED":
+      return "errors.trustline_cancelled";
+    case "INSUFFICIENT_XLM":
+      return "errors.insufficient_xlm";
+    case "NOT_CONFIRMED":
+      return "errors.trustline_not_confirmed";
+    case "SUBMIT":
+      return "errors.trustline_failed";
+    default:
+      return "errors.trustline_failed";
+  }
+}
+
+/**
  * Maps redemption session/API error codes to translation keys under benefits.errors.*
  */
 export function redemptionErrorKey(errorCode: string | undefined): string {

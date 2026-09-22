@@ -62,7 +62,11 @@ export function ProjectPage() {
               className="mt-2 hidden sm:inline-flex"
               onClick={() => setParticipateOpen(true)}
             >
-              {t("participate")}
+              {wallet.isConnected &&
+              wallet.isTestnet &&
+              balanceState.hasTrustline === false
+                ? t("addQrp")
+                : t("participate")}
             </Button>
           </div>
 
@@ -87,6 +91,7 @@ export function ProjectPage() {
         isTestnet={wallet.isTestnet}
         isLoadingBalance={balanceState.isLoading}
         onPurchaseSuccess={handlePurchaseSuccess}
+        onTrustlineSuccess={balanceState.refresh}
       />
     </div>
   );
