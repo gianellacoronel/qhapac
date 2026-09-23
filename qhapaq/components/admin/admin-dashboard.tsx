@@ -211,7 +211,7 @@ export function AdminDashboard() {
         </div>
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-12">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-end lg:gap-12">
         <div className="space-y-4">
           <h2 className="font-heading text-2xl font-semibold tracking-tight">
             {project.name}

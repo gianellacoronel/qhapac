@@ -3,11 +3,7 @@
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress";
+import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FundingProgressState } from "@/hooks/use-funding-progress";
 import { formatQrp, type ProjectData } from "@/lib/project/data";
@@ -72,7 +68,6 @@ export function FundingProgress({
         ) : (
           <Progress value={pct} className="w-full">
             <ProgressLabel className="sr-only">{t("completion")}</ProgressLabel>
-            <ProgressValue />
           </Progress>
         )}
       </section>
