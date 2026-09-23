@@ -346,8 +346,8 @@
     }
   },
   "admin": {
-    "label": "Admin",
-    "title": "Admin",
+    "label": "Administrador del proyecto",
+    "title": "Administrador del proyecto",
     "description": "Aprueba hitos y revisa el avance del proyecto activo. Cada aprobación deja un comprobante público.",
     "subtitle": "Administración del proyecto",
     "currentProject": "Proyecto actual",
@@ -360,12 +360,12 @@
     "actionRequired": "Requiere acción",
     "nextMilestonePrompt": "Revisa la evidencia y aprueba este hito. Quedará un comprobante público del registro.",
     "allCaughtUp": "Sin hitos pendientes",
-    "adminWallet": "Billetera admin: {address}",
-    "loading": "Verificando acceso de admin…",
+    "adminWallet": "Billetera del administrador del proyecto: {address}",
+    "loading": "Verificando acceso de administrador del proyecto…",
     "accessDeniedTitle": "Acceso denegado",
     "unauthorizedTitle": "No autorizado",
-    "unauthorizedDescription": "Solo la billetera de administración puede acceder a esta área.",
-    "connectAdminWallet": "Conecta la billetera de administración con Freighter para acceder a esta área.",
+    "unauthorizedDescription": "Solo la billetera del administrador del proyecto puede acceder a esta área.",
+    "connectAdminWallet": "Conecta la billetera del administrador del proyecto con Freighter para acceder a esta área.",
     "backHome": "Volver al proyecto"
   },
   "milestones": {
@@ -393,7 +393,7 @@
     "expectedDate": "Fecha esperada",
     "approvedByLabel": "Aprobado por",
     "approvedAtLabel": "Fecha de aprobación",
-    "approvedByAdminWallet": "Aprobado por billetera admin",
+    "approvedByAdminWallet": "Aprobado por la billetera del administrador del proyecto",
     "approvedByAddress": "Aprobado por {address}",
     "approvedAt": "{date}",
     "blockchainProof": "Comprobante de aprobación",
@@ -408,12 +408,12 @@
     "evidencePrototypeNote": "Registro demostrativo del MVP — no es un documento físico ni una verificación de obra.",
     "transactionHash": "Hash de la operación (dato técnico)",
     "confirmApproval": "Confirmar aprobación",
-    "confirmApprovalDescription": "¿Aprobar “{title}”? Se registrará la aprobación con un comprobante público firmado por la billetera admin.",
+    "confirmApprovalDescription": "¿Aprobar “{title}”? Se registrará la aprobación con un comprobante público firmado por la billetera del administrador del proyecto.",
     "cancel": "Cancelar",
     "close": "Cerrar",
     "prototypeNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Estos hitos son datos de demostración del MVP.",
     "localApprovalNote": "Las aprobaciones son locales a esta sesión del prototipo. La confirmación pública llegará después.",
-    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación deja un comprobante público firmado por la billetera admin.",
+    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación deja un comprobante público firmado por la billetera del administrador del proyecto.",
     "items": {
       "land-acquisition": {
         "title": "Adquisición del terreno",

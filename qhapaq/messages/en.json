@@ -346,8 +346,8 @@
     }
   },
   "admin": {
-    "label": "Admin",
-    "title": "Admin",
+    "label": "Project administrator",
+    "title": "Project administrator",
     "description": "Approve milestones and review progress for the active project. Each approval leaves a public proof.",
     "subtitle": "Project administration",
     "currentProject": "Current project",
@@ -360,12 +360,12 @@
     "actionRequired": "Action required",
     "nextMilestonePrompt": "Review evidence and approve this milestone. A public proof of the record will be created.",
     "allCaughtUp": "No pending milestones",
-    "adminWallet": "Admin wallet: {address}",
-    "loading": "Checking admin access…",
+    "adminWallet": "Project administrator wallet: {address}",
+    "loading": "Checking project administrator access…",
     "accessDeniedTitle": "Access denied",
     "unauthorizedTitle": "Unauthorized",
-    "unauthorizedDescription": "Only the admin wallet can access project administration.",
-    "connectAdminWallet": "Connect the admin wallet with Freighter to access this area.",
+    "unauthorizedDescription": "Only the project administrator wallet can access this area.",
+    "connectAdminWallet": "Connect the project administrator wallet with Freighter to access this area.",
     "backHome": "Back to project"
   },
   "milestones": {
@@ -393,7 +393,7 @@
     "expectedDate": "Expected date",
     "approvedByLabel": "Approved by",
     "approvedAtLabel": "Approved at",
-    "approvedByAdminWallet": "Approved by admin wallet",
+    "approvedByAdminWallet": "Approved by the project administrator wallet",
     "approvedByAddress": "Approved by {address}",
     "approvedAt": "{date}",
     "blockchainProof": "Approval record",
@@ -408,12 +408,12 @@
     "evidencePrototypeNote": "Demonstrative MVP record — not a physical document or construction verification.",
     "transactionHash": "Operation hash (technical)",
     "confirmApproval": "Confirm approval",
-    "confirmApprovalDescription": "Approve “{title}”? This records approval with a public proof signed by the admin wallet.",
+    "confirmApprovalDescription": "Approve “{title}”? This records approval with a public proof signed by the project administrator wallet.",
     "cancel": "Cancel",
     "close": "Close",
     "prototypeNote": "Qhapaq records the approvals and evidence associated with the project. These milestones are MVP demonstration data.",
     "localApprovalNote": "Approvals are local to this prototype session. Public confirmation will come later.",
-    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval leaves a public proof signed by the admin wallet.",
+    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval leaves a public proof signed by the project administrator wallet.",
     "items": {
       "land-acquisition": {
         "title": "Land acquisition",
