@@ -15,12 +15,13 @@ import {
   INITIAL_HUARAL_MILESTONES,
   countApprovedMilestones,
   countPendingMilestones,
+  hasOnChainApproval,
 } from "@/lib/milestones/data";
 import type { Milestone } from "@/lib/milestones/types";
 import type { MilestoneApprovalProof } from "@/lib/milestones/actions";
 
 /** Bump when seed status/shape changes so stale local demos reset. */
-const STORAGE_KEY = "qhapaq.huaral.milestones.v2";
+const STORAGE_KEY = "qhapaq.huaral.milestones.v3";
 
 type MilestonesContextValue = {
   milestones: Milestone[];
@@ -53,24 +54,31 @@ function normalizeMilestoneList(
     const seed = id ? byId.get(id) : undefined;
     if (!id || !seed) continue;
 
-    const status =
-      item.status === "approved" || item.status === "pending"
-        ? item.status
-        : "pending";
-
     const transactionHash =
       typeof item.transactionHash === "string" &&
       item.transactionHash.trim().length > 0
         ? item.transactionHash.trim()
         : undefined;
 
+    // Without an on-chain proof, never surface as approved (admin can approve).
+    const rawStatus =
+      item.status === "approved" || item.status === "pending"
+        ? item.status
+        : "pending";
+    const status =
+      rawStatus === "approved" && transactionHash ? "approved" : "pending";
+
     next.push({
       ...seed,
       status,
       approvedAt:
-        typeof item.approvedAt === "string" ? item.approvedAt : undefined,
+        status === "approved" && typeof item.approvedAt === "string"
+          ? item.approvedAt
+          : undefined,
       approvedBy:
-        typeof item.approvedBy === "string" ? item.approvedBy : undefined,
+        status === "approved" && typeof item.approvedBy === "string"
+          ? item.approvedBy
+          : undefined,
       transactionHash,
     });
   }
@@ -112,31 +120,18 @@ function mergeMilestones(
     const remoteItem = remote.find((m) => m.id === localItem.id);
     if (!remoteItem) return localItem;
 
-    if (
-      remoteItem.status === "approved" &&
-      remoteItem.transactionHash
-    ) {
+    if (hasOnChainApproval(remoteItem)) {
       return remoteItem;
     }
 
     if (
-      localItem.status === "approved" &&
-      localItem.transactionHash &&
-      remoteItem.status !== "approved"
+      hasOnChainApproval(localItem) &&
+      !hasOnChainApproval(remoteItem)
     ) {
       return localItem;
     }
 
-    if (remoteItem.status === "approved") {
-      return {
-        ...localItem,
-        ...remoteItem,
-        transactionHash:
-          remoteItem.transactionHash ?? localItem.transactionHash,
-      };
-    }
-
-    return localItem.status === "approved" ? localItem : remoteItem;
+    return hasOnChainApproval(localItem) ? localItem : remoteItem;
   });
 }
 

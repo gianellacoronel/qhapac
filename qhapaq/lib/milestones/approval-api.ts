@@ -14,6 +14,7 @@ import {
   getStoredMilestone,
   isMilestoneApprovalInFlight,
 } from "@/lib/milestones/approval-store";
+import { hasOnChainApproval } from "@/lib/milestones/data";
 import {
   MilestoneApprovalConfigError,
   MilestoneApprovalSubmitError,
@@ -71,7 +72,7 @@ export async function approveMilestoneOnChain(
     };
   }
 
-  if (existing.status === "approved") {
+  if (hasOnChainApproval(existing)) {
     return {
       success: false,
       error: "already_approved",
@@ -90,7 +91,7 @@ export async function approveMilestoneOnChain(
   const started = beginMilestoneApproval(milestoneId);
   if (!started) {
     const again = getStoredMilestone(milestoneId);
-    if (again?.status === "approved") {
+    if (again && hasOnChainApproval(again)) {
       return {
         success: false,
         error: "already_approved",

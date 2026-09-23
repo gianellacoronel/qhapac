@@ -3,7 +3,7 @@
  * Survives for the lifetime of the Node process.
  * Import exclusively from server Route Handlers — never from client components.
  */
-import { INITIAL_HUARAL_MILESTONES } from "./data";
+import { INITIAL_HUARAL_MILESTONES, hasOnChainApproval } from "./data";
 import type { Milestone } from "./types";
 
 type StoredMilestone = Milestone & {
@@ -17,6 +17,16 @@ const milestones = new Map<string, StoredMilestone>(
 
 function toPublicMilestone(stored: StoredMilestone): Milestone {
   const { approving: _approving, ...milestone } = stored;
+  // Never expose faux approved state without a Stellar proof.
+  if (!hasOnChainApproval(milestone)) {
+    return {
+      ...milestone,
+      status: "pending",
+      approvedAt: undefined,
+      approvedBy: undefined,
+      transactionHash: undefined,
+    };
+  }
   return { ...milestone };
 }
 
@@ -39,13 +49,16 @@ export function getStoredMilestone(id: string): Milestone | undefined {
 export function beginMilestoneApproval(id: string): boolean {
   const current = milestones.get(id);
   if (!current) return false;
-  if (current.status === "approved") return false;
+  if (hasOnChainApproval(current)) return false;
   if (current.approving) return false;
 
   milestones.set(id, {
     ...current,
     status: "pending",
     approving: true,
+    approvedAt: undefined,
+    approvedBy: undefined,
+    transactionHash: undefined,
   });
   return true;
 }

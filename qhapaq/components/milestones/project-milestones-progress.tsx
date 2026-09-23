@@ -3,13 +3,14 @@
 import { useTranslations } from "next-intl";
 import { MilestoneList } from "@/components/milestones/milestone-list";
 import { useMilestones } from "@/components/milestones/milestones-provider";
+import { hasOnChainApproval } from "@/lib/milestones/data";
 
 /** Read-only milestone progress for the participant project page. */
 export function ProjectMilestonesProgress() {
   const t = useTranslations("milestones");
   const { milestones, approvedCount, totalCount } = useMilestones();
 
-  const nextPending = milestones.find((m) => m.status === "pending");
+  const nextPending = milestones.find((m) => !hasOnChainApproval(m));
   const nextTitle = nextPending
     ? t(`items.${nextPending.id}.title`)
     : t("allApproved");

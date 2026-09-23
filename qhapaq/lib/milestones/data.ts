@@ -19,10 +19,8 @@ export type HuaralMilestoneId = (typeof HUARAL_MILESTONE_IDS)[number];
 export const INITIAL_HUARAL_MILESTONES: Milestone[] = [
   {
     id: "land-acquisition",
-    status: "approved",
+    status: "pending",
     expectedDate: "2026-08-15",
-    approvedAt: "2026-08-15T15:00:00.000Z",
-    approvedBy: "prototype",
     evidence: { mock: true },
   },
   {
@@ -51,10 +49,19 @@ export const INITIAL_HUARAL_MILESTONES: Milestone[] = [
   },
 ];
 
+/** Approved only when status is approved and a Stellar proof hash exists. */
+export function hasOnChainApproval(milestone: Milestone): boolean {
+  return (
+    milestone.status === "approved" &&
+    typeof milestone.transactionHash === "string" &&
+    milestone.transactionHash.trim().length > 0
+  );
+}
+
 export function countApprovedMilestones(milestones: Milestone[]): number {
-  return milestones.filter((m) => m.status === "approved").length;
+  return milestones.filter((m) => hasOnChainApproval(m)).length;
 }
 
 export function countPendingMilestones(milestones: Milestone[]): number {
-  return milestones.filter((m) => m.status === "pending").length;
+  return milestones.filter((m) => !hasOnChainApproval(m)).length;
 }

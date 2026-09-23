@@ -16,6 +16,7 @@ import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Link } from "@/i18n/navigation";
 import { requestMilestoneApproval } from "@/lib/milestones/approve-client";
+import { hasOnChainApproval } from "@/lib/milestones/data";
 import { formatQrp } from "@/lib/project/data";
 import { shortenAddress } from "@/lib/stellar/wallet";
 
@@ -54,7 +55,7 @@ export function AdminDashboard() {
   );
 
   const nextPending = useMemo(
-    () => milestones.find((m) => m.status === "pending") ?? null,
+    () => milestones.find((m) => !hasOnChainApproval(m)) ?? null,
     [milestones],
   );
 

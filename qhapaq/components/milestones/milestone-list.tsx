@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { toIntlLocale } from "@/lib/project/data";
 import { shortenAddress } from "@/lib/stellar/wallet";
+import { hasOnChainApproval } from "@/lib/milestones/data";
 import type { Milestone } from "@/lib/milestones/types";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +66,7 @@ export function MilestoneList({
   return (
     <ol className="space-y-0 divide-y divide-border/60">
       {milestones.map((milestone) => {
-        const approved = milestone.status === "approved";
+        const approved = hasOnChainApproval(milestone);
         const statusLabel = approved ? t("approved") : t("pending");
         const title = t(`items.${milestone.id}.title`);
         const description = t(`items.${milestone.id}.description`);

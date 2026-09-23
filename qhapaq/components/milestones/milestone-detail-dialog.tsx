@@ -16,6 +16,7 @@ import { stellarRichTag } from "@/components/stellar-help";
 import { toIntlLocale } from "@/lib/project/data";
 import { shortenHash } from "@/lib/stellar/explorer";
 import { shortenAddress } from "@/lib/stellar/wallet";
+import { hasOnChainApproval } from "@/lib/milestones/data";
 import type { Milestone } from "@/lib/milestones/types";
 import { cn } from "@/lib/utils";
 
@@ -89,7 +90,7 @@ export function MilestoneDetailDialog({
 
   if (!milestone) return null;
 
-  const approved = milestone.status === "approved";
+  const approved = hasOnChainApproval(milestone);
   const title = t(`items.${milestone.id}.title`);
   const description = t(`items.${milestone.id}.description`);
   const evidenceTitle = t(`items.${milestone.id}.evidenceTitle`);
