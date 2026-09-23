@@ -12,8 +12,10 @@ import { QrpLabel } from "@/components/qrp-help";
 import { Link } from "@/i18n/navigation";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
+import { useUserRole } from "@/hooks/use-user-role";
 import { useWallet } from "@/hooks/use-wallet";
 import { availableBenefits } from "@/lib/benefits/data";
+import { canGenerateResortServiceDiscount } from "@/lib/benefits/eligibility";
 import type { BenefitStatus } from "@/lib/benefits/types";
 
 /** Maps project benefit ids to generatable benefit definition ids. */
@@ -25,8 +27,13 @@ export function BenefitsPage() {
   const t = useTranslations("benefits");
   const project = useLocalizedProject();
   const wallet = useWallet();
+  const { isAdmin } = useUserRole();
   const { generatedBenefit, generateBenefit } = useBenefitSession();
-  const { formatted, isLoading: balanceLoading } = useQrpBalance(
+  const {
+    balance,
+    formatted,
+    isLoading: balanceLoading,
+  } = useQrpBalance(
     wallet.isConnected && wallet.isTestnet ? wallet.address : null,
   );
 
@@ -45,6 +52,11 @@ export function BenefitsPage() {
     [activeDefinitionId],
   );
 
+  const canGenerate = canGenerateResortServiceDiscount({
+    isAdmin,
+    qrpBalance: balance,
+  });
+
   const participationAmount = !wallet.isConnected
     ? null
     : balanceLoading || formatted == null
@@ -52,7 +64,7 @@ export function BenefitsPage() {
       : formatted;
 
   function handleGenerateConfirm() {
-    if (!activeDefinition) return;
+    if (!activeDefinition || !canGenerate) return;
     const created = generateBenefit(activeDefinition.id);
     if (created) {
       setDialogOpen(false);
@@ -119,7 +131,9 @@ export function BenefitsPage() {
                     ? generatedBenefit.status === "redeemed"
                       ? "redeemed"
                       : "generated"
-                    : "available";
+                    : canGenerate
+                      ? "available"
+                      : "locked";
 
                 return (
                   <AvailableBenefitCard
@@ -128,6 +142,7 @@ export function BenefitsPage() {
                     projectBenefit={benefit}
                     status={cardStatus}
                     onGenerate={() => {
+                      if (!canGenerate) return;
                       setActiveDefinitionId(definition.id);
                       setDialogOpen(true);
                     }}

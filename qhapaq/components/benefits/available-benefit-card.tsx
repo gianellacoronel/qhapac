@@ -31,14 +31,18 @@ export function AvailableBenefitCard({
       ? t("status.redeemed")
       : status === "generated"
         ? t("status.generated")
-        : t("status.available");
+        : status === "locked"
+          ? t("status.locked")
+          : t("status.available");
 
   const actionButton =
     isRedeemable && status === "available" ? (
       <Button className="w-full sm:w-auto" onClick={onGenerate}>
         {t("generate")}
       </Button>
-    ) : isRedeemable && onViewGenerated ? (
+    ) : isRedeemable &&
+      (status === "generated" || status === "redeemed") &&
+      onViewGenerated ? (
       <Button
         className="w-full sm:w-auto"
         variant="outline"
@@ -63,7 +67,9 @@ export function AvailableBenefitCard({
               className={
                 status === "available"
                   ? "bg-primary/20 text-foreground"
-                  : undefined
+                  : status === "locked"
+                    ? "text-muted-foreground"
+                    : undefined
               }
             >
               {statusLabel}
@@ -76,6 +82,11 @@ export function AvailableBenefitCard({
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
           {projectBenefit.description}
         </p>
+        {status === "locked" ? (
+          <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
+            {t("lockedHint")}
+          </p>
+        ) : null}
       </article>
       {actionButton ? (
         <div className="sm:justify-self-end">{actionButton}</div>

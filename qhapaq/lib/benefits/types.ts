@@ -1,5 +1,6 @@
 export type BenefitStatus =
   | "available"
+  | "locked"
   | "generated"
   | "verified"
   | "redeeming"

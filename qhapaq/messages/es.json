@@ -185,6 +185,7 @@
     },
     "status": {
       "available": "Disponible",
+      "locked": "Inactivo",
       "generated": "Generado",
       "redeemed": "Usado",
       "valid": "Válido"
@@ -192,6 +193,7 @@
     "percentOff": "{discount}% OFF",
     "yourParticipation": "Tu participación: {label}",
     "connectToSee": "Conecta tu billetera para ver tu participación",
+    "lockedHint": "Genera este beneficio cuando tengas al menos 1 QRP, o como admin.",
     "generate": "Generar beneficio",
     "viewBenefit": "Ver beneficio",
     "generateDialogTitle": "Tu beneficio",

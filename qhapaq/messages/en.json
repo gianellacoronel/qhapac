@@ -185,6 +185,7 @@
     },
     "status": {
       "available": "Available",
+      "locked": "Inactive",
       "generated": "Generated",
       "redeemed": "Used",
       "valid": "Valid"
@@ -192,6 +193,7 @@
     "percentOff": "{discount}% OFF",
     "yourParticipation": "Your participation: {label}",
     "connectToSee": "Connect your wallet to see your participation",
+    "lockedHint": "Generate this benefit when you have at least 1 QRP, or as admin.",
     "generate": "Generate benefit",
     "viewBenefit": "View benefit",
     "generateDialogTitle": "Your benefit",
