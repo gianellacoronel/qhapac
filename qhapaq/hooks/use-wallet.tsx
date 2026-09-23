@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { WatchWalletChanges } from "@stellar/freighter-api";
 import {
   isExpectedFreighterNetwork,
@@ -9,7 +17,9 @@ import {
 import {
   connectFreighter,
   detectFreighter,
+  getWalletConnectionPreference,
   restoreWalletConnection,
+  setWalletConnectionPreference,
   type ConnectedWallet,
 } from "@/lib/stellar/wallet";
 
@@ -30,6 +40,8 @@ export type WalletState = {
   clearError: () => void;
 };
 
+const WalletContext = createContext<WalletState | null>(null);
+
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -37,7 +49,7 @@ function toErrorMessage(error: unknown): string {
   return "Unexpected wallet error.";
 }
 
-export function useWallet(): WalletState {
+function useWalletState(): WalletState {
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
   const [networkPassphrase, setNetworkPassphrase] = useState<string | null>(
@@ -86,10 +98,23 @@ export function useWallet(): WalletState {
           return;
         }
 
+        const preference = getWalletConnectionPreference();
+        // Only restore when the user previously connected explicitly.
+        // Freighter available / previously authorized ≠ auto-connect.
+        if (preference !== "connected") {
+          applyWallet(null);
+          return;
+        }
+
         const restored = await restoreWalletConnection();
         if (cancelled) return;
 
-        if (restored && !restored.isTestnet) {
+        if (!restored) {
+          applyWallet(null);
+          return;
+        }
+
+        if (!restored.isTestnet) {
           setWalletError(
             "wrong_network",
             `Wrong network. Switch Freighter to ${stellarConfig.displayName}.`
@@ -159,6 +184,7 @@ export function useWallet(): WalletState {
 
     try {
       const wallet = await connectFreighter();
+      setWalletConnectionPreference("connected");
       applyWallet(wallet);
       setIsFreighterAvailable(true);
     } catch (err) {
@@ -170,6 +196,7 @@ export function useWallet(): WalletState {
   }, [applyWallet, setWalletError]);
 
   const disconnect = useCallback(() => {
+    setWalletConnectionPreference("disconnected");
     applyWallet(null);
     setWalletError(null, null);
   }, [applyWallet, setWalletError]);
@@ -183,18 +210,50 @@ export function useWallet(): WalletState {
     ? isExpectedFreighterNetwork(network)
     : false;
 
-  return {
-    address,
-    network,
-    networkPassphrase,
-    isConnected,
-    isTestnet,
-    isFreighterAvailable,
-    isLoading,
-    error,
-    errorCode,
-    connect,
-    disconnect,
-    clearError,
-  };
+  return useMemo(
+    () => ({
+      address,
+      network,
+      networkPassphrase,
+      isConnected,
+      isTestnet,
+      isFreighterAvailable,
+      isLoading,
+      error,
+      errorCode,
+      connect,
+      disconnect,
+      clearError,
+    }),
+    [
+      address,
+      network,
+      networkPassphrase,
+      isConnected,
+      isTestnet,
+      isFreighterAvailable,
+      isLoading,
+      error,
+      errorCode,
+      connect,
+      disconnect,
+      clearError,
+    ]
+  );
+}
+
+/** Single shared Freighter connection for the whole app. */
+export function WalletProvider({ children }: { children: ReactNode }) {
+  const value = useWalletState();
+  return (
+    <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
+  );
+}
+
+export function useWallet(): WalletState {
+  const context = useContext(WalletContext);
+  if (!context) {
+    throw new Error("useWallet must be used within WalletProvider");
+  }
+  return context;
 }

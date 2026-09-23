@@ -83,9 +83,10 @@ export function formatParticipationLabel(
   formatted: string | null,
   token: string,
   isConnected: boolean,
-  connectLabel: string
+  connectLabel: string,
+  isLoading = false
 ): string {
   if (!isConnected) return connectLabel;
-  if (!formatted) return `0 ${token}`;
+  if (isLoading || formatted == null) return "—";
   return `${formatted} ${token}`;
 }

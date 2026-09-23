@@ -21,6 +21,41 @@ export type ConnectedWallet = {
   isTestnet: boolean;
 };
 
+/** Explicit user preference — Freighter available ≠ user connected. */
+export type WalletConnectionPreference = "connected" | "disconnected";
+
+const WALLET_CONNECTION_PREF_KEY = "qhapaq.wallet.connection.v1";
+
+function canUseStorage(): boolean {
+  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
+/** Read whether the user last chose to connect or disconnect. */
+export function getWalletConnectionPreference(): WalletConnectionPreference | null {
+  if (!canUseStorage()) return null;
+  try {
+    const raw = window.localStorage.getItem(WALLET_CONNECTION_PREF_KEY);
+    if (raw === "connected" || raw === "disconnected") {
+      return raw;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist connect/disconnect choice (public preference only — never keys). */
+export function setWalletConnectionPreference(
+  preference: WalletConnectionPreference
+): void {
+  if (!canUseStorage()) return;
+  try {
+    window.localStorage.setItem(WALLET_CONNECTION_PREF_KEY, preference);
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
 function freighterErrorMessage(
   error: { message?: string } | undefined,
   fallback: string

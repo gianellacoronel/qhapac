@@ -22,7 +22,7 @@ export function BenefitsPage() {
   const t = useTranslations("benefits");
   const wallet = useWallet();
   const { generatedBenefit, generateBenefit } = useBenefitSession();
-  const { formatted } = useQrpBalance(
+  const { formatted, isLoading: balanceLoading } = useQrpBalance(
     wallet.isConnected && wallet.isTestnet ? wallet.address : null
   );
 
@@ -47,7 +47,8 @@ export function BenefitsPage() {
     formatted,
     huaralResort.token,
     wallet.isConnected,
-    t("connectToSee", { token: huaralResort.token })
+    t("connectToSee", { token: huaralResort.token }),
+    balanceLoading
   );
 
   function handleGenerateConfirm() {

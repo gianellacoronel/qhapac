@@ -4,7 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -14,6 +16,7 @@ import {
   createBenefitId,
   normalizeBenefitId,
 } from "@/lib/benefits/utils";
+import { useWallet } from "@/hooks/use-wallet";
 
 export type RedeemBenefitOutcome =
   | { ok: true; benefit: GeneratedBenefit }
@@ -46,8 +49,24 @@ const BenefitSessionContext = createContext<BenefitSessionContextValue | null>(
 );
 
 export function BenefitSessionProvider({ children }: { children: ReactNode }) {
+  const { address } = useWallet();
+  const previousAddressRef = useRef<string | null | undefined>(undefined);
   const [generatedBenefit, setGeneratedBenefit] =
     useState<GeneratedBenefit | null>(null);
+
+  // Drop session data when the connected wallet changes or disconnects.
+  useEffect(() => {
+    const previous = previousAddressRef.current;
+    previousAddressRef.current = address;
+
+    if (previous === undefined) {
+      return;
+    }
+
+    if (previous !== address) {
+      setGeneratedBenefit(null);
+    }
+  }, [address]);
 
   const generateBenefit = useCallback((definitionId: string) => {
     const definition = getBenefitDefinition(definitionId);

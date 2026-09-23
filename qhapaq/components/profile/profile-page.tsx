@@ -229,17 +229,26 @@ export function ProfilePage() {
       </header>
 
       {isLoading && !isConnected ? (
-        <div className="mt-10 grid gap-10 lg:mt-14 lg:grid-cols-3 lg:gap-12">
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
+        <div className="mt-10 flex max-w-lg flex-col gap-4 lg:mt-14" aria-busy>
+          <SectionLabel>{t("yourWallet")}</SectionLabel>
+          <p className="text-sm text-muted-foreground">{t("loadingProfile")}</p>
+          <div className="grid gap-10 lg:grid-cols-3 lg:gap-12">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
         </div>
       ) : !isConnected ? (
         <div className="mt-10 flex max-w-lg flex-col gap-5 lg:mt-14">
           <SectionLabel>{t("yourWallet")}</SectionLabel>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {t("connectPrompt")}
-          </p>
+          <div className="space-y-2">
+            <p className="text-base leading-relaxed text-foreground sm:text-[1.0625rem]">
+              {t("connectPrompt")}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t("connectPromptDetail")}
+            </p>
+          </div>
           <Button
             className="w-fit"
             onClick={() => {
@@ -344,13 +353,13 @@ export function ProfilePage() {
 
                 <div className="space-y-5">
                   <div className="space-y-2">
-                    <p className="text-base leading-relaxed text-foreground sm:text-[1.0625rem]">
-                      {balances.isLoading ? (
-                        <Skeleton className="h-5 w-72" />
-                      ) : (
-                        participationBody
-                      )}
-                    </p>
+                    {balances.isLoading ? (
+                      <Skeleton className="h-5 w-72" />
+                    ) : (
+                      <p className="text-base leading-relaxed text-foreground sm:text-[1.0625rem]">
+                        {participationBody}
+                      </p>
+                    )}
                     <p className="text-sm text-muted-foreground">
                       {t("status")}:{" "}
                       <span className="text-foreground">

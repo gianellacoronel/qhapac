@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Gift, RefreshCw } from "lucide-react";
+import { AlertCircle, Gift, Loader2, RefreshCw, Wallet } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,9 @@ type ParticipationCardProps = {
   address: string | null;
   isConnected: boolean;
   isTestnet: boolean;
+  isWalletLoading?: boolean;
+  isFreighterAvailable?: boolean | null;
+  onConnect?: () => void;
   projectName?: string;
   onParticipate?: () => void;
 };
@@ -22,10 +25,14 @@ export function ParticipationCard({
   address,
   isConnected,
   isTestnet,
+  isWalletLoading = false,
+  isFreighterAvailable = null,
+  onConnect,
   projectName = huaralResort.name,
   onParticipate,
 }: ParticipationCardProps) {
   const t = useTranslations("participation");
+  const tWallet = useTranslations("wallet");
   const locale = useLocale();
   const project = useLocalizedProject();
   const { formatted, balance, hasTrustline, isLoading, error, refresh } =
@@ -35,9 +42,11 @@ export function ParticipationCard({
     <div className="flex w-full flex-col gap-10">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end lg:gap-14">
         <div className="min-w-0 space-y-3">
-          {!isConnected ? (
+          {isWalletLoading && !isConnected ? (
+            <Skeleton className="h-24 w-56 sm:h-28" />
+          ) : !isConnected ? (
             <p className="font-heading text-5xl font-semibold tracking-tight text-muted-foreground sm:text-6xl lg:text-7xl">
-              {t("connectWallet")}
+              —
             </p>
           ) : !isTestnet ? (
             <p className="font-heading text-5xl font-semibold tracking-tight text-destructive sm:text-6xl">
@@ -60,6 +69,11 @@ export function ParticipationCard({
               · {projectName}
             </span>
           </p>
+          {!isConnected && !isWalletLoading ? (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t("connectPrompt")}
+            </p>
+          ) : null}
           {isConnected && isTestnet && !isLoading && !error ? (
             <p className="text-base text-muted-foreground">
               ≈{" "}
@@ -84,11 +98,25 @@ export function ParticipationCard({
             <p className="text-sm text-muted-foreground">{t("benefits")}</p>
             <p className="flex items-center gap-2 font-medium lg:justify-end">
               <Gift className="size-4 shrink-0 text-primary" aria-hidden />
-              {project.mainBenefit}
+              {!isConnected && !isWalletLoading ? "—" : project.mainBenefit}
             </p>
           </div>
 
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
+            {!isConnected && onConnect ? (
+              <Button
+                className="w-full sm:w-auto"
+                onClick={onConnect}
+                disabled={isWalletLoading || isFreighterAvailable === false}
+              >
+                {isWalletLoading ? (
+                  <Loader2 data-icon="inline-start" className="animate-spin" />
+                ) : (
+                  <Wallet data-icon="inline-start" />
+                )}
+                {tWallet("connect")}
+              </Button>
+            ) : null}
             <Link href="/benefits" className="w-full sm:w-auto">
               <Button variant="outline" className="w-full">
                 {t("viewBenefits")}

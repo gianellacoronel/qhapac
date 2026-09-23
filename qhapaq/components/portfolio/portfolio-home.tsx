@@ -29,6 +29,13 @@ export function PortfolioHome() {
         address={wallet.address}
         isConnected={wallet.isConnected}
         isTestnet={wallet.isTestnet}
+        isWalletLoading={wallet.isLoading}
+        isFreighterAvailable={wallet.isFreighterAvailable}
+        onConnect={() => {
+          void wallet.connect().catch(() => {
+            /* error surfaced via wallet.error */
+          });
+        }}
       />
 
       <div className="border-t border-border/70 pt-10 opacity-90">

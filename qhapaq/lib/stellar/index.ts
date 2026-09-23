@@ -18,8 +18,11 @@ export {
   detectFreighter,
   connectFreighter,
   restoreWalletConnection,
+  getWalletConnectionPreference,
+  setWalletConnectionPreference,
   shortenAddress,
 } from "./wallet";
+export type { WalletConnectionPreference } from "./wallet";
 export {
   TEST_XLM_AMOUNT,
   TrustlineError,

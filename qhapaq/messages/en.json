@@ -143,6 +143,7 @@
   "participation": {
     "yourParticipation": "Your participation",
     "connectWallet": "Connect wallet",
+    "connectPrompt": "Connect your wallet to view your participation.",
     "switchToTestnet": "Switch to Testnet",
     "noTrustline": "No QRP trustline found on this account yet.",
     "benefits": "Benefits",
@@ -298,7 +299,9 @@
     "connectionStatus": "Connection status",
     "statusConnected": "Connected",
     "statusDisconnected": "Disconnected",
-    "connectPrompt": "Connect Freighter to see your wallet, participation, and benefits.",
+    "connectPrompt": "Connect your wallet to view your profile.",
+    "connectPromptDetail": "Here you can check your participation, benefits, and activity recorded in Qhapaq.",
+    "loadingProfile": "Loading profile…",
     "copyAddress": "Copy",
     "copiedAddress": "Copied",
     "copyAddressAria": "Copy wallet address",
