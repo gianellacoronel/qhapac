@@ -199,6 +199,8 @@
     "validForLabel": "Válido para",
     "generatedTitle": "Beneficio generado",
     "benefitId": "Código del beneficio",
+    "copyCodeAria": "Copiar código del beneficio",
+    "copiedCode": "Copiado",
     "validForOneRedemption": "Válido para un uso",
     "verifyBenefit": "Verificar beneficio",
     "redeemedTitle": "Beneficio usado",

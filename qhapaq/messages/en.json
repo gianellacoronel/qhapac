@@ -199,6 +199,8 @@
     "validForLabel": "Valid for",
     "generatedTitle": "Benefit generated",
     "benefitId": "Benefit code",
+    "copyCodeAria": "Copy benefit code",
+    "copiedCode": "Copied",
     "validForOneRedemption": "Valid for one use",
     "verifyBenefit": "Verify benefit",
     "redeemedTitle": "Benefit used",

@@ -1,7 +1,8 @@
 "use client";
 
-import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { Check, CheckCircle2, Copy, ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { BenefitQr } from "@/components/benefits/benefit-qr";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,22 @@ export function GeneratedBenefitView({ benefit }: GeneratedBenefitViewProps) {
 
 function ActiveGeneratedBenefitView({ benefit }: GeneratedBenefitViewProps) {
   const t = useTranslations("benefits");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = window.setTimeout(() => setCopied(false), 1800);
+    return () => window.clearTimeout(timeout);
+  }, [copied]);
+
+  async function handleCopyCode() {
+    try {
+      await navigator.clipboard.writeText(benefit.id);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   const validFor = t.has(`definitions.${benefit.benefitDefinitionId}.validFor`)
     ? t(`definitions.${benefit.benefitDefinitionId}.validFor`)
@@ -51,9 +68,28 @@ function ActiveGeneratedBenefitView({ benefit }: GeneratedBenefitViewProps) {
 
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{t("benefitId")}</p>
-          <p className="font-mono text-2xl font-semibold tracking-wide sm:text-3xl">
-            {benefit.id}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="font-mono text-2xl font-semibold tracking-wide sm:text-3xl">
+              {benefit.id}
+            </p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                void handleCopyCode();
+              }}
+              aria-label={copied ? t("copiedCode") : t("copyCodeAria")}
+            >
+              {copied ? <Check /> : <Copy />}
+            </Button>
+          </div>
+          {copied ? (
+            <p className="text-xs text-foreground" aria-live="polite">
+              {t("copiedCode")}
+            </p>
+          ) : null}
           <p className="pt-2 text-xs text-muted-foreground">
             {t("validForOneRedemption")}
           </p>
