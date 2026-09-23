@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FundingProgressState } from "@/hooks/use-funding-progress";
-import { QrpLabel } from "@/components/qrp-help";
 import { formatQrp, type ProjectData } from "@/lib/project/data";
 import { cn } from "@/lib/utils";
 
@@ -53,12 +52,9 @@ export function FundingProgress({
             </p>
           )}
           {!isLoading && !error ? (
-            <p className="font-heading text-lg font-semibold tabular-nums tracking-tight sm:text-xl">
-              {formatQrp(raised ?? 0, locale)}
-              <span className="ml-1 inline-flex items-baseline gap-1 text-sm font-normal text-muted-foreground sm:text-base">
-                / {formatQrp(displayGoal, locale)}{" "}
-                <QrpLabel brief />
-              </span>
+            <p className="text-sm tabular-nums text-muted-foreground">
+              {formatQrp(raised ?? 0, locale)} /{" "}
+              {formatQrp(displayGoal, locale)} {project.token}
             </p>
           ) : null}
         </div>
@@ -91,7 +87,7 @@ export function FundingProgress({
 
       {isLoading ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <Skeleton className="h-10 w-56 sm:h-12 lg:h-14" />
+          <Skeleton className="h-8 w-48 sm:h-9" />
           <Skeleton className="h-16 w-36 sm:h-[4.5rem]" />
         </div>
       ) : error ? (
@@ -103,12 +99,11 @@ export function FundingProgress({
       ) : (
         <div className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6 pb-6">
-            <p className="order-2 font-heading text-3xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-4xl lg:text-5xl">
+            <p className="order-2 font-heading text-xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-2xl">
               {formatQrp(raised ?? 0, locale)}
-              <span className="inline-flex items-baseline gap-1 text-lg font-normal text-muted-foreground sm:text-xl">
+              <span className="text-base font-normal text-muted-foreground">
                 {" "}
-                / {formatQrp(displayGoal, locale)}{" "}
-                <QrpLabel brief={false} />
+                / {formatQrp(displayGoal, locale)} {project.token}
               </span>
             </p>
             <p className="order-1 font-heading text-5xl font-semibold tracking-tighter text-primary tabular-nums sm:order-2 sm:text-right sm:text-6xl sm:tracking-tighter">

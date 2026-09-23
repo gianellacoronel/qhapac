@@ -50,12 +50,12 @@ export function AdminDashboard() {
 
   const selectedMilestone = useMemo(
     () => milestones.find((m) => m.id === selectedId) ?? null,
-    [milestones, selectedId]
+    [milestones, selectedId],
   );
 
   const nextPending = useMemo(
     () => milestones.find((m) => m.status === "pending") ?? null,
-    [milestones]
+    [milestones],
   );
 
   const nextPendingTitle = nextPending
@@ -93,7 +93,7 @@ export function AdminDashboard() {
               ? tMilestones("configError")
               : result.error === "network"
                 ? tMilestones("networkError")
-                : tMilestones("approvalFailed")
+                : tMilestones("approvalFailed"),
         );
         setApprovingId(null);
         return;
@@ -107,13 +107,7 @@ export function AdminDashboard() {
       setApprovalPhase("success");
       setApprovingId(null);
     },
-    [
-      address,
-      isAdmin,
-      approvingId,
-      recordApprovedMilestone,
-      tMilestones,
-    ]
+    [address, isAdmin, approvingId, recordApprovedMilestone, tMilestones],
   );
 
   if (isLoading) {
@@ -286,9 +280,7 @@ export function AdminDashboard() {
         canApprove
         onApprove={handleApprove}
         isApproving={
-          selectedMilestone
-            ? approvingId === selectedMilestone.id
-            : false
+          selectedMilestone ? approvingId === selectedMilestone.id : false
         }
         approvalPhase={
           selectedId === selectedMilestone?.id ? approvalPhase : "idle"
