@@ -2,6 +2,7 @@
 
 import { Check, Circle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { stellarRichTag } from "@/components/stellar-help";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TransactionLink } from "@/components/wallet/transaction-link";
@@ -129,7 +130,9 @@ export function MilestoneList({
                       label={t("viewBlockchainProof")}
                     />
                   ) : (
-                    <p className="text-xs">{t("noBlockchainProof")}</p>
+                    <p className="text-xs">
+                      {t.rich("noBlockchainProof", stellarRichTag())}
+                    </p>
                   )}
                 </div>
               ) : null}
