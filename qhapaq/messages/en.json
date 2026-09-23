@@ -440,9 +440,9 @@
     "confirmApprovalDescription": "Approve “{title}”? This records approval with a public proof signed by the project administrator wallet.",
     "cancel": "Cancel",
     "close": "Close",
-    "prototypeNote": "Qhapaq records the approvals and evidence associated with the project. These milestones are MVP demonstration data.",
+    "prototypeNote": "Qhapaq records the approvals and evidence associated with the project.",
     "localApprovalNote": "Approvals are local to this prototype session. Public confirmation will come later.",
-    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval uploads evidence to IPFS and leaves a public proof signed by the project administrator wallet.",
+    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project, and leaves a public proof signed by the project administrator wallet.",
     "items": {
       "land-acquisition": {
         "title": "Land acquisition",

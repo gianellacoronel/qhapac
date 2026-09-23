@@ -440,9 +440,9 @@
     "confirmApprovalDescription": "¿Aprobar “{title}”? Se registrará la aprobación con un comprobante público firmado por la billetera del administrador del proyecto.",
     "cancel": "Cancelar",
     "close": "Cerrar",
-    "prototypeNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Estos hitos son datos de demostración del MVP.",
+    "prototypeNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto.",
     "localApprovalNote": "Las aprobaciones son locales a esta sesión del prototipo. La confirmación pública llegará después.",
-    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación sube la evidencia a IPFS y deja un comprobante público firmado por la billetera del administrador del proyecto.",
+    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto, y deja un comprobante público firmado por la billetera del administrador del proyecto.",
     "items": {
       "land-acquisition": {
         "title": "Adquisición del terreno",
