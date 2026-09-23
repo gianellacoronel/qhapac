@@ -24,7 +24,7 @@ function formatApprovedAt(iso: string, locale: string): string {
   if (Number.isNaN(date.getTime())) return iso;
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   }).format(date);
 }

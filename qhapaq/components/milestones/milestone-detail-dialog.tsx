@@ -41,7 +41,7 @@ function formatDate(iso: string, locale: string): string {
   if (Number.isNaN(date.getTime())) return iso;
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   }).format(date);
 }
@@ -54,7 +54,7 @@ function formatDay(isoDate: string, locale: string): string {
   if (Number.isNaN(date.getTime())) return isoDate;
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   }).format(date);
 }
@@ -180,7 +180,13 @@ export function MilestoneDetailDialog({
                   </dt>
                   {milestone.transactionHash ? (
                     <dd className="space-y-2">
-                      <p className="break-all font-mono text-xs">
+                      <p className="text-sm text-foreground">
+                        {t("approvalPublicNote")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("stellarTechnicalNote")}
+                      </p>
+                      <p className="break-all font-mono text-xs text-muted-foreground">
                         {t("transactionLabel", {
                           hash: shortenHash(milestone.transactionHash),
                         })}
@@ -213,6 +219,9 @@ export function MilestoneDetailDialog({
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0 space-y-0.5">
                     <p className="text-sm font-medium">{evidenceTitle}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {evidenceDescription}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {t("evidencePrototypeNote")}
                     </p>

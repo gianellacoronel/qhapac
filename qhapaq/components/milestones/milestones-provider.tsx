@@ -19,7 +19,8 @@ import {
 import type { Milestone } from "@/lib/milestones/types";
 import type { MilestoneApprovalProof } from "@/lib/milestones/actions";
 
-const STORAGE_KEY = "qhapaq.huaral.milestones.v1";
+/** Bump when seed status/shape changes so stale local demos reset. */
+const STORAGE_KEY = "qhapaq.huaral.milestones.v2";
 
 type MilestonesContextValue = {
   milestones: Milestone[];

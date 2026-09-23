@@ -390,52 +390,54 @@
     "approvedByAdminWallet": "Approved by admin wallet",
     "approvedByAddress": "Approved by {address}",
     "approvedAt": "{date}",
-    "blockchainProof": "Record proof",
+    "blockchainProof": "Approval record",
+    "approvalPublicNote": "This approval was recorded publicly.",
     "transactionLabel": "Reference: {hash}",
     "viewOnExplorer": "View proof",
     "viewBlockchainProof": "View proof",
-    "noBlockchainProof": "No proof available",
+    "noBlockchainProof": "No Stellar approval record yet.",
+    "stellarTechnicalNote": "Technical detail on Stellar",
     "evidence": "Evidence",
     "viewEvidence": "View evidence",
-    "evidencePrototypeNote": "Demo evidence for this prototype — not a real verifiable document.",
+    "evidencePrototypeNote": "Demonstrative MVP record — not a physical document or construction verification.",
     "transactionHash": "Operation hash (technical)",
     "confirmApproval": "Confirm approval",
     "confirmApprovalDescription": "Approve “{title}”? This records approval with a public proof signed by the admin wallet.",
     "cancel": "Cancel",
     "close": "Close",
-    "prototypeNote": "Prototype milestones for demonstrating the admin and participant flow. Not live project data.",
+    "prototypeNote": "Qhapaq records the approvals and evidence associated with the project. These milestones are MVP demonstration data.",
     "localApprovalNote": "Approvals are local to this prototype session. Public confirmation will come later.",
-    "onChainApprovalNote": "Approving a milestone records a real operation signed by the admin wallet as public proof in Qhapaq — not proof that the physical milestone occurred.",
+    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval leaves a public proof signed by the admin wallet — it does not verify that physical construction occurred.",
     "items": {
       "land-acquisition": {
         "title": "Land acquisition",
-        "description": "Secure the coastal plot for Huaral Resort development.",
-        "evidenceTitle": "Land acquisition summary",
-        "evidenceDescription": "Demo note confirming plot diligence for the coastal site."
+        "description": "Formalization of the land designated for the development of Huaral Resort.",
+        "evidenceTitle": "Land documentation",
+        "evidenceDescription": "Documentation recorded as supporting evidence for the land designated for the project."
       },
       "construction-start": {
-        "title": "Construction start",
-        "description": "Begin site preparation and primary construction works.",
-        "evidenceTitle": "Site kickoff checklist",
-        "evidenceDescription": "Demo note for mobilization and site preparation start."
+        "title": "Construction begins",
+        "description": "Start of the preparation and construction work for the project.",
+        "evidenceTitle": "Construction start record",
+        "evidenceDescription": "Evidence to be recorded when construction work begins."
       },
       "construction-25": {
-        "title": "25% construction",
-        "description": "Reach one quarter of planned construction progress.",
-        "evidenceTitle": "Construction progress report",
-        "evidenceDescription": "Demo progress report for the 25% construction checkpoint."
+        "title": "25% construction progress",
+        "description": "Initial construction progress reaching approximately 25% of the project.",
+        "evidenceTitle": "Progress report",
+        "evidenceDescription": "Evidence to be recorded together with the corresponding construction progress report."
       },
       "construction-50": {
-        "title": "50% construction",
-        "description": "Reach halfway through planned construction progress.",
-        "evidenceTitle": "Midpoint construction report",
-        "evidenceDescription": "Demo progress report for the 50% construction checkpoint."
+        "title": "50% construction progress",
+        "description": "Construction progress reaching approximately half of the project.",
+        "evidenceTitle": "Progress report",
+        "evidenceDescription": "Evidence to be recorded together with the corresponding construction progress report."
       },
       "project-complete": {
-        "title": "Project complete",
-        "description": "Finish construction and open Huaral Resort operations.",
-        "evidenceTitle": "Opening readiness note",
-        "evidenceDescription": "Demo note for completion and operational readiness."
+        "title": "Project completed",
+        "description": "Completion of the construction work and preparation of the project to begin operations.",
+        "evidenceTitle": "Project completion record",
+        "evidenceDescription": "Evidence to be recorded once construction is completed."
       }
     }
   }

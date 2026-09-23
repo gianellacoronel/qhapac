@@ -390,52 +390,54 @@
     "approvedByAdminWallet": "Aprobado por billetera admin",
     "approvedByAddress": "Aprobado por {address}",
     "approvedAt": "{date}",
-    "blockchainProof": "Comprobante del registro",
+    "blockchainProof": "Comprobante de aprobación",
+    "approvalPublicNote": "Esta aprobación quedó registrada públicamente.",
     "transactionLabel": "Referencia: {hash}",
     "viewOnExplorer": "Ver comprobante",
     "viewBlockchainProof": "Ver comprobante",
-    "noBlockchainProof": "No hay comprobante disponible",
+    "noBlockchainProof": "Sin comprobante de aprobación en Stellar todavía.",
+    "stellarTechnicalNote": "Detalle técnico en Stellar",
     "evidence": "Evidencia",
     "viewEvidence": "Ver evidencia",
-    "evidencePrototypeNote": "Evidencia de demostración para este prototipo — no es un documento verificable real.",
+    "evidencePrototypeNote": "Registro demostrativo del MVP — no es un documento físico ni una verificación de obra.",
     "transactionHash": "Hash de la operación (dato técnico)",
     "confirmApproval": "Confirmar aprobación",
     "confirmApprovalDescription": "¿Aprobar “{title}”? Se registrará la aprobación con un comprobante público firmado por la billetera admin.",
     "cancel": "Cancelar",
     "close": "Cerrar",
-    "prototypeNote": "Hitos de prototipo para demostrar el flujo admin y participante. No son datos reales del proyecto.",
+    "prototypeNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Estos hitos son datos de demostración del MVP.",
     "localApprovalNote": "Las aprobaciones son locales a esta sesión del prototipo. La confirmación pública llegará después.",
-    "onChainApprovalNote": "Aprobar un hito registra una operación real firmada por la billetera admin como prueba pública en Qhapaq — no prueba que el hito físico haya ocurrido.",
+    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación deja un comprobante público firmado por la billetera admin — no verifica que la obra física haya ocurrido.",
     "items": {
       "land-acquisition": {
         "title": "Adquisición del terreno",
-        "description": "Asegurar el terreno costero para el desarrollo de Huaral Resort.",
-        "evidenceTitle": "Resumen de adquisición del terreno",
-        "evidenceDescription": "Nota de demostración que confirma la diligencia del terreno costero."
+        "description": "Formalización del terreno destinado al desarrollo de Huaral Resort.",
+        "evidenceTitle": "Documentación del terreno",
+        "evidenceDescription": "Documentación registrada como respaldo del terreno destinado al proyecto."
       },
       "construction-start": {
         "title": "Inicio de construcción",
-        "description": "Comenzar la preparación del sitio y las obras principales.",
-        "evidenceTitle": "Checklist de inicio de obra",
-        "evidenceDescription": "Nota de demostración para la movilización y preparación del sitio."
+        "description": "Inicio de los trabajos de preparación y construcción del proyecto.",
+        "evidenceTitle": "Registro de inicio de obra",
+        "evidenceDescription": "Evidencia pendiente de registrar cuando comiencen los trabajos."
       },
       "construction-25": {
         "title": "25% de construcción",
-        "description": "Alcanzar un cuarto del progreso de construcción planificado.",
-        "evidenceTitle": "Informe de avance de construcción",
-        "evidenceDescription": "Informe de demostración para el hito del 25% de construcción."
+        "description": "Avance inicial de la construcción hasta alcanzar aproximadamente el 25% del proyecto.",
+        "evidenceTitle": "Reporte de avance",
+        "evidenceDescription": "Evidencia pendiente de registrar junto con el reporte correspondiente al avance de obra."
       },
       "construction-50": {
         "title": "50% de construcción",
-        "description": "Alcanzar la mitad del progreso de construcción planificado.",
-        "evidenceTitle": "Informe de mitad de obra",
-        "evidenceDescription": "Informe de demostración para el hito del 50% de construcción."
+        "description": "Avance de la construcción hasta alcanzar aproximadamente la mitad del proyecto.",
+        "evidenceTitle": "Reporte de avance",
+        "evidenceDescription": "Evidencia pendiente de registrar junto con el reporte correspondiente al avance de obra."
       },
       "project-complete": {
         "title": "Proyecto terminado",
-        "description": "Finalizar la construcción y abrir las operaciones de Huaral Resort.",
-        "evidenceTitle": "Nota de apertura",
-        "evidenceDescription": "Nota de demostración para la finalización y preparación operacional."
+        "description": "Finalización de las obras y preparación del proyecto para iniciar sus operaciones.",
+        "evidenceTitle": "Cierre del proyecto",
+        "evidenceDescription": "Evidencia pendiente de registrar una vez finalizadas las obras."
       }
     }
   }
