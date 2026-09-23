@@ -9,7 +9,7 @@ export function ProjectOverview({ project }: ProjectOverviewProps) {
   const t = useTranslations("project");
 
   return (
-    <section className="grid gap-8 border-t border-border/70 pt-12 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-14">
+    <section className="grid gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-14">
       <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
         {t("overviewTitle")}
       </h2>

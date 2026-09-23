@@ -49,7 +49,7 @@ function ActiveGeneratedBenefitView({ benefit }: GeneratedBenefitViewProps) {
           <p className="text-sm text-muted-foreground">{validFor}</p>
         </div>
 
-        <div className="space-y-1 border-t border-border/70 pt-6">
+        <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{t("benefitId")}</p>
           <p className="font-mono text-2xl font-semibold tracking-wide sm:text-3xl">
             {benefit.id}
@@ -99,7 +99,7 @@ function RedeemedBenefitView({ benefit }: GeneratedBenefitViewProps) {
           {benefit.projectName}
         </p>
 
-        <dl className="grid gap-4 border-t border-border/70 pt-6 sm:grid-cols-2">
+        <dl className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <dt className="text-sm text-muted-foreground">{t("benefitId")}</dt>
             <dd className="font-mono text-sm font-semibold tracking-wide">
@@ -117,7 +117,7 @@ function RedeemedBenefitView({ benefit }: GeneratedBenefitViewProps) {
         </dl>
       </div>
 
-      <div className="space-y-3 border-t border-border/70 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+      <div className="space-y-3 lg:border-l lg:border-border/60 lg:pl-8">
         <p className="text-sm text-muted-foreground">{t("onChainProof")}</p>
         {benefit.transactionHash ? (
           <div className="space-y-2">

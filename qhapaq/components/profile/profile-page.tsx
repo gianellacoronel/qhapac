@@ -292,7 +292,7 @@ export function ProfilePage() {
           {isTestnet ? (
             <section
               aria-label={t("highlightsAria")}
-              className="border-y border-border py-8 sm:py-10"
+              className="py-2 sm:py-4"
             >
               {balances.error ? (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -416,7 +416,7 @@ export function ProfilePage() {
                   </div>
 
                   {activeGenerated ? (
-                    <div className="space-y-3 border-t border-border pt-5">
+                    <div className="space-y-3 pt-1">
                       <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
                         {t("benefitActive")}
                       </p>
@@ -430,7 +430,7 @@ export function ProfilePage() {
                       </Link>
                     </div>
                   ) : redeemedProof ? (
-                    <div className="space-y-3 border-t border-border pt-5">
+                    <div className="space-y-3 pt-1">
                       <p className="text-sm leading-relaxed text-muted-foreground">
                         {t("benefitUsedHint")}
                       </p>
@@ -441,7 +441,7 @@ export function ProfilePage() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="space-y-3 border-t border-border pt-5">
+                    <div className="space-y-3 pt-1">
                       <p className="text-sm leading-relaxed text-muted-foreground">
                         {hasQrp
                           ? t("howToGetBenefits")
@@ -460,10 +460,7 @@ export function ProfilePage() {
           ) : null}
 
           {isTestnet ? (
-            <section
-              aria-labelledby="profile-activity-heading"
-              className="border-t border-border pt-12 lg:pt-14"
-            >
+            <section aria-labelledby="profile-activity-heading">
               <SectionLabel>
                 <span id="profile-activity-heading">
                   {t("sectionActivity")}
@@ -512,7 +509,7 @@ export function ProfilePage() {
             </section>
           ) : null}
 
-          <details className="group border-t border-border pt-10 lg:pt-12">
+          <details className="group border-t border-border/60 pt-10 lg:pt-12">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
               <span className="text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground uppercase">
                 {t("sectionTechnical")}

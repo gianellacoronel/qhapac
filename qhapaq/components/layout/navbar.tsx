@@ -37,7 +37,7 @@ export function Navbar() {
   }, [isAdmin, t]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-6 sm:px-8">
         <Link
           href="/"
@@ -103,7 +103,7 @@ export function Navbar() {
       </div>
 
       {open ? (
-        <div className="border-t border-border/70 bg-background px-6 py-4 md:hidden">
+        <div className="border-t border-border/60 bg-background px-6 py-4 md:hidden">
           <nav className="flex flex-col gap-1" aria-label={t("mobileNav")}>
             {navItems.map((item) => {
               const active =
@@ -127,7 +127,7 @@ export function Navbar() {
               );
             })}
           </nav>
-          <div className="mt-4 flex flex-col gap-4 border-t border-border/70 pt-4">
+          <div className="mt-5 flex flex-col gap-4 pt-1">
             <Suspense fallback={null}>
               <LanguageSwitcher />
             </Suspense>

@@ -114,7 +114,7 @@ export function BenefitsPage() {
             </div>
           </section>
 
-          <div className="flex flex-col gap-6 border-t border-border/70 pt-10">
+          <div className="flex flex-col gap-0">
             {availableBenefits.map((benefit) => {
               const cardStatus: BenefitStatus =
                 generatedBenefit?.benefitDefinitionId === benefit.id
@@ -141,7 +141,7 @@ export function BenefitsPage() {
               );
             })}
 
-            <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+            <div className="flex flex-col gap-3 pt-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
               <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
                 {t("disclaimer")}
               </p>

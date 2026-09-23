@@ -12,11 +12,11 @@ type ProjectHeroProps = {
 
 export function ProjectHero({ project, lead, aside }: ProjectHeroProps) {
   return (
-    <section className="relative border-b border-border/60">
+    <section className="relative">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-14 sm:gap-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
         {lead}
 
-        <div className="grid gap-8 border-t border-border/60 pt-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,26rem)] lg:items-stretch lg:gap-12 lg:pt-10">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,26rem)] lg:items-stretch lg:gap-12">
           <div className="relative flex min-h-48 min-w-0 flex-col justify-end overflow-hidden rounded-2xl sm:min-h-56 lg:min-h-0 lg:h-full">
             <Image
               src="/huaral-resort.jpg"

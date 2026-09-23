@@ -38,7 +38,7 @@ export function PortfolioHome() {
         }}
       />
 
-      <div className="border-t border-border/70 pt-10 opacity-90">
+      <div className="opacity-90">
         <TestTransactionCard
           address={wallet.address}
           isConnected={wallet.isConnected}

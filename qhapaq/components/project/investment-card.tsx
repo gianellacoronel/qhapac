@@ -37,7 +37,7 @@ export function InvestmentCard({
 
   return (
     <>
-      <div className="flex w-full flex-col gap-5 border-t border-border/70 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+      <div className="flex w-full flex-col gap-5 border-t border-border/60 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
         <div className="space-y-1.5">
           <p className="text-sm text-muted-foreground">{t("yourParticipation")}</p>
           {!isConnected ? (

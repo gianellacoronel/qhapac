@@ -52,7 +52,7 @@ export function GenerateBenefitDialog({
             </p>
             <p className="text-base font-medium">{benefit.projectName}</p>
           </div>
-          <div className="space-y-1 border-t border-border/70 pt-4">
+          <div className="space-y-1">
             <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
               {t("validForLabel")}
             </p>

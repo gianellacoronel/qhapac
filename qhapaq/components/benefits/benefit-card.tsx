@@ -6,7 +6,7 @@ type BenefitCardProps = {
 
 export function BenefitCard({ benefit }: BenefitCardProps) {
   return (
-    <article className="space-y-2 border-t border-border/70 pt-5">
+    <article className="space-y-2">
       {benefit.highlight ? (
         <p className="font-heading text-3xl font-semibold tracking-tight text-primary">
           {benefit.highlight}

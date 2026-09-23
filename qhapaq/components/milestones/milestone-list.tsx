@@ -39,7 +39,7 @@ export function MilestoneList({
   const compact = variant === "compact";
 
   return (
-    <ol className="space-y-0 divide-y divide-border/70 border-y border-border/70">
+    <ol className="space-y-0 divide-y divide-border/60">
       {milestones.map((milestone) => {
         const approved = milestone.status === "approved";
         const title = t(`items.${milestone.id}.title`);

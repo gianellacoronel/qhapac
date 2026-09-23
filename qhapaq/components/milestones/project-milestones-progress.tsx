@@ -15,7 +15,7 @@ export function ProjectMilestonesProgress() {
     : t("allApproved");
 
   return (
-    <section className="grid gap-10 border-t border-border/70 pt-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
+    <section className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
       <div className="space-y-5">
         <div className="space-y-2">
           <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">

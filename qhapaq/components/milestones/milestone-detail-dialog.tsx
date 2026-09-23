@@ -206,7 +206,7 @@ export function MilestoneDetailDialog({
             ) : null}
 
             {milestone.evidence?.mock ? (
-              <div className="space-y-2 border-t border-border/70 pt-4">
+              <div className="space-y-2 pt-2">
                 <p className="text-xs tracking-wide text-muted-foreground uppercase">
                   {t("evidence")}
                 </p>

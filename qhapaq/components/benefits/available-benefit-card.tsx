@@ -50,7 +50,7 @@ export function AvailableBenefitCard({
     );
 
   return (
-    <div className="grid gap-4 border-b border-border/70 py-6 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8">
+    <div className="grid gap-4 border-b border-border/60 py-6 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8">
       <div className="min-w-0 space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">

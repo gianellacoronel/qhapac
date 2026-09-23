@@ -162,7 +162,7 @@ export function AdminDashboard() {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-14 px-6 py-10 sm:px-8 sm:py-16 lg:py-20">
-      <section className="grid gap-8 border-b border-border/70 pb-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] lg:items-end lg:gap-14">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] lg:items-end lg:gap-14">
         <div className="min-w-0 space-y-4">
           <p className="text-sm text-muted-foreground">
             {project.name}
@@ -247,7 +247,7 @@ export function AdminDashboard() {
         />
       </section>
 
-      <section className="space-y-4 border-t border-border/70 pt-10">
+      <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="font-heading text-2xl font-semibold tracking-tight">
             {tMilestones("title")}
