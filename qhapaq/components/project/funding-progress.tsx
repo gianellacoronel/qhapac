@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 type FundingProgressProps = {
   project: ProjectData;
   funding: FundingProgressState;
-  /** Monumental % as the page hero. Compact keeps a quieter inline read. */
+  /** Column layout for the project hero; compact keeps a quieter inline read. */
   variant?: "hero" | "compact";
   className?: string;
 };
@@ -80,56 +80,30 @@ export function FundingProgress({
   }
 
   return (
-    <section className={cn("space-y-8", className)}>
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-end lg:gap-12">
-        <div className="min-w-0 space-y-3">
-          {isLoading ? (
-            <Skeleton className="h-24 w-48 sm:h-28" />
-          ) : error ? (
-            <p
-              className="font-heading text-7xl font-semibold tracking-tighter text-muted-foreground tabular-nums sm:text-8xl lg:text-9xl"
-              aria-hidden
-            >
-              —
-            </p>
-          ) : (
-            <p className="font-heading text-7xl font-semibold tracking-tighter text-primary tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
-              {pct}
-              <span className="text-[0.55em]">%</span>
-            </p>
-          )}
-          <p className="max-w-sm font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            {t("heroStatement", { projectName: project.name })}
-          </p>
-        </div>
+    <section className={cn("flex flex-col gap-5", className)}>
+      <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        {t("label")}
+      </p>
 
-        <div className="flex min-w-0 flex-col gap-4 lg:items-end lg:text-right">
-          {isLoading ? (
-            <Skeleton className="h-6 w-56" />
-          ) : error ? (
-            <Alert variant="destructive" className="text-left">
-              <AlertCircle />
-              <AlertTitle>{t("errorTitle")}</AlertTitle>
-              <AlertDescription>{t("errorDescription")}</AlertDescription>
-            </Alert>
-          ) : (
-            <>
-              <p className="font-heading text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl">
-                {formatQrp(raised ?? 0, locale)}
-                <span className="text-lg font-normal text-muted-foreground">
-                  {" "}
-                  / {formatQrp(displayGoal, locale)} {project.token}
-                </span>
-              </p>
-              {/*<p className="max-w-xs text-sm leading-relaxed text-muted-foreground lg:ml-auto">
-                {t("footnote", {
-                  projectName: project.name,
-                  token: project.token,
-                })}
-              </p>*/}
-            </>
-          )}
-        </div>
+      <div className="space-y-3">
+        {isLoading ? (
+          <Skeleton className="h-16 w-36" />
+        ) : error ? (
+          <p
+            className="font-heading text-5xl font-semibold tracking-tighter text-muted-foreground tabular-nums sm:text-6xl"
+            aria-hidden
+          >
+            —
+          </p>
+        ) : (
+          <p className="font-heading text-5xl font-semibold tracking-tighter text-primary tabular-nums sm:text-6xl sm:tracking-tighter">
+            {pct}
+            <span className="text-[0.55em]">%</span>
+          </p>
+        )}
+        <p className="max-w-sm font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+          {t("heroStatement", { projectName: project.name })}
+        </p>
       </div>
 
       {isLoading ? (
@@ -137,12 +111,27 @@ export function FundingProgress({
           <Loader2 className="size-4 animate-spin" aria-hidden />
           {t("loading")}
         </div>
-      ) : !error ? (
-        <Progress value={pct} className="w-full">
-          <ProgressLabel className="sr-only">{t("completion")}</ProgressLabel>
-          <ProgressValue />
-        </Progress>
-      ) : null}
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertCircle />
+          <AlertTitle>{t("errorTitle")}</AlertTitle>
+          <AlertDescription>{t("errorDescription")}</AlertDescription>
+        </Alert>
+      ) : (
+        <div className="space-y-3">
+          <p className="font-heading text-xl font-semibold tracking-tight tabular-nums sm:text-2xl">
+            {formatQrp(raised ?? 0, locale)}
+            <span className="text-base font-normal text-muted-foreground">
+              {" "}
+              / {formatQrp(displayGoal, locale)} {project.token}
+            </span>
+          </p>
+          <Progress value={pct} className="w-full">
+            <ProgressLabel className="sr-only">{t("completion")}</ProgressLabel>
+            <ProgressValue />
+          </Progress>
+        </div>
+      )}
     </section>
   );
 }

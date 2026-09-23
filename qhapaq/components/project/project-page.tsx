@@ -35,8 +35,8 @@ export function ProjectPage() {
     <div className="flex flex-1 flex-col">
       <ProjectHero
         project={project}
-        lead={<FundingProgress project={project} funding={funding} />}
-        aside={
+        progress={<FundingProgress project={project} funding={funding} />}
+        participation={
           <InvestmentCard
             project={project}
             address={wallet.address}

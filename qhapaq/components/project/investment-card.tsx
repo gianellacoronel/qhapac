@@ -37,9 +37,11 @@ export function InvestmentCard({
 
   return (
     <>
-      <div className="flex w-full flex-col gap-5 border-t border-border/60 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
-        <div className="space-y-1.5">
-          <p className="text-sm text-muted-foreground">{t("yourParticipation")}</p>
+      <div className="flex w-full flex-col gap-5">
+        <div className="space-y-3">
+          <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+            {t("yourParticipation")}
+          </p>
           {!isConnected ? (
             <p className="font-heading text-3xl font-semibold tracking-tight text-muted-foreground sm:text-4xl">
               {t("connectWallet")}
@@ -67,7 +69,7 @@ export function InvestmentCard({
                 {estimateUsdValue(
                   balance ?? "0",
                   project.referenceValueUsd,
-                  locale
+                  locale,
                 )}
               </p>
             </>
@@ -78,13 +80,13 @@ export function InvestmentCard({
           {project.mainBenefit}
         </p>
 
-        <div className="flex flex-col gap-2">
-          <Button className="w-full" size="lg" onClick={() => setOpen(true)}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+          <Button className="w-full sm:flex-1" size="lg" onClick={() => setOpen(true)}>
             {isConnected && isTestnet && hasTrustline === false
               ? t("addQrp")
               : t("participate")}
           </Button>
-          <Link href="/benefits" className="w-full">
+          <Link href="/benefits" className="w-full sm:flex-1">
             <Button variant="outline" size="lg" className="w-full">
               {t("viewBenefits")}
             </Button>

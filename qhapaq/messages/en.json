@@ -25,6 +25,9 @@
   },
   "project": {
     "stellarTestnet": "Stellar Testnet",
+    "sectionProject": "Project",
+    "heroTitle": "Participate in <mark>investment projects</mark>",
+    "heroLead": "A coastal hospitality project with verifiable participation on Stellar Testnet.",
     "overviewLabel": "Project information",
     "overviewTitle": "Verifiable participation in a coastal resort",
     "location": "Location",
