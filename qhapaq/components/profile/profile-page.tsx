@@ -34,7 +34,6 @@ import { cn } from "@/lib/utils";
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <div className="mb-5 flex items-center gap-3">
-      <span aria-hidden className="block h-px w-8 shrink-0 bg-border sm:w-10" />
       <span className="text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground uppercase">
         {children}
       </span>
@@ -393,7 +392,7 @@ export function ProfilePage() {
                   {!balances.isLoading &&
                   !balances.error &&
                   (balances.hasTrustline === false || !hasQrp) ? (
-                    <Link href="/" className="inline-flex w-fit">
+                    <Link href="/" className="inline-flex w-fit ml-2">
                       <Button variant="outline" size="sm">
                         {t("participate")}
                       </Button>
