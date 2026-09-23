@@ -89,7 +89,7 @@ export function MilestoneList({
               className={cn(
                 "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full",
                 approved
-                  ? "bg-primary/15 text-primary"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground"
               )}
               aria-hidden

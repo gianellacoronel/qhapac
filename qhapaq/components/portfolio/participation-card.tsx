@@ -59,8 +59,10 @@ export function ParticipationCard({
               —
             </p>
           ) : (
-            <p className="font-heading text-7xl font-semibold tracking-tighter text-primary tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
-              {formatted ?? "0"}
+            <p className="font-heading text-7xl font-semibold tracking-tighter tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
+              <span className="bg-primary px-2 py-0.5 text-primary-foreground">
+                {formatted ?? "0"}
+              </span>
             </p>
           )}
           <p className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">

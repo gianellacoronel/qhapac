@@ -64,11 +64,17 @@ function HighlightStat({
           className={cn(
             "font-heading font-semibold tracking-tight",
             emphasize
-              ? "text-3xl text-primary tabular-nums sm:text-4xl sm:tracking-tighter"
+              ? "text-3xl tabular-nums sm:text-4xl sm:tracking-tighter"
               : "text-2xl text-foreground sm:text-3xl",
           )}
         >
-          {value}
+          {emphasize ? (
+            <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+              {value}
+            </span>
+          ) : (
+            value
+          )}
         </p>
       )}
     </div>

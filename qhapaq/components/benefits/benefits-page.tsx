@@ -84,9 +84,11 @@ export function BenefitsPage() {
         <>
           <section className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-14">
             <div className="min-w-0 space-y-3">
-              <p className="font-heading text-7xl font-semibold tracking-tighter text-primary tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
-                {primaryBenefit?.discount ?? 20}
-                <span className="text-[0.55em]">%</span>
+              <p className="font-heading text-7xl font-semibold tracking-tighter tabular-nums sm:text-8xl lg:text-[7.5rem] lg:leading-none">
+                <span className="bg-primary px-2 py-0.5 text-primary-foreground">
+                  {primaryBenefit?.discount ?? 20}
+                  <span className="text-[0.55em]">%</span>
+                </span>
               </p>
               <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
                 {t("heroStatement")}

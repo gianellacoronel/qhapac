@@ -25,8 +25,10 @@ export function ProjectMilestonesProgress() {
             {nextPending ? t("nextUp", { title: nextTitle }) : nextTitle}
           </p>
         </div>
-        <p className="font-heading text-5xl font-semibold tracking-tight tabular-nums text-primary sm:text-6xl">
-          {approvedCount}
+        <p className="font-heading text-5xl font-semibold tracking-tight tabular-nums sm:text-6xl">
+          <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+            {approvedCount}
+          </span>
           <span className="text-[0.5em] font-medium text-muted-foreground">
             {" "}
             / {totalCount}

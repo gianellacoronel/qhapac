@@ -58,7 +58,7 @@
     --card-foreground: oklch(0.16 0.01 90);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.16 0.01 90);
-    /* Qhapaq yellow — primary accent */
+    /* Qhapaq yellow — fills & marks; pair with primary-foreground for readable text */
     --primary: oklch(0.852 0.199 91.936);
     --primary-foreground: oklch(0.22 0.04 75);
     --secondary: oklch(0.94 0.006 95);

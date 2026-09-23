@@ -45,7 +45,9 @@ export function FundingProgress({
             </p>
           ) : (
             <p className="font-heading text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl">
-              <span className="text-primary">{pct}%</span>
+              <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+                {pct}%
+              </span>
               <span className="ml-2 text-base font-normal text-muted-foreground">
                 {t("funded")}
               </span>
@@ -106,9 +108,11 @@ export function FundingProgress({
                 / {formatQrp(displayGoal, locale)} {project.token}
               </span>
             </p>
-            <p className="order-1 font-heading text-5xl font-semibold tracking-tighter text-primary tabular-nums sm:order-2 sm:text-right sm:text-6xl sm:tracking-tighter">
-              {pct}
-              <span className="text-[0.55em]">%</span>
+            <p className="order-1 font-heading text-5xl font-semibold tracking-tighter tabular-nums sm:order-2 sm:text-right sm:text-6xl sm:tracking-tighter">
+              <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+                {pct}
+                <span className="text-[0.55em]"> %</span>
+              </span>
             </p>
           </div>
           <Progress value={pct} className="w-full">

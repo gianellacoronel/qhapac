@@ -172,10 +172,12 @@ export function AdminDashboard() {
           </p>
           {nextPending && nextPendingTitle ? (
             <>
-              <p className="text-sm font-medium text-primary">
-                {t("actionRequired")}
+              <p className="text-sm font-medium">
+                <span className="bg-primary px-1.5 py-0.5 text-primary-foreground">
+                  {t("actionRequired")}
+                </span>
               </p>
-              <h1 className="font-heading text-4xl font-semibold tracking-tight text-primary sm:text-5xl lg:text-6xl lg:leading-[1.05]">
+              <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl lg:leading-[1.05]">
                 {nextPendingTitle}
               </h1>
               <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
@@ -190,7 +192,7 @@ export function AdminDashboard() {
             </>
           ) : (
             <>
-              <h1 className="font-heading text-4xl font-semibold tracking-tight text-primary sm:text-5xl lg:text-6xl">
+              <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 {t("allCaughtUp")}
               </h1>
               <p className="max-w-lg text-base leading-relaxed text-muted-foreground">

@@ -249,8 +249,8 @@ function ValidBenefitCard({
     return (
       <Card className="w-full shadow-xs">
         <CardHeader className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-medium text-primary">
-            <LoaderCircle className="size-4 animate-spin" aria-hidden />
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />
             {t("recording")}
           </div>
           <CardTitle className="font-heading text-xl">
@@ -270,8 +270,8 @@ function ValidBenefitCard({
         <div className="flex min-w-0 flex-1 flex-col gap-(--card-spacing) py-(--card-spacing)">
           <CardHeader className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-primary">
-                <CheckCircle2 className="size-4" aria-hidden />
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CheckCircle2 className="size-4 text-primary" aria-hidden />
                 {isRedeemed ? t("redeemedBenefit") : t("validBenefit")}
               </div>
               <Badge variant={isRedeemed ? "outline" : "secondary"}>

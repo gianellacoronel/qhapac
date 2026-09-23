@@ -138,7 +138,9 @@ export function MilestoneDetailDialog({
               <span
                 className={cn(
                   "shrink-0 text-xs font-medium tracking-wide uppercase",
-                  approved ? "text-primary" : "text-muted-foreground"
+                  approved
+                    ? "bg-primary px-1.5 py-0.5 text-primary-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 {approved ? t("approved") : t("pending")}

@@ -35,13 +35,15 @@ function ActiveGeneratedBenefitView({ benefit }: GeneratedBenefitViewProps) {
     <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-14">
       <div className="min-w-0 space-y-8">
         <div className="space-y-3">
-          <p className="flex items-center gap-2 text-sm font-medium text-primary">
-            <CheckCircle2 className="size-4" aria-hidden />
+          <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <CheckCircle2 className="size-4 text-primary" aria-hidden />
             {t("generatedTitle")}
           </p>
-          <p className="font-heading text-6xl font-semibold tracking-tighter text-primary tabular-nums sm:text-7xl lg:text-8xl">
-            {benefit.discount}
-            <span className="text-[0.55em]">%</span>
+          <p className="font-heading text-6xl font-semibold tracking-tighter tabular-nums sm:text-7xl lg:text-8xl">
+            <span className="bg-primary px-2 py-0.5 text-primary-foreground">
+              {benefit.discount}
+              <span className="text-[0.55em]">%</span>
+            </span>
           </p>
           <p className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
             {benefit.projectName}
