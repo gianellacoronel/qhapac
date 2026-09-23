@@ -20,7 +20,7 @@ export const INITIAL_HUARAL_MILESTONES: Milestone[] = [
   {
     id: "land-acquisition",
     status: "pending",
-    expectedDate: "2026-08-15",
+    expectedDate: "2026-09-24",
     evidence: { mock: true },
   },
   {
