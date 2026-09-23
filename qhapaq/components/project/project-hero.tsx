@@ -32,7 +32,7 @@ export function ProjectHero({
 
   return (
     <section className="relative">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 sm:gap-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-20">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 sm:gap-12 sm:px-8 sm:py-16 lg:gap-14 lg:py-12">
         <header className="max-w-max space-y-4">
           <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
             {t.rich("heroTitle", {
