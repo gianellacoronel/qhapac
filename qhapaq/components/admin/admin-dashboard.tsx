@@ -9,6 +9,7 @@ import { MilestoneList } from "@/components/milestones/milestone-list";
 import { useMilestones } from "@/components/milestones/milestones-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { QrpLabel } from "@/components/qrp-help";
 import { useFundingProgress } from "@/hooks/use-funding-progress";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useUserRole } from "@/hooks/use-user-role";
@@ -158,7 +159,7 @@ export function AdminDashboard() {
   const fundingSummary =
     funding.isLoading || funding.error
       ? "—"
-      : `${formatQrp(fundingRaised, locale)} / ${formatQrp(fundingGoal, locale)} ${project.token}`;
+      : `${formatQrp(fundingRaised, locale)} / ${formatQrp(fundingGoal, locale)}`;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-14 px-6 py-10 sm:px-8 sm:py-16 lg:py-20">
@@ -228,11 +229,18 @@ export function AdminDashboard() {
             </div>
             <div className="space-y-0.5">
               <dt className="text-muted-foreground">{tProject("token")}</dt>
-              <dd className="font-medium">{project.token}</dd>
+              <dd className="font-medium">
+                <QrpLabel brief={false} />
+              </dd>
             </div>
             <div className="space-y-0.5">
               <dt className="text-muted-foreground">{t("fundingLabel")}</dt>
-              <dd className="font-medium tabular-nums">{fundingSummary}</dd>
+              <dd className="inline-flex items-baseline gap-1 font-medium tabular-nums">
+                {fundingSummary}
+                {fundingSummary !== "—" ? (
+                  <QrpLabel brief showHelp={false} />
+                ) : null}
+              </dd>
             </div>
             <div className="space-y-0.5">
               <dt className="text-muted-foreground">{t("networkLabel")}</dt>

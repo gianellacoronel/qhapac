@@ -35,11 +35,11 @@ export const huaralResort: ProjectData = {
   fundingTarget: 1000,
   fundingCurrent: 0,
   shortDescription:
-    "A coastal hospitality project inviting verifiable community participation through QRP on Stellar Testnet.",
+    "A coastal hospitality project inviting the community to participate and unlock verifiable benefits.",
   overview: [
     "Huaral Resort brings guests a calm Pacific retreat north of Lima — pools, dining, and wellness spaces designed for long stays and local weekends.",
-    "Qhapaq lets supporters participate with QRP, a classic Stellar Testnet asset that represents project participation for this hackathon prototype — not legal shares or securities.",
-    "Holding QRP unlocks a 20% discount on resort services, giving participation a clear, tangible benefit.",
+    "With Qhapaq you can acquire participation in this project. Your participation is measured in QRP and recorded in a verifiable way. This is not shares or an investment product.",
+    "Participating unlocks a 20% discount on resort services — a concrete benefit you can generate, verify, and use.",
   ],
   mainBenefit: "20% discount on resort services",
   benefits: [
@@ -62,11 +62,11 @@ export const huaralResort: ProjectData = {
       title: "Project updates",
       description:
         "Transparent progress notes on funding, construction milestones, and guest experience improvements.",
-      highlight: "On-chain linked",
+      highlight: "Verifiable record",
     },
   ],
   disclaimer:
-    "QRP on Stellar Testnet is a hackathon prototype for verifiable participation. It is not a security, equity share, or investment product.",
+    "This is a demonstration of verifiable participation. QRP is not a security, equity share, or investment product.",
 };
 
 export function getFundingPercent(raised: number, goal: number): number {

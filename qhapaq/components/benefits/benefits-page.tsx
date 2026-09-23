@@ -3,14 +3,12 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  AvailableBenefitCard,
-  formatParticipationLabel,
-} from "@/components/benefits/available-benefit-card";
+import { AvailableBenefitCard } from "@/components/benefits/available-benefit-card";
 import { GenerateBenefitDialog } from "@/components/benefits/generate-benefit-dialog";
 import { GeneratedBenefitView } from "@/components/benefits/generated-benefit-view";
 import { useBenefitSession } from "@/components/benefits/benefit-session";
 import { Button } from "@/components/ui/button";
+import { QrpLabel } from "@/components/qrp-help";
 import { Link } from "@/i18n/navigation";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
@@ -47,13 +45,11 @@ export function BenefitsPage() {
     [activeDefinitionId],
   );
 
-  const participationLabel = formatParticipationLabel(
-    formatted,
-    project.token,
-    wallet.isConnected,
-    t("connectToSee", { token: project.token }),
-    balanceLoading,
-  );
+  const participationAmount = !wallet.isConnected
+    ? null
+    : balanceLoading || formatted == null
+      ? "—"
+      : formatted;
 
   function handleGenerateConfirm() {
     if (!activeDefinition) return;
@@ -97,7 +93,16 @@ export function BenefitsPage() {
               })}
             </h1>
             <p className="shrink-0 text-sm text-muted-foreground sm:text-right">
-              {t("yourParticipation", { label: participationLabel })}
+              {participationAmount == null ? (
+                t("connectToSee")
+              ) : (
+                <span className="inline-flex flex-wrap items-baseline justify-end gap-1">
+                  <span>
+                    {t("yourParticipation", { label: participationAmount })}
+                  </span>
+                  <QrpLabel brief className="text-sm text-muted-foreground" />
+                </span>
+              )}
             </p>
           </header>
 

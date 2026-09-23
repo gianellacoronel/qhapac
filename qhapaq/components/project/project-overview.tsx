@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { QrpLabel } from "@/components/qrp-help";
 import type { ProjectData } from "@/lib/project/data";
 
 type ProjectOverviewProps = {
@@ -35,7 +36,9 @@ export function ProjectOverview({ project }: ProjectOverviewProps) {
           </div>
           <div className="space-y-1">
             <dt className="text-sm text-muted-foreground">{t("token")}</dt>
-            <dd className="font-medium">{project.token}</dd>
+            <dd className="font-medium">
+              <QrpLabel brief={false} />
+            </dd>
           </div>
           <div className="space-y-1">
             <dt className="text-sm text-muted-foreground">

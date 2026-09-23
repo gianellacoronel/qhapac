@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { QrpLabel } from "@/components/qrp-help";
 import { purchaseErrorKey, trustlineErrorKey } from "@/lib/i18n/errors";
 import { requestQrpPurchase } from "@/lib/participation/purchase-client";
 import {
@@ -274,7 +275,7 @@ export function ParticipateDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl">
-            {t("title", { token: project.token, projectName: project.name })}
+            {t("title", { projectName: project.name })}
           </DialogTitle>
           <DialogDescription>
             {needsTrustline
@@ -303,9 +304,10 @@ export function ParticipateDialog({
             ) : (
               <p className="mt-1 font-heading text-2xl font-semibold tracking-tight">
                 {formattedBalance ?? "0"}{" "}
-                <span className="text-base font-normal text-muted-foreground">
-                  {project.token}
-                </span>
+                <QrpLabel
+                  brief
+                  className="text-base font-normal text-muted-foreground"
+                />
               </p>
             )}
             {investorAddress && isConnected ? (

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ParticipateDialog } from "@/components/project/participate-dialog";
+import { QrpLabel } from "@/components/qrp-help";
 import { Link } from "@/i18n/navigation";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { estimateUsdValue, type ProjectData } from "@/lib/project/data";
@@ -60,9 +61,10 @@ export function InvestmentCard({
             <>
               <p className="font-heading text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
                 {formatted ?? "0"}{" "}
-                <span className="text-base font-normal text-muted-foreground sm:text-lg">
-                  {project.token}
-                </span>
+                <QrpLabel
+                  brief={false}
+                  className="text-base font-normal text-muted-foreground sm:text-lg"
+                />
               </p>
               <p className="text-sm text-muted-foreground">
                 ≈{" "}

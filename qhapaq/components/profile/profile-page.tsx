@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionLink } from "@/components/wallet/transaction-link";
+import { QrpLabel } from "@/components/qrp-help";
 import { useAccountBalances } from "@/hooks/use-account-balances";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useWallet } from "@/hooks/use-wallet";
@@ -313,9 +314,11 @@ export function ProfilePage() {
                     value={
                       <>
                         {balances.qrpFormatted ?? "0"}
-                        <span className="ml-2 text-[0.45em] font-medium tracking-normal text-muted-foreground">
-                          {huaralResort.token}
-                        </span>
+                        <QrpLabel
+                          brief={false}
+                          className="ml-2 text-[0.45em] font-medium tracking-normal text-muted-foreground"
+                          helpClassName="size-3 text-[0.55rem]"
+                        />
                       </>
                     }
                   />
@@ -364,8 +367,13 @@ export function ProfilePage() {
                     </p>
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
-                    {t("tokenLabel", { token: huaralResort.token })}
+                  <p className="inline-flex items-baseline gap-1.5 text-xs text-muted-foreground">
+                    <span>{t("tokenLabel")}</span>
+                    <QrpLabel
+                      brief
+                      showHelp={false}
+                      className="text-xs text-muted-foreground"
+                    />
                   </p>
 
                   {balancesReady && hasQrp ? (

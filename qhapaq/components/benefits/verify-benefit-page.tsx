@@ -346,6 +346,9 @@ function ValidBenefitCard({
                   <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
                     {t("onChainProof")}
                   </p>
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    {t("proofHint")}
+                  </p>
                   <div className="space-y-1">
                     <p className="text-xs font-medium tracking-[0.12em] text-muted-foreground uppercase">
                       {t("transaction")}

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QrpLabel } from "@/components/qrp-help";
 import { Link } from "@/i18n/navigation";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
@@ -64,7 +65,7 @@ export function ParticipationCard({
             </p>
           )}
           <p className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-            {huaralResort.token}
+            <QrpLabel brief={false} />
             <span className="ml-2 text-base font-normal text-muted-foreground">
               · {projectName}
             </span>
@@ -154,7 +155,7 @@ export function ParticipationCard({
           <AlertCircle />
           <AlertTitle>{t("balanceErrorTitle")}</AlertTitle>
           <AlertDescription>
-            <span className="block">{error}</span>
+            <span className="block">{t("balanceErrorDescription")}</span>
             <Button
               variant="ghost"
               size="xs"

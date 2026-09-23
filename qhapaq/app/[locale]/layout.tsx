@@ -17,6 +17,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { MilestonesProvider } from "@/components/milestones/milestones-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { WalletProvider } from "@/hooks/use-wallet";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -102,15 +103,17 @@ export default async function LocaleLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages}>
-            <WalletProvider>
-              <BenefitSessionProvider>
-                <MilestonesProvider>
-                  <Navbar />
-                  {children}
-                  <ThemeToggle />
-                </MilestonesProvider>
-              </BenefitSessionProvider>
-            </WalletProvider>
+            <TooltipProvider delay={200}>
+              <WalletProvider>
+                <BenefitSessionProvider>
+                  <MilestonesProvider>
+                    <Navbar />
+                    {children}
+                    <ThemeToggle />
+                  </MilestonesProvider>
+                </BenefitSessionProvider>
+              </WalletProvider>
+            </TooltipProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

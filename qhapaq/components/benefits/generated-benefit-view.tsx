@@ -119,8 +119,12 @@ function RedeemedBenefitView({ benefit }: GeneratedBenefitViewProps) {
 
       <div className="space-y-3 lg:border-l lg:border-border/60 lg:pl-8">
         <p className="text-sm text-muted-foreground">{t("onChainProof")}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          {t("proofHint")}
+        </p>
         {benefit.transactionHash ? (
           <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">{t("transaction")}</p>
             <p className="font-mono text-sm font-semibold tracking-wide">
               {shortenHash(benefit.transactionHash)}
             </p>
