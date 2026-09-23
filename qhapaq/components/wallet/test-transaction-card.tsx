@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionLink } from "@/components/wallet/transaction-link";
+import { stellarRichTag } from "@/components/stellar-help";
 import { useTestTransaction } from "@/hooks/use-test-transaction";
 import { shortenHash } from "@/lib/stellar/explorer";
 import { TEST_XLM_AMOUNT } from "@/lib/stellar/transactions";
@@ -67,7 +68,9 @@ export function TestTransactionCard({
           <Alert variant="destructive">
             <AlertCircle />
             <AlertTitle>{t("wrongNetworkTitle")}</AlertTitle>
-            <AlertDescription>{t("wrongNetworkDescription")}</AlertDescription>
+            <AlertDescription>
+              {t.rich("wrongNetworkDescription", stellarRichTag())}
+            </AlertDescription>
           </Alert>
         ) : null}
 

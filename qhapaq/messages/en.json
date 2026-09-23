@@ -28,6 +28,12 @@
     "description": "QRP represents your participation in this project within Qhapaq. The amount of QRP you have indicates your participation in the project.",
     "brief": "QRP is the unit that represents your participation in this project."
   },
+  "stellar": {
+    "helpAria": "What is Stellar",
+    "term": "Stellar",
+    "description": "Stellar is the public network where Qhapaq records your participation so it can be checked openly. Think of it as a shared notebook that keeps a clear, lasting record.",
+    "brief": "Stellar is the public network that keeps an open record of your participation."
+  },
   "project": {
     "stellarTestnet": "Stellar Testnet",
     "sectionProject": "Project",
@@ -246,7 +252,7 @@
     "freighterRequiredDescription": "Install the Freighter browser extension and refresh this page to connect your wallet.",
     "errorTitle": "Wallet error",
     "dismiss": "Dismiss",
-    "wrongNetworkMessage": "Wrong network. Switch Freighter to {network}.",
+    "wrongNetworkMessage": "Wrong network. Switch Freighter to <network></network>.",
     "unexpectedError": "Unexpected wallet error."
   },
   "profile": {
@@ -324,7 +330,7 @@
     "description": "Sends {amount} XLM to your own account on Testnet. Uses Freighter for signing — no private keys, no participation movement.",
     "connectPrompt": "Connect Freighter to run a test operation.",
     "wrongNetworkTitle": "Wrong network",
-    "wrongNetworkDescription": "Switch Freighter to Stellar Testnet before sending.",
+    "wrongNetworkDescription": "Switch Freighter to <stellar>Stellar</stellar> Testnet before sending.",
     "waitingApproval": "Waiting for wallet approval…",
     "submitting": "Submitting operation…",
     "confirmedTitle": "Operation confirmed",
@@ -395,8 +401,8 @@
     "transactionLabel": "Reference: {hash}",
     "viewOnExplorer": "View proof",
     "viewBlockchainProof": "View proof",
-    "noBlockchainProof": "No Stellar approval record yet.",
-    "stellarTechnicalNote": "Technical detail on Stellar",
+    "noBlockchainProof": "No <stellar>Stellar</stellar> approval record yet.",
+    "stellarTechnicalNote": "Technical detail on <stellar>Stellar</stellar>",
     "evidence": "Evidence",
     "viewEvidence": "View evidence",
     "evidencePrototypeNote": "Demonstrative MVP record — not a physical document or construction verification.",

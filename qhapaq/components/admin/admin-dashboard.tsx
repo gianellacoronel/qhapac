@@ -10,13 +10,13 @@ import { useMilestones } from "@/components/milestones/milestones-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { QrpLabel } from "@/components/qrp-help";
+import { StellarNetworkLabel } from "@/components/stellar-help";
 import { useFundingProgress } from "@/hooks/use-funding-progress";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Link } from "@/i18n/navigation";
 import { requestMilestoneApproval } from "@/lib/milestones/approve-client";
 import { formatQrp } from "@/lib/project/data";
-import { stellarConfig } from "@/lib/stellar/config";
 import { shortenAddress } from "@/lib/stellar/wallet";
 
 export type ApprovalUiPhase =
@@ -238,7 +238,9 @@ export function AdminDashboard() {
             </div>
             <div className="space-y-0.5">
               <dt className="text-muted-foreground">{t("networkLabel")}</dt>
-              <dd className="font-medium">{stellarConfig.displayName}</dd>
+              <dd className="font-medium">
+                <StellarNetworkLabel brief={false} />
+              </dd>
             </div>
           </dl>
         </div>

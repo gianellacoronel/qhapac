@@ -22,7 +22,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWallet } from "@/hooks/use-wallet";
 import { useRouter } from "@/i18n/navigation";
-import { stellarConfig } from "@/lib/stellar/config";
+import { StellarNetworkLabel } from "@/components/stellar-help";
 import { shortenAddress } from "@/lib/stellar/wallet";
 
 type ConnectWalletProps = {
@@ -57,7 +57,9 @@ export function ConnectWallet({
 
   const displayError =
     errorCode === "wrong_network"
-      ? t("wrongNetworkMessage", { network: stellarConfig.displayName })
+      ? t.rich("wrongNetworkMessage", {
+          network: () => <StellarNetworkLabel />,
+        })
       : errorCode === "unexpected"
         ? t("unexpectedError")
         : error;
@@ -139,7 +141,7 @@ export function ConnectWallet({
             {shortenAddress(address!)}
           </Badge>
           <Badge variant={isTestnet ? "outline" : "destructive"}>
-            {isTestnet ? stellarConfig.displayName : t("wrongNetwork")}
+            {isTestnet ? <StellarNetworkLabel /> : t("wrongNetwork")}
           </Badge>
           <Button
             variant="ghost"

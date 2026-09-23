@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { QrpLabel } from "@/components/qrp-help";
+import { StellarNetworkLabel } from "@/components/stellar-help";
 import { useAccountBalances } from "@/hooks/use-account-balances";
 import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useWallet } from "@/hooks/use-wallet";
@@ -27,7 +28,6 @@ import {
   huaralResort,
   toIntlLocale,
 } from "@/lib/project/data";
-import { stellarConfig } from "@/lib/stellar/config";
 import { shortenAddress } from "@/lib/stellar/wallet";
 import { cn } from "@/lib/utils";
 
@@ -122,9 +122,11 @@ export function ProfilePage() {
     }
   }
 
-  const networkLabel = isTestnet
-    ? stellarConfig.displayName
-    : tWallet("wrongNetwork");
+  const networkLabel = isTestnet ? (
+    <StellarNetworkLabel brief={false} />
+  ) : (
+    tWallet("wrongNetwork")
+  );
 
   let participationStatus = t("participationUnavailable");
   let participationBody = t("participationIntroUnavailable");
@@ -282,8 +284,8 @@ export function ProfilePage() {
               <AlertCircle />
               <AlertTitle>{tWallet("wrongNetwork")}</AlertTitle>
               <AlertDescription>
-                {tWallet("wrongNetworkMessage", {
-                  network: stellarConfig.displayName,
+                {tWallet.rich("wrongNetworkMessage", {
+                  network: () => <StellarNetworkLabel />,
                 })}
               </AlertDescription>
             </Alert>

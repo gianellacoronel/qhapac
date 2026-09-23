@@ -28,6 +28,12 @@
     "description": "QRP representa tu participación en este proyecto dentro de Qhapaq. La cantidad de QRP que tienes indica cuánto participas en el proyecto.",
     "brief": "QRP es la unidad que representa tu participación en este proyecto."
   },
+  "stellar": {
+    "helpAria": "Qué es Stellar",
+    "term": "Stellar",
+    "description": "Stellar es la red pública donde Qhapaq registra tu participación para que se pueda consultar abiertamente. Piensa en ella como un cuaderno compartido que guarda un registro claro y duradero.",
+    "brief": "Stellar es la red pública que guarda un registro abierto de tu participación."
+  },
   "project": {
     "stellarTestnet": "Stellar Testnet",
     "sectionProject": "Proyecto",
@@ -246,7 +252,7 @@
     "freighterRequiredDescription": "Instala la extensión Freighter del navegador y recarga esta página para conectar tu billetera.",
     "errorTitle": "Error de billetera",
     "dismiss": "Cerrar",
-    "wrongNetworkMessage": "Red incorrecta. Cambia Freighter a {network}.",
+    "wrongNetworkMessage": "Red incorrecta. Cambia Freighter a <network></network>.",
     "unexpectedError": "Ocurrió un error inesperado con la billetera."
   },
   "profile": {
@@ -324,7 +330,7 @@
     "description": "Envía {amount} XLM a tu propia cuenta en Testnet. Usa Freighter para firmar — sin claves privadas ni movimiento de participación.",
     "connectPrompt": "Conecta Freighter para ejecutar una operación de prueba.",
     "wrongNetworkTitle": "Red incorrecta",
-    "wrongNetworkDescription": "Cambia Freighter a Stellar Testnet antes de enviar.",
+    "wrongNetworkDescription": "Cambia Freighter a <stellar>Stellar</stellar> Testnet antes de enviar.",
     "waitingApproval": "Esperando aprobación de la billetera…",
     "submitting": "Enviando operación…",
     "confirmedTitle": "Operación confirmada",
@@ -395,8 +401,8 @@
     "transactionLabel": "Referencia: {hash}",
     "viewOnExplorer": "Ver comprobante",
     "viewBlockchainProof": "Ver comprobante",
-    "noBlockchainProof": "Sin comprobante de aprobación en Stellar todavía.",
-    "stellarTechnicalNote": "Detalle técnico en Stellar",
+    "noBlockchainProof": "Sin comprobante de aprobación en <stellar>Stellar</stellar> todavía.",
+    "stellarTechnicalNote": "Detalle técnico en <stellar>Stellar</stellar>",
     "evidence": "Evidencia",
     "viewEvidence": "Ver evidencia",
     "evidencePrototypeNote": "Registro demostrativo del MVP — no es un documento físico ni una verificación de obra.",

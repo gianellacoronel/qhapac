@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TransactionLink } from "@/components/wallet/transaction-link";
+import { stellarRichTag } from "@/components/stellar-help";
 import { toIntlLocale } from "@/lib/project/data";
 import { shortenHash } from "@/lib/stellar/explorer";
 import { shortenAddress } from "@/lib/stellar/wallet";
@@ -184,7 +185,7 @@ export function MilestoneDetailDialog({
                         {t("approvalPublicNote")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {t("stellarTechnicalNote")}
+                        {t.rich("stellarTechnicalNote", stellarRichTag())}
                       </p>
                       <p className="break-all font-mono text-xs text-muted-foreground">
                         {t("transactionLabel", {
@@ -198,7 +199,7 @@ export function MilestoneDetailDialog({
                     </dd>
                   ) : (
                     <dd className="text-sm text-muted-foreground">
-                      {t("noBlockchainProof")}
+                      {t.rich("noBlockchainProof", stellarRichTag())}
                     </dd>
                   )}
                 </div>
