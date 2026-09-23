@@ -85,31 +85,10 @@ export function FundingProgress({
         {t("label")}
       </p>
 
-      <div className="space-y-3">
-        {isLoading ? (
-          <Skeleton className="h-16 w-36" />
-        ) : error ? (
-          <p
-            className="font-heading text-5xl font-semibold tracking-tighter text-muted-foreground tabular-nums sm:text-6xl"
-            aria-hidden
-          >
-            —
-          </p>
-        ) : (
-          <p className="font-heading text-5xl font-semibold tracking-tighter text-primary tabular-nums sm:text-6xl sm:tracking-tighter">
-            {pct}
-            <span className="text-[0.55em]">%</span>
-          </p>
-        )}
-        <p className="max-w-sm font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-          {t("heroStatement", { projectName: project.name })}
-        </p>
-      </div>
-
       {isLoading ? (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" aria-hidden />
-          {t("loading")}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <Skeleton className="h-8 w-48 sm:h-9" />
+          <Skeleton className="h-16 w-36 sm:h-[4.5rem]" />
         </div>
       ) : error ? (
         <Alert variant="destructive">
@@ -119,19 +98,32 @@ export function FundingProgress({
         </Alert>
       ) : (
         <div className="space-y-3">
-          <p className="font-heading text-xl font-semibold tracking-tight tabular-nums sm:text-2xl">
-            {formatQrp(raised ?? 0, locale)}
-            <span className="text-base font-normal text-muted-foreground">
-              {" "}
-              / {formatQrp(displayGoal, locale)} {project.token}
-            </span>
-          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+            <p className="order-2 font-heading text-xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-2xl">
+              {formatQrp(raised ?? 0, locale)}
+              <span className="text-base font-normal text-muted-foreground">
+                {" "}
+                / {formatQrp(displayGoal, locale)} {project.token}
+              </span>
+            </p>
+            <p className="order-1 font-heading text-5xl font-semibold tracking-tighter text-primary tabular-nums sm:order-2 sm:text-right sm:text-6xl sm:tracking-tighter">
+              {pct}
+              <span className="text-[0.55em]">%</span>
+            </p>
+          </div>
           <Progress value={pct} className="w-full">
             <ProgressLabel className="sr-only">{t("completion")}</ProgressLabel>
             <ProgressValue />
           </Progress>
         </div>
       )}
+
+      {isLoading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+          {t("loading")}
+        </div>
+      ) : null}
     </section>
   );
 }
