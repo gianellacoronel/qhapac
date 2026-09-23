@@ -5,9 +5,10 @@ export const huaralResortDiscount: BenefitDefinition = {
   id: "huaral-resort-20-off",
   projectId: huaralResort.id,
   projectName: huaralResort.name,
-  title: "20% OFF",
-  description: "Discount on resort services available through Qhapaq participation.",
-  validFor: "Resort services",
+  title: "Resort services discount",
+  description:
+    "Participants receive 20% off lodging, dining, and spa services when visiting Huaral Resort.",
+  validFor: "Lodging, dining, and spa",
   discount: 20,
 };
 

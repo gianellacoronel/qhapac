@@ -158,7 +158,7 @@
   },
   "benefits": {
     "label": "Benefits",
-    "title": "Your benefits",
+    "title": "Your participation <mark>counts</mark>",
     "heroStatement": "Discount on resort services",
     "description": "Generate your digital credential and use it at Huaral Resort.",
     "backToBenefits": "Back to benefits",
@@ -166,9 +166,9 @@
     "verifyLink": "Verify a benefit ID",
     "definitions": {
       "huaral-resort-20-off": {
-        "title": "20% OFF",
-        "description": "Discount on resort services available through Qhapaq participation.",
-        "validFor": "Resort services"
+        "title": "Resort services discount",
+        "description": "Participants receive 20% off lodging, dining, and spa services when visiting Huaral Resort.",
+        "validFor": "Lodging, dining, and spa"
       }
     },
     "status": {
