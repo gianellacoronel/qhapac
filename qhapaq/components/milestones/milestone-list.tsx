@@ -2,6 +2,7 @@
 
 import { Check, Circle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TransactionLink } from "@/components/wallet/transaction-link";
 import { toIntlLocale } from "@/lib/project/data";
@@ -28,6 +29,28 @@ function formatApprovedAt(iso: string, locale: string): string {
   }).format(date);
 }
 
+function MilestoneStatusBadge({
+  approved,
+  label,
+  className,
+}: {
+  approved: boolean;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <Badge
+      variant={approved ? "secondary" : "outline"}
+      className={cn(
+        approved ? "bg-primary/20 text-foreground" : undefined,
+        className
+      )}
+    >
+      {label}
+    </Badge>
+  );
+}
+
 export function MilestoneList({
   milestones,
   canApprove = false,
@@ -42,6 +65,7 @@ export function MilestoneList({
     <ol className="space-y-0 divide-y divide-border/60">
       {milestones.map((milestone) => {
         const approved = milestone.status === "approved";
+        const statusLabel = approved ? t("approved") : t("pending");
         const title = t(`items.${milestone.id}.title`);
         const description = t(`items.${milestone.id}.description`);
         const approvedByText =
@@ -78,18 +102,13 @@ export function MilestoneList({
             </span>
 
             <div className="min-w-0 space-y-1.5">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <div className="flex items-start justify-between gap-2">
                 <p className="font-medium text-foreground">{title}</p>
-                {!compact ? (
-                  <span
-                    className={cn(
-                      "text-xs font-medium tracking-wide uppercase sm:hidden",
-                      approved ? "text-primary" : "text-muted-foreground"
-                    )}
-                  >
-                    {approved ? t("approved") : t("pending")}
-                  </span>
-                ) : null}
+                <MilestoneStatusBadge
+                  approved={approved}
+                  label={statusLabel}
+                  className={compact ? undefined : "sm:hidden"}
+                />
               </div>
 
               {!compact ? (
@@ -100,9 +119,6 @@ export function MilestoneList({
 
               {approved && compact ? (
                 <div className="space-y-1.5 text-sm text-muted-foreground">
-                  <p className="text-xs font-medium tracking-wide text-primary uppercase">
-                    {t("approved")}
-                  </p>
                   {milestone.approvedAt ? (
                     <p>{formatApprovedAt(milestone.approvedAt, locale)}</p>
                   ) : null}
@@ -152,14 +168,10 @@ export function MilestoneList({
 
             {!compact ? (
               <div className="hidden flex-col items-end gap-2 sm:flex">
-                <span
-                  className={cn(
-                    "text-xs font-medium tracking-wide uppercase",
-                    approved ? "text-primary" : "text-muted-foreground"
-                  )}
-                >
-                  {approved ? t("approved") : t("pending")}
-                </span>
+                <MilestoneStatusBadge
+                  approved={approved}
+                  label={statusLabel}
+                />
                 {onViewDetails || canApprove ? (
                   <Button
                     size="sm"
