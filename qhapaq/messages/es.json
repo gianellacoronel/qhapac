@@ -413,7 +413,7 @@
     "close": "Cerrar",
     "prototypeNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Estos hitos son datos de demostración del MVP.",
     "localApprovalNote": "Las aprobaciones son locales a esta sesión del prototipo. La confirmación pública llegará después.",
-    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación deja un comprobante público firmado por la billetera admin — no verifica que la obra física haya ocurrido.",
+    "onChainApprovalNote": "Qhapaq registra las aprobaciones y evidencias asociadas al proyecto. Una aprobación deja un comprobante público firmado por la billetera admin.",
     "items": {
       "land-acquisition": {
         "title": "Adquisición del terreno",

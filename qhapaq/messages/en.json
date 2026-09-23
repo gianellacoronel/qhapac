@@ -413,7 +413,7 @@
     "close": "Close",
     "prototypeNote": "Qhapaq records the approvals and evidence associated with the project. These milestones are MVP demonstration data.",
     "localApprovalNote": "Approvals are local to this prototype session. Public confirmation will come later.",
-    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval leaves a public proof signed by the admin wallet — it does not verify that physical construction occurred.",
+    "onChainApprovalNote": "Qhapaq records the approvals and evidence associated with the project. An approval leaves a public proof signed by the admin wallet.",
     "items": {
       "land-acquisition": {
         "title": "Land acquisition",

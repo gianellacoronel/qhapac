@@ -50,7 +50,7 @@ function formatDate(iso: string, locale: string): string {
 function formatDay(isoDate: string, locale: string): string {
   // Expected dates are YYYY-MM-DD — append noon UTC to avoid timezone shift.
   const date = new Date(
-    isoDate.includes("T") ? isoDate : `${isoDate}T12:00:00.000Z`
+    isoDate.includes("T") ? isoDate : `${isoDate}T12:00:00.000Z`,
   );
   if (Number.isNaN(date.getTime())) return isoDate;
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
@@ -139,7 +139,7 @@ export function MilestoneDetailDialog({
               <span
                 className={cn(
                   "shrink-0 text-xs font-medium tracking-wide uppercase",
-                  approved ? "text-primary" : "text-muted-foreground"
+                  approved ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 {approved ? t("approved") : t("pending")}
@@ -223,9 +223,9 @@ export function MilestoneDetailDialog({
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       {evidenceDescription}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    {/*<p className="text-xs text-muted-foreground">
                       {t("evidencePrototypeNote")}
-                    </p>
+                    </p>*/}
                   </div>
                   <Button
                     type="button"
@@ -290,7 +290,7 @@ export function MilestoneDetailDialog({
         <DialogContent className="sm:max-w-md" showCloseButton>
           <DialogHeader>
             <DialogTitle>{t("evidence")}</DialogTitle>
-            <DialogDescription>{t("evidencePrototypeNote")}</DialogDescription>
+            {/*<DialogDescription>{t("evidencePrototypeNote")}</DialogDescription>*/}
           </DialogHeader>
           <div className="space-y-2">
             <p className="font-medium">{evidenceTitle}</p>
