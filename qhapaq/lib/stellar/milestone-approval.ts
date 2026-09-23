@@ -3,7 +3,10 @@
  * Import exclusively from Route Handlers / Server Actions — never from client components.
  *
  * The Testnet self-payment proves that the Admin Wallet registered/approved a
- * milestone in Qhapaq. It does NOT prove the physical milestone occurred.
+ * milestone evidence hash in Qhapaq. It does NOT prove the physical milestone occurred.
+ *
+ * On-chain: Memo.hash(SHA-256 of the evidence file).
+ * Off-chain/IPFS: CID + metadata (milestoneId, description, fileName, …).
  */
 import {
   Asset,
@@ -14,7 +17,10 @@ import {
   TransactionBuilder,
 } from "stellar-sdk";
 import { getAdminAddress } from "@/lib/auth/role";
-import { buildMilestoneApprovalMemo } from "@/lib/milestones/memo";
+import {
+  getMilestoneShortCode,
+  sha256BytesFromHex,
+} from "@/lib/milestones/evidence";
 import { getHorizonServer, stellarConfig } from "./config";
 import { getTransactionExplorerUrl } from "./explorer";
 
@@ -43,7 +49,10 @@ export type MilestoneApprovalProofResult = {
   hash: string;
   explorerUrl: string;
   milestoneId: string;
-  memo: string;
+  /** Short human ref (e.g. QHP-MS-01) — also stored in Pinata metadata. */
+  shortCode: string;
+  /** Hex SHA-256 that was placed in Memo.hash. */
+  contentHash: string;
   approvedBy: string;
 };
 
@@ -113,16 +122,30 @@ function toSubmitErrorMessage(error: unknown): string {
 }
 
 /**
- * Build, sign (server-side), and submit a Testnet proof transaction.
- * Memo identifies the milestone. Does not transfer QRP.
+ * Build, sign (server-side Admin Wallet), and submit a Testnet proof transaction.
+ * Memo.hash carries the SHA-256 of the evidence file.
  * Never logs or returns the secret key.
  */
-export async function submitMilestoneApprovalProof(
-  milestoneId: string
-): Promise<MilestoneApprovalProofResult> {
+export async function submitMilestoneApprovalProof(input: {
+  milestoneId: string;
+  contentHash: string;
+}): Promise<MilestoneApprovalProofResult> {
+  const shortCode = getMilestoneShortCode(input.milestoneId);
+  if (!shortCode) {
+    throw new MilestoneApprovalSubmitError("Unknown milestone id.");
+  }
+
+  let hashBytes: Buffer;
+  try {
+    hashBytes = sha256BytesFromHex(input.contentHash);
+  } catch {
+    throw new MilestoneApprovalSubmitError(
+      "Invalid evidence content hash for Stellar memo."
+    );
+  }
+
   const keypair = loadAdminKeypair();
   const horizon = getHorizonServer();
-  const memo = buildMilestoneApprovalMemo(milestoneId);
 
   let account;
   try {
@@ -144,7 +167,7 @@ export async function submitMilestoneApprovalProof(
         amount: MILESTONE_APPROVAL_XLM_AMOUNT,
       })
     )
-    .addMemo(Memo.text(memo))
+    .addMemo(Memo.hash(hashBytes))
     .setTimeout(180)
     .build();
 
@@ -155,8 +178,9 @@ export async function submitMilestoneApprovalProof(
     return {
       hash: response.hash,
       explorerUrl: getTransactionExplorerUrl(response.hash),
-      milestoneId,
-      memo,
+      milestoneId: input.milestoneId,
+      shortCode,
+      contentHash: input.contentHash.toLowerCase(),
       approvedBy: keypair.publicKey(),
     };
   } catch (error: unknown) {

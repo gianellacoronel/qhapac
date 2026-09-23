@@ -4,6 +4,11 @@ import { useCallback, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
 import { FundingProgress } from "@/components/project/funding-progress";
+import {
+  MilestoneApproveModal,
+  type ApprovalModalPhase,
+  type ApproveMilestonePayload,
+} from "@/components/milestones/milestone-approve-modal";
 import { MilestoneDetailDialog } from "@/components/milestones/milestone-detail-dialog";
 import { MilestoneList } from "@/components/milestones/milestone-list";
 import { useMilestones } from "@/components/milestones/milestones-provider";
@@ -20,13 +25,6 @@ import { hasOnChainApproval } from "@/lib/milestones/data";
 import { formatQrp } from "@/lib/project/data";
 import { shortenAddress } from "@/lib/stellar/wallet";
 
-export type ApprovalUiPhase =
-  | "idle"
-  | "approving"
-  | "confirming"
-  | "success"
-  | "error";
-
 export function AdminDashboard() {
   const t = useTranslations("admin");
   const tProject = useTranslations("project");
@@ -41,12 +39,15 @@ export function AdminDashboard() {
     pendingCount,
     totalCount,
     recordApprovedMilestone,
+    refreshMilestones,
   } = useMilestones();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
-  const [approvalPhase, setApprovalPhase] = useState<ApprovalUiPhase>("idle");
+  const [approvalPhase, setApprovalPhase] =
+    useState<ApprovalModalPhase>("idle");
   const [approvalError, setApprovalError] = useState<string | null>(null);
 
   const selectedMilestone = useMemo(
@@ -63,52 +64,121 @@ export function AdminDashboard() {
     ? tMilestones(`items.${nextPending.id}.title`)
     : null;
 
+  const approveTargetTitle = selectedMilestone
+    ? tMilestones(`items.${selectedMilestone.id}.title`)
+    : "";
+
+  const resetApprovalUi = useCallback(() => {
+    setApprovalPhase("idle");
+    setApprovalError(null);
+    setApprovingId(null);
+  }, []);
+
   const handleViewDetails = useCallback((id: string) => {
     setSelectedId(id);
     setDetailOpen(true);
+    setApproveOpen(false);
     setApprovalPhase("idle");
     setApprovalError(null);
   }, []);
 
-  const handleApprove = useCallback(
-    async (id: string) => {
-      if (!address || !isAdmin) return;
-      if (approvingId) return;
+  const handleApproveRequest = useCallback((id: string) => {
+    setSelectedId(id);
+    setApprovalError(null);
+    setApprovalPhase("idle");
+    setApproveOpen(true);
+  }, []);
 
+  const mapClientError = useCallback(
+    (error: string) => {
+      switch (error) {
+        case "already_approved":
+          return tMilestones("alreadyApprovedError");
+        case "config":
+          return tMilestones("configError");
+        case "network":
+          return tMilestones("networkError");
+        case "pinata_upload":
+          return tMilestones("uploadFailed");
+        case "stellar_submit":
+          return tMilestones("stellarFailed");
+        case "invalid_file":
+        case "file_too_large":
+          return tMilestones("validationFileType");
+        case "invalid_description":
+          return tMilestones("validationDescriptionRequired");
+        case "in_progress":
+          return tMilestones("inProgressError");
+        default:
+          return tMilestones("stellarFailed");
+      }
+    },
+    [tMilestones],
+  );
+
+  const handleConfirmApprove = useCallback(
+    async (payload: ApproveMilestonePayload) => {
+      if (!address || !isAdmin || !selectedMilestone) return;
+      if (approvingId) return;
+      if (hasOnChainApproval(selectedMilestone)) {
+        setApprovalError(tMilestones("alreadyApprovedError"));
+        setApprovalPhase("error");
+        return;
+      }
+
+      const id = selectedMilestone.id;
       setApprovingId(id);
       setApprovalError(null);
-      setApprovalPhase("approving");
+      setApprovalPhase("preparing");
 
-      // Brief UI beat before network round-trip / Horizon confirm.
-      await new Promise((resolve) => setTimeout(resolve, 150));
-      setApprovalPhase("confirming");
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      setApprovalPhase("uploading");
 
-      const result = await requestMilestoneApproval(id);
+      // Network round-trip covers upload + Stellar; advance UI phases for clarity.
+      const resultPromise = requestMilestoneApproval({
+        milestoneId: id,
+        description: payload.description,
+        file: payload.file,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      setApprovalPhase("recording");
+
+      const result = await resultPromise;
 
       if (!result.ok) {
         setApprovalPhase("error");
-        setApprovalError(
-          result.error === "already_approved"
-            ? tMilestones("alreadyApprovedError")
-            : result.error === "config"
-              ? tMilestones("configError")
-              : result.error === "network"
-                ? tMilestones("networkError")
-                : tMilestones("approvalFailed"),
-        );
+        setApprovalError(mapClientError(result.error));
         setApprovingId(null);
         return;
       }
+
+      setApprovalPhase("confirming");
+      await new Promise((resolve) => setTimeout(resolve, 120));
 
       recordApprovedMilestone(id, {
         approvedBy: result.approvedBy,
         approvedAt: result.approvedAt,
         transactionHash: result.transactionHash,
+        approvalMemo: result.approvalMemo,
+        evidence: result.evidence,
       });
+
       setApprovalPhase("success");
       setApprovingId(null);
+      setApproveOpen(false);
+      void refreshMilestones();
     },
-    [address, isAdmin, approvingId, recordApprovedMilestone, tMilestones],
+    [
+      address,
+      isAdmin,
+      selectedMilestone,
+      approvingId,
+      recordApprovedMilestone,
+      refreshMilestones,
+      mapClientError,
+      tMilestones,
+    ],
   );
 
   if (isLoading) {
@@ -276,12 +346,11 @@ export function AdminDashboard() {
           setDetailOpen(open);
           if (!open) {
             setSelectedId(null);
-            setApprovalPhase("idle");
-            setApprovalError(null);
+            resetApprovalUi();
           }
         }}
         canApprove
-        onApprove={handleApprove}
+        onApproveRequest={handleApproveRequest}
         isApproving={
           selectedMilestone ? approvingId === selectedMilestone.id : false
         }
@@ -291,6 +360,28 @@ export function AdminDashboard() {
         approvalError={
           selectedId === selectedMilestone?.id ? approvalError : null
         }
+      />
+
+      <MilestoneApproveModal
+        open={approveOpen && Boolean(selectedMilestone)}
+        onOpenChange={(open) => {
+          if (
+            approvalPhase === "preparing" ||
+            approvalPhase === "uploading" ||
+            approvalPhase === "recording" ||
+            approvalPhase === "confirming"
+          ) {
+            return;
+          }
+          setApproveOpen(open);
+          if (!open && approvalPhase !== "success") {
+            resetApprovalUi();
+          }
+        }}
+        milestoneTitle={approveTargetTitle}
+        phase={approvalPhase}
+        error={approvalError}
+        onConfirm={handleConfirmApprove}
       />
     </div>
   );

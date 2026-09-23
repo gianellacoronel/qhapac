@@ -2,9 +2,13 @@
  * In-memory milestone approval ledger for the hackathon MVP (no database).
  * Survives for the lifetime of the Node process.
  * Import exclusively from server Route Handlers — never from client components.
+ *
+ * On-chain Stellar proofs + Pinata evidence are the durable source of truth;
+ * this Map is a fast cache hydrated/reconciled by GET /api/milestones.
  */
 import { INITIAL_HUARAL_MILESTONES, hasOnChainApproval } from "./data";
-import type { Milestone } from "./types";
+import { isMilestoneEvidence } from "./evidence";
+import type { Milestone, MilestoneEvidence } from "./types";
 
 type StoredMilestone = Milestone & {
   /** In-flight guard — never exposed to API responses as status. */
@@ -25,6 +29,8 @@ function toPublicMilestone(stored: StoredMilestone): Milestone {
       approvedAt: undefined,
       approvedBy: undefined,
       transactionHash: undefined,
+      approvalMemo: undefined,
+      evidence: undefined,
     };
   }
   return { ...milestone };
@@ -59,6 +65,8 @@ export function beginMilestoneApproval(id: string): boolean {
     approvedAt: undefined,
     approvedBy: undefined,
     transactionHash: undefined,
+    approvalMemo: undefined,
+    evidence: undefined,
   });
   return true;
 }
@@ -69,10 +77,13 @@ export function completeMilestoneApproval(
     approvedBy: string;
     approvedAt: string;
     transactionHash: string;
+    approvalMemo?: string;
+    evidence: MilestoneEvidence;
   }
 ): Milestone | null {
   const current = milestones.get(id);
   if (!current) return null;
+  if (!isMilestoneEvidence(proof.evidence)) return null;
 
   const approved: StoredMilestone = {
     ...current,
@@ -81,12 +92,53 @@ export function completeMilestoneApproval(
     approvedAt: proof.approvedAt,
     approvedBy: proof.approvedBy,
     transactionHash: proof.transactionHash,
+    approvalMemo: proof.approvalMemo,
+    evidence: proof.evidence,
   };
   milestones.set(id, approved);
   return toPublicMilestone(approved);
 }
 
-/** Roll back an in-flight approval when Stellar submission fails. */
+/**
+ * Idempotent apply when reconciling Horizon + Pinata after refresh.
+ * Does not overwrite an existing different transaction hash.
+ */
+export function reconcileMilestoneApproval(
+  id: string,
+  proof: {
+    approvedBy: string;
+    approvedAt: string;
+    transactionHash: string;
+    approvalMemo?: string;
+    evidence: MilestoneEvidence;
+  }
+): Milestone | null {
+  const current = milestones.get(id) ?? INITIAL_HUARAL_MILESTONES.find((m) => m.id === id);
+  if (!current) return null;
+  if (!isMilestoneEvidence(proof.evidence)) return null;
+
+  if (
+    hasOnChainApproval(current) &&
+    current.transactionHash === proof.transactionHash
+  ) {
+    // Refresh evidence fields if missing.
+    if (!current.evidence) {
+      return completeMilestoneApproval(id, proof);
+    }
+    return toPublicMilestone({ ...current, approving: false });
+  }
+
+  if (hasOnChainApproval(current)) {
+    // Already approved with a different tx — do not create a second approval.
+    return toPublicMilestone(
+      milestones.get(id) ?? { ...current, approving: false }
+    );
+  }
+
+  return completeMilestoneApproval(id, proof);
+}
+
+/** Roll back an in-flight approval when Pinata or Stellar submission fails. */
 export function abortMilestoneApproval(id: string): void {
   const current = milestones.get(id);
   if (!current?.approving) return;
@@ -98,6 +150,8 @@ export function abortMilestoneApproval(id: string): void {
     approvedAt: undefined,
     approvedBy: undefined,
     transactionHash: undefined,
+    approvalMemo: undefined,
+    evidence: undefined,
   });
 }
 

@@ -17,11 +17,12 @@ import {
   countPendingMilestones,
   hasOnChainApproval,
 } from "@/lib/milestones/data";
+import { isMilestoneEvidence } from "@/lib/milestones/evidence";
 import type { Milestone } from "@/lib/milestones/types";
 import type { MilestoneApprovalProof } from "@/lib/milestones/actions";
 
 /** Bump when seed status/shape changes so stale local demos reset. */
-const STORAGE_KEY = "qhapaq.huaral.milestones.v3";
+const STORAGE_KEY = "qhapaq.huaral.milestones.v4";
 
 type MilestonesContextValue = {
   milestones: Milestone[];
@@ -60,7 +61,11 @@ function normalizeMilestoneList(
         ? item.transactionHash.trim()
         : undefined;
 
-    // Without an on-chain proof, never surface as approved (admin can approve).
+    const evidence = isMilestoneEvidence(item.evidence)
+      ? item.evidence
+      : undefined;
+
+    // Without an on-chain proof, never surface as approved.
     const rawStatus =
       item.status === "approved" || item.status === "pending"
         ? item.status
@@ -80,6 +85,11 @@ function normalizeMilestoneList(
           ? item.approvedBy
           : undefined,
       transactionHash,
+      approvalMemo:
+        status === "approved" && typeof item.approvalMemo === "string"
+          ? item.approvalMemo
+          : undefined,
+      evidence: status === "approved" ? evidence : undefined,
     });
   }
 
@@ -106,8 +116,8 @@ function parseStoredMilestones(raw: string | null): Milestone[] | null {
 }
 
 /**
- * Prefer server (process memory) when it has a real on-chain approval;
- * otherwise keep richer localStorage / seed data for the session.
+ * Prefer server (process memory + Horizon/Pinata reconcile) when it has a real
+ * on-chain approval; otherwise keep richer localStorage / seed data.
  */
 function mergeMilestones(
   local: Milestone[] | null,
@@ -121,6 +131,10 @@ function mergeMilestones(
     if (!remoteItem) return localItem;
 
     if (hasOnChainApproval(remoteItem)) {
+      // Prefer remote evidence when present; keep local evidence if remote lacks it.
+      if (!remoteItem.evidence && localItem.evidence) {
+        return { ...remoteItem, evidence: localItem.evidence };
+      }
       return remoteItem;
     }
 

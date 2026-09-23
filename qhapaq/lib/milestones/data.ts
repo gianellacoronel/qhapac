@@ -5,6 +5,9 @@ import type { Milestone } from "./types";
  * Not live project data — used to demonstrate admin / participant flows.
  * Qhapaq records associated approvals and evidence; it does not verify
  * that physical construction occurred.
+ *
+ * All start pending: an "approved" status requires a real Stellar proof
+ * (see hasOnChainApproval). Do not invent transaction hashes for demos.
  */
 export const HUARAL_MILESTONE_IDS = [
   "land-acquisition",
@@ -21,31 +24,26 @@ export const INITIAL_HUARAL_MILESTONES: Milestone[] = [
     id: "land-acquisition",
     status: "pending",
     expectedDate: "2026-09-24",
-    evidence: { mock: true },
   },
   {
     id: "construction-start",
     status: "pending",
     expectedDate: "2026-09-30",
-    evidence: { mock: true },
   },
   {
     id: "construction-25",
     status: "pending",
     expectedDate: "2026-11-30",
-    evidence: { mock: true },
   },
   {
     id: "construction-50",
     status: "pending",
     expectedDate: "2027-01-31",
-    evidence: { mock: true },
   },
   {
     id: "project-complete",
     status: "pending",
     expectedDate: "2027-06-30",
-    evidence: { mock: true },
   },
 ];
 

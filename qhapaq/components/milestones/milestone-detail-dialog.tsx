@@ -17,12 +17,15 @@ import { toIntlLocale } from "@/lib/project/data";
 import { shortenHash } from "@/lib/stellar/explorer";
 import { shortenAddress } from "@/lib/stellar/wallet";
 import { hasOnChainApproval } from "@/lib/milestones/data";
+import { isMilestoneEvidence } from "@/lib/milestones/evidence";
 import type { Milestone } from "@/lib/milestones/types";
 import { cn } from "@/lib/utils";
 
 export type MilestoneApprovalPhase =
   | "idle"
-  | "approving"
+  | "preparing"
+  | "uploading"
+  | "recording"
   | "confirming"
   | "success"
   | "error";
@@ -32,24 +35,25 @@ type MilestoneDetailDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   canApprove?: boolean;
-  onApprove?: (id: string) => void | Promise<void>;
+  onApproveRequest?: (id: string) => void;
   isApproving?: boolean;
   approvalPhase?: MilestoneApprovalPhase;
   approvalError?: string | null;
 };
 
-function formatDate(iso: string, locale: string): string {
+function formatDateTime(iso: string, locale: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     year: "numeric",
     month: "long",
     day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date);
 }
 
 function formatDay(isoDate: string, locale: string): string {
-  // Expected dates are YYYY-MM-DD — append noon UTC to avoid timezone shift.
   const date = new Date(
     isoDate.includes("T") ? isoDate : `${isoDate}T12:00:00.000Z`,
   );
@@ -66,25 +70,20 @@ export function MilestoneDetailDialog({
   open,
   onOpenChange,
   canApprove = false,
-  onApprove,
+  onApproveRequest,
   isApproving = false,
   approvalPhase = "idle",
   approvalError = null,
 }: MilestoneDetailDialogProps) {
   const t = useTranslations("milestones");
   const locale = useLocale();
-  const [confirming, setConfirming] = useState(false);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
 
   useEffect(() => {
-    if (!open) {
-      setConfirming(false);
-      setEvidenceOpen(false);
-    }
+    if (!open) setEvidenceOpen(false);
   }, [open]);
 
   useEffect(() => {
-    setConfirming(false);
     setEvidenceOpen(false);
   }, [milestone?.id]);
 
@@ -93,8 +92,9 @@ export function MilestoneDetailDialog({
   const approved = hasOnChainApproval(milestone);
   const title = t(`items.${milestone.id}.title`);
   const description = t(`items.${milestone.id}.description`);
-  const evidenceTitle = t(`items.${milestone.id}.evidenceTitle`);
-  const evidenceDescription = t(`items.${milestone.id}.evidenceDescription`);
+  const evidence = isMilestoneEvidence(milestone.evidence)
+    ? milestone.evidence
+    : null;
 
   const approvedByText =
     !milestone.approvedBy || milestone.approvedBy === "prototype"
@@ -103,20 +103,18 @@ export function MilestoneDetailDialog({
           address: shortenAddress(milestone.approvedBy, 4),
         });
 
-  const handleConfirmApprove = () => {
-    if (!onApprove || !canApprove || approved || isApproving) return;
-    void onApprove(milestone.id);
-    setConfirming(false);
-  };
-
   const approveButtonLabel =
-    approvalPhase === "approving"
-      ? t("approving")
-      : approvalPhase === "confirming"
-        ? t("confirmingOnStellar")
-        : approvalPhase === "success" || approved
-          ? t("approved")
-          : t("approve");
+    approvalPhase === "preparing"
+      ? t("phasePreparing")
+      : approvalPhase === "uploading"
+        ? t("phaseUploading")
+        : approvalPhase === "recording"
+          ? t("phaseRecording")
+          : approvalPhase === "confirming"
+            ? t("phaseConfirming")
+            : approvalPhase === "success" || approved
+              ? t("approved")
+              : t("approve");
 
   return (
     <>
@@ -162,7 +160,7 @@ export function MilestoneDetailDialog({
                   <dt className="text-xs tracking-wide text-muted-foreground uppercase">
                     {t("approvedAtLabel")}
                   </dt>
-                  <dd>{formatDate(milestone.approvedAt, locale)}</dd>
+                  <dd>{formatDateTime(milestone.approvedAt, locale)}</dd>
                 </div>
               ) : null}
 
@@ -172,6 +170,45 @@ export function MilestoneDetailDialog({
                     {t("approvedByLabel")}
                   </dt>
                   <dd>{approvedByText}</dd>
+                </div>
+              ) : null}
+
+              {approved && evidence ? (
+                <div className="space-y-2 sm:col-span-2">
+                  <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                    {t("evidence")}
+                  </dt>
+                  <dd className="space-y-2">
+                    <p className="text-sm font-medium">{evidence.fileName}</p>
+                    <div className="space-y-0.5">
+                      <p className="text-xs tracking-wide text-muted-foreground uppercase">
+                        {t("evidenceDescriptionLabel")}
+                      </p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {evidence.description}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEvidenceOpen(true)}
+                      >
+                        {t("viewEvidence")}
+                      </Button>
+                      <a
+                        href={evidence.gatewayUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex"
+                      >
+                        <Button type="button" size="sm" variant="outline">
+                          {t("openEvidenceFile")}
+                        </Button>
+                      </a>
+                    </div>
+                  </dd>
                 </div>
               ) : null}
 
@@ -195,7 +232,7 @@ export function MilestoneDetailDialog({
                       </p>
                       <TransactionLink
                         hash={milestone.transactionHash}
-                        label={t("viewOnExplorer")}
+                        label={t("viewApprovalRecord")}
                       />
                     </dd>
                   ) : (
@@ -212,77 +249,28 @@ export function MilestoneDetailDialog({
                 {approvalError}
               </p>
             ) : null}
-
-            {milestone.evidence?.mock ? (
-              <div className="space-y-2 pt-2">
-                <p className="text-xs tracking-wide text-muted-foreground uppercase">
-                  {t("evidence")}
-                </p>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="min-w-0 space-y-0.5">
-                    <p className="text-sm font-medium">{evidenceTitle}</p>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {evidenceDescription}
-                    </p>
-                    {/*<p className="text-xs text-muted-foreground">
-                      {t("evidencePrototypeNote")}
-                    </p>*/}
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={isApproving}
-                    onClick={() => setEvidenceOpen(true)}
-                  >
-                    {t("viewEvidence")}
-                  </Button>
-                </div>
-              </div>
-            ) : null}
           </div>
 
           <DialogFooter>
-            {isApproving ? (
-              <div className="flex w-full flex-col gap-2 sm:items-end">
-                <Button type="button" disabled>
-                  {approveButtonLabel}
-                </Button>
-              </div>
-            ) : confirming ? (
-              <div className="flex w-full flex-col gap-3 sm:items-end">
-                <p className="text-sm text-muted-foreground sm:text-right">
-                  {t("confirmApprovalDescription", { title })}
-                </p>
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setConfirming(false)}
-                  >
-                    {t("cancel")}
-                  </Button>
-                  <Button type="button" onClick={handleConfirmApprove}>
-                    {t("confirmApproval")}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isApproving}
+                onClick={() => onOpenChange(false)}
+              >
+                {t("close")}
+              </Button>
+              {canApprove && !approved && onApproveRequest ? (
                 <Button
                   type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
+                  disabled={isApproving}
+                  onClick={() => onApproveRequest(milestone.id)}
                 >
-                  {t("close")}
+                  {approveButtonLabel}
                 </Button>
-                {canApprove && !approved && onApprove ? (
-                  <Button type="button" onClick={() => setConfirming(true)}>
-                    {t("approve")}
-                  </Button>
-                ) : null}
-              </div>
-            )}
+              ) : null}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -291,15 +279,78 @@ export function MilestoneDetailDialog({
         <DialogContent className="sm:max-w-md" showCloseButton>
           <DialogHeader>
             <DialogTitle>{t("evidence")}</DialogTitle>
-            {/*<DialogDescription>{t("evidencePrototypeNote")}</DialogDescription>*/}
+            <DialogDescription>{title}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <p className="font-medium">{evidenceTitle}</p>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {evidenceDescription}
+          {evidence ? (
+            <dl className="space-y-3 text-sm">
+              <div className="space-y-0.5">
+                <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                  {t("evidenceFileLabel")}
+                </dt>
+                <dd className="font-medium">{evidence.fileName}</dd>
+              </div>
+              <div className="space-y-0.5">
+                <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                  {t("evidenceDescriptionLabel")}
+                </dt>
+                <dd className="leading-relaxed text-muted-foreground">
+                  {evidence.description}
+                </dd>
+              </div>
+              <div className="space-y-0.5">
+                <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                  {t("evidenceCid")}
+                </dt>
+                <dd className="break-all font-mono text-xs text-muted-foreground">
+                  {evidence.cid}
+                </dd>
+              </div>
+              <div className="space-y-0.5">
+                <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                  {t("evidenceHash")}
+                </dt>
+                <dd className="break-all font-mono text-xs text-muted-foreground">
+                  {evidence.contentHash}
+                </dd>
+              </div>
+              {milestone.approvedAt ? (
+                <div className="space-y-0.5">
+                  <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                    {t("approvedAtLabel")}
+                  </dt>
+                  <dd>{formatDateTime(milestone.approvedAt, locale)}</dd>
+                </div>
+              ) : null}
+              {milestone.transactionHash ? (
+                <div className="space-y-2">
+                  <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                    {t("blockchainProof")}
+                  </dt>
+                  <dd>
+                    <TransactionLink
+                      hash={milestone.transactionHash}
+                      label={t("viewApprovalRecord")}
+                    />
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("evidenceUnavailable")}
             </p>
-          </div>
+          )}
           <DialogFooter>
+            {evidence ? (
+              <a
+                href={evidence.gatewayUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex"
+              >
+                <Button type="button">{t("openEvidenceFile")}</Button>
+              </a>
+            ) : null}
             <Button
               type="button"
               variant="outline"

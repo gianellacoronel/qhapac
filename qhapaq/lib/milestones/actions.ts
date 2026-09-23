@@ -1,9 +1,12 @@
-import type { Milestone } from "./types";
+import type { Milestone, MilestoneEvidence } from "./types";
+import { isMilestoneEvidence } from "./evidence";
 
 export type MilestoneApprovalProof = {
   approvedBy: string;
   approvedAt: string;
   transactionHash: string;
+  approvalMemo?: string;
+  evidence: MilestoneEvidence;
 };
 
 /**
@@ -15,6 +18,10 @@ export function applyMilestoneApproval(
   id: string,
   proof: MilestoneApprovalProof
 ): { milestones: Milestone[]; didApprove: boolean } {
+  if (!isMilestoneEvidence(proof.evidence)) {
+    return { milestones, didApprove: false };
+  }
+
   let didApprove = false;
 
   const next = milestones.map((milestone) => {
@@ -29,6 +36,8 @@ export function applyMilestoneApproval(
       approvedAt: proof.approvedAt,
       approvedBy: proof.approvedBy,
       transactionHash: proof.transactionHash,
+      approvalMemo: proof.approvalMemo,
+      evidence: proof.evidence,
     };
   });
 
