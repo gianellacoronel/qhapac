@@ -87,13 +87,15 @@ export async function fetchAccountBalances(
       qrpMatch && "balance" in qrpMatch
         ? {
             balance: qrpMatch.balance,
-            formatted: formatAssetBalance(qrpMatch.balance),
+            formatted: formatAssetBalance(qrpMatch.balance, {
+              maxFractionDigits: 0,
+            }),
             hasTrustline: true,
             assetId,
           }
         : {
             balance: "0",
-            formatted: formatAssetBalance("0"),
+            formatted: formatAssetBalance("0", { maxFractionDigits: 0 }),
             hasTrustline: false,
             assetId,
           };

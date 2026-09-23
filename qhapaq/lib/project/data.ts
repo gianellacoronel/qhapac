@@ -86,7 +86,7 @@ export function formatQrp(amount: number | string, locale?: string): string {
   const value = typeof amount === "string" ? Number(amount) : amount;
   if (!Number.isFinite(value)) return "0";
   return new Intl.NumberFormat(toIntlLocale(locale), {
-    maximumFractionDigits: 7,
+    maximumFractionDigits: 0,
   }).format(value);
 }
 

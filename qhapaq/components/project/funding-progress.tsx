@@ -31,7 +31,7 @@ export function FundingProgress({
   const locale = useLocale();
   const { raised, goal, percentage, isLoading, error } = funding;
   const displayGoal = goal ?? project.fundingTarget;
-  const pct = percentage ?? 0;
+  const pct = Math.round(percentage ?? 0);
 
   if (variant === "compact") {
     return (
@@ -52,9 +52,11 @@ export function FundingProgress({
             </p>
           )}
           {!isLoading && !error ? (
-            <p className="text-sm tabular-nums text-muted-foreground">
-              {formatQrp(raised ?? 0, locale)} /{" "}
-              {formatQrp(displayGoal, locale)} {project.token}
+            <p className="font-heading text-lg font-semibold tabular-nums tracking-tight sm:text-xl">
+              {formatQrp(raised ?? 0, locale)}
+              <span className="ml-1 text-sm font-normal text-muted-foreground sm:text-base">
+                / {formatQrp(displayGoal, locale)} {project.token}
+              </span>
             </p>
           ) : null}
         </div>
@@ -87,7 +89,7 @@ export function FundingProgress({
 
       {isLoading ? (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <Skeleton className="h-8 w-48 sm:h-9" />
+          <Skeleton className="h-10 w-56 sm:h-12 lg:h-14" />
           <Skeleton className="h-16 w-36 sm:h-[4.5rem]" />
         </div>
       ) : error ? (
@@ -99,9 +101,9 @@ export function FundingProgress({
       ) : (
         <div className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6 pb-6">
-            <p className="order-2 font-heading text-xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-2xl">
+            <p className="order-2 font-heading text-3xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-4xl lg:text-5xl">
               {formatQrp(raised ?? 0, locale)}
-              <span className="text-base font-normal text-muted-foreground">
+              <span className="text-lg font-normal text-muted-foreground sm:text-xl">
                 {" "}
                 / {formatQrp(displayGoal, locale)} {project.token}
               </span>
