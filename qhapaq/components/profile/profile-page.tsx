@@ -165,11 +165,10 @@ export function ProfilePage() {
       : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-12 sm:px-8 sm:py-16 lg:py-20">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-12 sm:px-8 sm:py-16 lg:py-14">
       <header className="pb-10 sm:pb-12">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end lg:gap-14">
           <div className="max-w-xl space-y-4">
-            <SectionLabel>{t("sectionProfile")}</SectionLabel>
             <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
               {t.rich("heroTitle", {
                 mark: (chunks) => (
@@ -290,10 +289,7 @@ export function ProfilePage() {
           ) : null}
 
           {isTestnet ? (
-            <section
-              aria-label={t("highlightsAria")}
-              className="py-2 sm:py-4"
-            >
+            <section aria-label={t("highlightsAria")} className="py-2 sm:py-4">
               {balances.error ? (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-destructive">{balances.error}</p>
