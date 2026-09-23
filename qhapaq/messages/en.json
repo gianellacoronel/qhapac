@@ -162,7 +162,7 @@
     "heroStatement": "Discount on resort services",
     "description": "Generate your digital credential and use it at Huaral Resort.",
     "backToBenefits": "Back to benefits",
-    "disclaimer": "Generated benefits are unique digital credentials for this demo session. Redeeming records a real Stellar Testnet proof.",
+    "disclaimer": "Generated benefits are unique digital credentials for this demo session. Using them records a real Stellar Testnet proof.",
     "verifyLink": "Verify a benefit ID",
     "definitions": {
       "huaral-resort-20-off": {
@@ -174,7 +174,7 @@
     "status": {
       "available": "Available",
       "generated": "Generated",
-      "redeemed": "Redeemed",
+      "redeemed": "Used",
       "valid": "Valid"
     },
     "percentOff": "{discount}% OFF",
@@ -187,21 +187,21 @@
     "validForLabel": "Valid for",
     "generatedTitle": "Benefit generated",
     "benefitId": "Benefit ID",
-    "validForOneRedemption": "Valid for one redemption",
+    "validForOneRedemption": "Valid for one use",
     "verifyBenefit": "Verify benefit",
-    "redeemedTitle": "Benefit redeemed",
+    "redeemedTitle": "Benefit used",
     "statusLabel": "Status",
-    "redeemedOn": "Redeemed on",
+    "redeemedOn": "Used on",
     "onChainProof": "On-chain proof",
     "transaction": "Transaction",
     "viewOnExplorer": "View on Stellar Explorer",
     "txUnavailable": "Transaction details unavailable for this session.",
     "errors": {
       "not_found": "This benefit could not be verified.",
-      "already_redeemed": "This benefit has already been redeemed.",
-      "in_progress": "Redemption is already in progress.",
-      "not_configured": "Redemption is not configured on the server. Set QHAPAQ_REDEMPTION_SECRET_KEY and restart.",
-      "submit_failed": "We couldn't record the redemption on Stellar. Please try again."
+      "already_redeemed": "This benefit has already been used.",
+      "in_progress": "Use is already in progress.",
+      "not_configured": "Benefit use is not configured on the server. Set QHAPAQ_REDEMPTION_SECRET_KEY and restart.",
+      "submit_failed": "We couldn't record the use on Stellar. Please try again."
     }
   },
   "verify": {
@@ -215,19 +215,19 @@
     "unableTitle": "Unable to verify",
     "enterId": "Enter a benefit ID to verify.",
     "notFound": "This benefit could not be verified.",
-    "recording": "Recording redemption...",
+    "recording": "Recording use...",
     "verifyingOnChain": "Verifying on Stellar Testnet",
     "creatingProof": "Creating an on-chain proof for benefit {id}.",
     "validBenefit": "Valid benefit",
-    "redeemedBenefit": "Benefit redeemed",
+    "redeemedBenefit": "Benefit used",
     "discountLabel": "{discount}% discount",
     "statusLabel": "Status",
-    "redeemedOn": "Redeemed on",
+    "redeemedOn": "Used on",
     "onChainProof": "On-chain proof",
     "transaction": "Transaction",
     "viewOnExplorer": "View on Stellar Explorer",
-    "redeem": "Redeem benefit",
-    "redemptionFailed": "Redemption failed"
+    "redeem": "Use benefit",
+    "redemptionFailed": "Use failed"
   },
   "wallet": {
     "connect": "Connect Wallet",
