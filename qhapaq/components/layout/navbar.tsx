@@ -25,7 +25,7 @@ export function Navbar() {
   const navItems = useMemo(() => {
     const items: NavItem[] = [
       { href: "/", label: t("home") },
-      { href: "/portfolio", label: t("portfolio") },
+      // { href: "/portfolio", label: t("portfolio") },
       { href: "/benefits", label: t("benefits") },
     ];
 
