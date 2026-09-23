@@ -98,7 +98,7 @@ export function FundingProgress({
         </Alert>
       ) : (
         <div className="space-y-3">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6 pb-6">
             <p className="order-2 font-heading text-xl font-semibold tracking-tight tabular-nums sm:order-1 sm:text-2xl">
               {formatQrp(raised ?? 0, locale)}
               <span className="text-base font-normal text-muted-foreground">
@@ -113,7 +113,6 @@ export function FundingProgress({
           </div>
           <Progress value={pct} className="w-full">
             <ProgressLabel className="sr-only">{t("completion")}</ProgressLabel>
-            <ProgressValue />
           </Progress>
         </div>
       )}
