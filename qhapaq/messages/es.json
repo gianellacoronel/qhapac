@@ -414,7 +414,7 @@
     "evidenceUnavailable": "No hay evidencia disponible para este hito.",
     "approvalFailed": "Aprobación fallida",
     "alreadyApprovedError": "Este hito ya fue aprobado.",
-    "configError": "La aprobación de hitos no está configurada en el servidor.",
+    "configError": "La aprobación de hitos no está configurada en el servidor. Revisa PINATA_JWT (JWT largo de Pinata) y NEXT_PUBLIC_GATEWAY_URL, luego reinicia el servidor.",
     "networkError": "Error de red al aprobar. Inténtalo de nuevo.",
     "viewDetails": "Ver detalle",
     "detailsTitle": "Detalle del hito",

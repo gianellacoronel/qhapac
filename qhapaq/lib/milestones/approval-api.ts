@@ -207,7 +207,7 @@ export async function approveMilestoneOnChain(input: {
           success: false,
           error: "config",
           message:
-            "Pinata/IPFS is not configured on the server. Set PINATA_JWT and NEXT_PUBLIC_GATEWAY_URL.",
+            "Pinata/IPFS is not configured on the server. Set a valid PINATA_JWT (long JWT from Pinata API Keys, not the short API key) and NEXT_PUBLIC_GATEWAY_URL, then restart.",
         };
       }
       if (error instanceof PinataUploadError) {

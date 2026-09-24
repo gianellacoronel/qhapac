@@ -414,7 +414,7 @@
     "evidenceUnavailable": "No evidence is available for this milestone.",
     "approvalFailed": "Approval failed",
     "alreadyApprovedError": "This milestone has already been approved.",
-    "configError": "Milestone approval is not configured on the server.",
+    "configError": "Milestone approval is not configured on the server. Check PINATA_JWT (long JWT from Pinata) and NEXT_PUBLIC_GATEWAY_URL, then restart the server.",
     "networkError": "Network error while approving. Please try again.",
     "viewDetails": "View details",
     "detailsTitle": "Milestone details",

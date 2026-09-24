@@ -105,6 +105,23 @@ export async function uploadMilestoneEvidenceToPinata(input: {
     ) {
       throw error;
     }
+
+    const message =
+      error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+    if (
+      message.includes("401") ||
+      message.includes("403") ||
+      message.includes("unauthorized") ||
+      message.includes("invalid_credentials") ||
+      message.includes("malformed") ||
+      message.includes("authentication")
+    ) {
+      throw new PinataConfigError(
+        "Pinata rejected PINATA_JWT. Use a valid long JWT from Pinata API Keys and restart the server."
+      );
+    }
+
+    console.error("[pinata] evidence upload failed:", error);
     throw new PinataUploadError(
       "Could not upload evidence to Pinata/IPFS."
     );
