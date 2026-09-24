@@ -125,16 +125,27 @@ export function MilestoneList({
                     <p>{formatApprovedAt(milestone.approvedAt, locale)}</p>
                   ) : null}
                   <p>{approvedByText}</p>
-                  {milestone.transactionHash ? (
-                    <TransactionLink
-                      hash={milestone.transactionHash}
-                      label={t("viewBlockchainProof")}
-                    />
-                  ) : (
-                    <p className="text-xs">
-                      {t.rich("noBlockchainProof", stellarRichTag())}
-                    </p>
-                  )}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    {milestone.transactionHash ? (
+                      <TransactionLink
+                        hash={milestone.transactionHash}
+                        label={t("viewBlockchainProof")}
+                      />
+                    ) : (
+                      <p className="text-xs">
+                        {t.rich("noBlockchainProof", stellarRichTag())}
+                      </p>
+                    )}
+                    {onViewDetails ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onViewDetails(milestone.id)}
+                      >
+                        {t("viewApprovalDetails")}
+                      </Button>
+                    ) : null}
+                  </div>
                 </div>
               ) : null}
 

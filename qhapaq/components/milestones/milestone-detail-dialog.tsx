@@ -119,10 +119,16 @@ export function MilestoneDetailDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg" showCloseButton>
+        <DialogContent className="sm:max-w-xl" showCloseButton>
           <DialogHeader>
-            <DialogTitle>{t("detailsTitle")}</DialogTitle>
-            <DialogDescription>{t("detailsDescription")}</DialogDescription>
+            <DialogTitle>
+              {approved ? t("approvalDetailsTitle") : t("detailsTitle")}
+            </DialogTitle>
+            <DialogDescription>
+              {approved
+                ? t("approvalDetailsDescription")
+                : t("detailsDescription")}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5">
@@ -174,41 +180,43 @@ export function MilestoneDetailDialog({
               ) : null}
 
               {approved && evidence ? (
-                <div className="space-y-2 sm:col-span-2">
-                  <dt className="text-xs tracking-wide text-muted-foreground uppercase">
-                    {t("evidence")}
-                  </dt>
-                  <dd className="space-y-2">
-                    <p className="text-sm font-medium">{evidence.fileName}</p>
+                <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                  <div className="min-w-0 space-y-3">
                     <div className="space-y-0.5">
-                      <p className="text-xs tracking-wide text-muted-foreground uppercase">
+                      <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                        {t("evidence")}
+                      </dt>
+                      <dd className="text-sm font-medium">{evidence.fileName}</dd>
+                    </div>
+                    <div className="space-y-0.5">
+                      <dt className="text-xs tracking-wide text-muted-foreground uppercase">
                         {t("evidenceDescriptionLabel")}
-                      </p>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      </dt>
+                      <dd className="text-sm leading-relaxed text-muted-foreground">
                         {evidence.description}
-                      </p>
+                      </dd>
                     </div>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setEvidenceOpen(true)}
-                      >
-                        {t("viewEvidence")}
+                  </div>
+                  <div className="flex shrink-0 flex-row gap-2 sm:flex-col">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEvidenceOpen(true)}
+                    >
+                      {t("viewEvidence")}
+                    </Button>
+                    <a
+                      href={evidence.gatewayUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex"
+                    >
+                      <Button type="button" size="sm" variant="outline">
+                        {t("openEvidenceFile")}
                       </Button>
-                      <a
-                        href={evidence.gatewayUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex"
-                      >
-                        <Button type="button" size="sm" variant="outline">
-                          {t("openEvidenceFile")}
-                        </Button>
-                      </a>
-                    </div>
-                  </dd>
+                    </a>
+                  </div>
                 </div>
               ) : null}
 
