@@ -77,13 +77,13 @@ export function InvestmentCard({
             </>
           )}
         </div>
-
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {project.mainBenefit}
-        </p>
-
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <Button className="w-full sm:flex-1" size="lg" onClick={() => setOpen(true)}>
+          <Button
+            className="w-full sm:flex-1"
+            size="lg"
+            disabled={!isConnected}
+            onClick={() => setOpen(true)}
+          >
             {isConnected && isTestnet && hasTrustline === false
               ? t("addQrp")
               : t("participate")}

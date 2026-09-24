@@ -1,13 +1,12 @@
 "use client";
 
-import { AlertCircle, Gift, Loader2, RefreshCw, Wallet } from "lucide-react";
+import { AlertCircle, Loader2, RefreshCw, Wallet } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QrpLabel } from "@/components/qrp-help";
 import { Link } from "@/i18n/navigation";
-import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useQrpBalance } from "@/hooks/use-qrp-balance";
 import { estimateUsdValue, huaralResort } from "@/lib/project/data";
 
@@ -35,7 +34,6 @@ export function ParticipationCard({
   const t = useTranslations("participation");
   const tWallet = useTranslations("wallet");
   const locale = useLocale();
-  const project = useLocalizedProject();
   const { formatted, balance, hasTrustline, isLoading, error, refresh } =
     useQrpBalance(isConnected && isTestnet ? address : null);
 
@@ -95,14 +93,6 @@ export function ParticipationCard({
         </div>
 
         <div className="flex min-w-0 flex-col gap-5 lg:items-end lg:text-right">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{t("benefits")}</p>
-            <p className="flex items-center gap-2 font-medium lg:justify-end">
-              <Gift className="size-4 shrink-0 text-primary" aria-hidden />
-              {!isConnected && !isWalletLoading ? "—" : project.mainBenefit}
-            </p>
-          </div>
-
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
             {!isConnected && onConnect ? (
               <Button
