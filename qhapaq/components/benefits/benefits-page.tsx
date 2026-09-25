@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { AvailableBenefitCard } from "@/components/benefits/available-benefit-card";
@@ -28,7 +28,7 @@ export function BenefitsPage() {
   const project = useLocalizedProject();
   const wallet = useWallet();
   const { isAdmin } = useUserRole();
-  const { generatedBenefit, generateBenefit } = useBenefitSession();
+  const { generatedBenefit, generateBenefit, isHydrated } = useBenefitSession();
   const {
     balance,
     formatted,
@@ -41,9 +41,22 @@ export function BenefitsPage() {
   const [activeDefinitionId, setActiveDefinitionId] = useState(
     availableBenefits[0]?.id ?? "",
   );
-  const [showGenerated, setShowGenerated] = useState(
-    () => generatedBenefit != null,
-  );
+  const [showGenerated, setShowGenerated] = useState(false);
+  const wasHydratedRef = useRef(false);
+
+  // After prototype storage hydrates, restore the generated view once.
+  useEffect(() => {
+    if (!isHydrated) {
+      wasHydratedRef.current = false;
+      setShowGenerated(false);
+      return;
+    }
+    if (wasHydratedRef.current) return;
+    wasHydratedRef.current = true;
+    if (generatedBenefit) {
+      setShowGenerated(true);
+    }
+  }, [isHydrated, generatedBenefit]);
 
   const activeDefinition = useMemo(
     () =>
@@ -52,10 +65,13 @@ export function BenefitsPage() {
     [activeDefinitionId],
   );
 
-  const canGenerate = canGenerateResortServiceDiscount({
-    isAdmin,
-    qrpBalance: balance,
-  });
+  const canGenerate =
+    isHydrated &&
+    !generatedBenefit &&
+    canGenerateResortServiceDiscount({
+      isAdmin,
+      qrpBalance: balance,
+    });
 
   const participationAmount = !wallet.isConnected
     ? null

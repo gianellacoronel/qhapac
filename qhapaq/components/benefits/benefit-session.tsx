@@ -6,11 +6,14 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { getBenefitDefinition } from "@/lib/benefits/data";
+import {
+  readStoredGeneratedBenefit,
+  writeStoredGeneratedBenefit,
+} from "@/lib/benefits/session-store";
 import type { GeneratedBenefit } from "@/lib/benefits/types";
 import {
   createBenefitId,
@@ -24,6 +27,8 @@ export type RedeemBenefitOutcome =
 
 type BenefitSessionContextValue = {
   generatedBenefit: GeneratedBenefit | null;
+  /** False until localStorage has been read for the current wallet. */
+  isHydrated: boolean;
   generateBenefit: (definitionId: string) => GeneratedBenefit | null;
   verifyBenefit: (benefitId: string) => GeneratedBenefit | null;
   markVerified: (benefitId: string) => GeneratedBenefit | null;
@@ -50,43 +55,65 @@ const BenefitSessionContext = createContext<BenefitSessionContextValue | null>(
 
 export function BenefitSessionProvider({ children }: { children: ReactNode }) {
   const { address } = useWallet();
-  const previousAddressRef = useRef<string | null | undefined>(undefined);
   const [generatedBenefit, setGeneratedBenefit] =
     useState<GeneratedBenefit | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [sessionAddress, setSessionAddress] = useState<
+    string | null | undefined
+  >(undefined);
 
-  // Drop session data when the connected wallet changes or disconnects.
+  // Clear immediately when the wallet slot changes so we never mutate another
+  // wallet's benefit before localStorage hydrates.
+  if (sessionAddress !== address) {
+    setSessionAddress(address);
+    setGeneratedBenefit(null);
+    setIsHydrated(false);
+  }
+
   useEffect(() => {
-    const previous = previousAddressRef.current;
-    previousAddressRef.current = address;
-
-    if (previous === undefined) {
-      return;
-    }
-
-    if (previous !== address) {
-      setGeneratedBenefit(null);
-    }
+    setGeneratedBenefit(readStoredGeneratedBenefit(address));
+    setIsHydrated(true);
   }, [address]);
 
-  const generateBenefit = useCallback((definitionId: string) => {
-    const definition = getBenefitDefinition(definitionId);
-    if (!definition) return null;
+  const persistBenefit = useCallback(
+    (benefit: GeneratedBenefit | null) => {
+      setGeneratedBenefit(benefit);
+      writeStoredGeneratedBenefit(address, benefit);
+    },
+    [address]
+  );
 
-    const next: GeneratedBenefit = {
-      id: createBenefitId(),
-      benefitDefinitionId: definition.id,
-      projectId: definition.projectId,
-      projectName: definition.projectName,
-      benefitType: definition.title,
-      validFor: definition.validFor,
-      discount: definition.discount,
-      status: "generated",
-      generatedAt: new Date().toISOString(),
-    };
+  const generateBenefit = useCallback(
+    (definitionId: string) => {
+      if (!isHydrated) return null;
 
-    setGeneratedBenefit(next);
-    return next;
-  }, []);
+      // Prototype: one generation per wallet — never mint a second ID.
+      if (generatedBenefit) {
+        return generatedBenefit.benefitDefinitionId === definitionId
+          ? generatedBenefit
+          : null;
+      }
+
+      const definition = getBenefitDefinition(definitionId);
+      if (!definition) return null;
+
+      const next: GeneratedBenefit = {
+        id: createBenefitId(),
+        benefitDefinitionId: definition.id,
+        projectId: definition.projectId,
+        projectName: definition.projectName,
+        benefitType: definition.title,
+        validFor: definition.validFor,
+        discount: definition.discount,
+        status: "generated",
+        generatedAt: new Date().toISOString(),
+      };
+
+      persistBenefit(next);
+      return next;
+    },
+    [generatedBenefit, isHydrated, persistBenefit]
+  );
 
   const verifyBenefit = useCallback(
     (benefitId: string) => {
@@ -102,29 +129,32 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
     [generatedBenefit]
   );
 
-  const markVerified = useCallback((benefitId: string) => {
-    let verified: GeneratedBenefit | null = null;
-
-    setGeneratedBenefit((current) => {
-      if (!current) return current;
-      if (normalizeBenefitId(current.id) !== normalizeBenefitId(benefitId)) {
-        return current;
+  const markVerified = useCallback(
+    (benefitId: string) => {
+      if (!generatedBenefit) return null;
+      if (
+        normalizeBenefitId(generatedBenefit.id) !==
+        normalizeBenefitId(benefitId)
+      ) {
+        return null;
       }
-      if (current.status === "redeemed" || current.status === "redeeming") {
-        verified = current;
-        return current;
+      if (
+        generatedBenefit.status === "redeemed" ||
+        generatedBenefit.status === "redeeming"
+      ) {
+        return generatedBenefit;
       }
 
-      verified = {
-        ...current,
+      const verified: GeneratedBenefit = {
+        ...generatedBenefit,
         status: "verified",
         redeemError: undefined,
       };
+      persistBenefit(verified);
       return verified;
-    });
-
-    return verified;
-  }, []);
+    },
+    [generatedBenefit, persistBenefit]
+  );
 
   const redeemBenefit = useCallback(
     async (benefitId: string): Promise<RedeemBenefitOutcome> => {
@@ -175,7 +205,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
         status: "redeeming",
         redeemError: undefined,
       };
-      setGeneratedBenefit(redeeming);
+      persistBenefit(redeeming);
 
       try {
         const response = await fetch("/api/benefits/redeem", {
@@ -211,7 +241,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
             status: "failed",
             redeemError: errorCode,
           };
-          setGeneratedBenefit(failed);
+          persistBenefit(failed);
           return { ok: false, benefit: failed, errorCode, message };
         }
 
@@ -224,7 +254,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
           explorerUrl: success.explorerUrl,
           redeemError: undefined,
         };
-        setGeneratedBenefit(redeemed);
+        persistBenefit(redeemed);
         return { ok: true, benefit: redeemed };
       } catch {
         const errorCode = "submit_failed";
@@ -235,20 +265,21 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
           status: "failed",
           redeemError: errorCode,
         };
-        setGeneratedBenefit(failed);
+        persistBenefit(failed);
         return { ok: false, benefit: failed, errorCode, message };
       }
     },
-    [generatedBenefit]
+    [generatedBenefit, persistBenefit]
   );
 
   const clearSession = useCallback(() => {
-    setGeneratedBenefit(null);
-  }, []);
+    persistBenefit(null);
+  }, [persistBenefit]);
 
   const value = useMemo(
     () => ({
       generatedBenefit,
+      isHydrated,
       generateBenefit,
       verifyBenefit,
       markVerified,
@@ -257,6 +288,7 @@ export function BenefitSessionProvider({ children }: { children: ReactNode }) {
     }),
     [
       generatedBenefit,
+      isHydrated,
       generateBenefit,
       verifyBenefit,
       markVerified,
